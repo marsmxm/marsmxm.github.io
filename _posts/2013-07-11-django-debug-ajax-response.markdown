@@ -19,5 +19,3 @@ meta:
   1. 在Chrome的菜单，工具下打开developer tool（ctrl+shift+j)。
   2. 选择Network标签页。这时测试有问题的AJAX请求，会在左侧的列表里出现对应的URL。
   3. 选择之后，Preview里就会出现熟悉的Django error page了。
-
-
