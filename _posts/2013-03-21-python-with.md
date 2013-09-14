@@ -13,13 +13,15 @@ meta:
 ---
 
 Python从2.5之后引入了with语句，最广泛的用处当属用来处理文件。之前的传统方法是这样的：
-{% highlight python %}
+
+```python
 f = open("a file on disk")
 try:
     # deal with f
 finally:
     f.close()
-{% endhighlight %}
+```
+
 可以保证文件的关闭，而用with语句可以简单的写成：
 {% highlight python %}
 from __future__ import with_statement # only requried by python2.5
@@ -51,7 +53,8 @@ with_item ::=  expression ["as" target]
 
 
 除了用with语句来处理外部资源，前几天在Quora上也看到了一个用with实现Timer的好办法：
-{% highlight python %}
+
+```python
 import time
 class Timer:
     def __enter__(self):
@@ -67,11 +70,11 @@ class Timer:
 with Timer() as t:
     dosomesuch()
 print t.interval
-{% endhighlight %}
+```
 
+   
 
-
-<h3>延伸阅读：</h3>
+###延伸阅读:
 <ul>
 <li><a href="http://effbot.org/zone/python-with-statement.htm" target="_blank">Understanding Python's "with" statement</a></li>
 <li><a href="http://docs.python.org/2.7/reference/compound_stmts.html#with" target="_blank">http://docs.python.org/2.7/reference/compound_stmts.html#with</a></li>

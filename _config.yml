@@ -1,2 +1,6 @@
 name: Samuel Mu
+
 pygments: true
+paginate_path: 'page:3'
+
+markdown: redcarpet
