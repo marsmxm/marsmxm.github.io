@@ -13,7 +13,8 @@ meta:
 ---
 
 Java中，在未作任何处理的情况下，父线程（比如main()所在的线程）无法捕获子线程抛出的异常：
-{% highlight java %} 
+
+```java
 public class ExceptionThread implements Runnable {
 	public void run() {
 		throw new RuntimeException();
@@ -28,17 +29,21 @@ public class ExceptionThread implements Runnable {
 		}
 	}
 }
-{% endhighlight %}
+```
+
 输出的结果是：
-{% highlight java %} 
+
+```java 
 java.lang.RuntimeException
     at ExceptionThread.run(ExceptionThread.java:7)
     at ThreadPoolExecutor$Worker.runTask(Unknown Source)
     at ThreadPoolExecutor$Worker.run(Unknown Source)
     at Java.lang.Thread.run(Unknown Source)
-{% endhighlight %}
+```
+
 一个解决办法是，通过Thread对象t的setUncaughtExceptionHandler()方法，提供给t一个Thread.UncaughtExceptionHandler类型的对象，要实现Thread.UncaughtExceptionHandler接口，只需实现uncaughtException()方法，该方法在线程将要抛出异常前被调用:
-{% highlight java %} 
+
+```java 
 import java.util.concurrent.*;
 
 public class ExceptionThread implements Runnable {
@@ -56,9 +61,11 @@ public class ExceptionThread implements Runnable {
 		t.start();
 	}
 }
-{% endhighlight %}
+```
+
 如果使用Executor来创建线程的话，可以通过ThreadFactory来实现：
-{% highlight java %} 
+
+```java 
 iimport java.util.concurrent.*;
 
 class HandlerThreadFactory implements ThreadFactory {
@@ -85,7 +92,8 @@ public class ExceptionThread implements Runnable {
 		executor.execute(new ExceptionThread());
 	}
 }
-{% endhighlight %}
+```
+
 
 (EOF)
 
