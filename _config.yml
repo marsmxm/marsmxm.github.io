@@ -1,6 +1,22 @@
-name: Samuel Mu
+# Dependencies
+markdown:         redcarpet
+pygments:         true
 
-pygments: true
-paginate_path: 'page:3'
+# Permalinks
+permalink:        pretty
 
-markdown: redcarpet
+# Setup
+title:            Samuel Mu
+tagline:          'A Home Page'
+description:      'Someting needs to be finished...'
+url:              http://mu.xming.me
+
+author:
+  name:           'Mu Xian Ming'
+  url:            http://www.douban.com/people/marsmxm/
+
+paginate:         5
+
+# Custom vars
+github:
+  repo:           https://github.com/marsmxm

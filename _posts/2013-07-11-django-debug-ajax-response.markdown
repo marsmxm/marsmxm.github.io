@@ -19,7 +19,7 @@ meta:
 2. 选择Network标签页。这时测试有问题的AJAX请求，会在左侧的列表里出现对应的URL。
 3. 选择之后，Preview里就会出现熟悉的Django error page了。
 
-![screenshot]({{ site.url }}/assets/img/chrome-dev-tool.png)
+![screenshot]({{ site.url }}/public/img/chrome-dev-tool.png)
 
 (EOF)
 
