@@ -1,7 +1,7 @@
 ---
 layout: page
 title: About
+permalink: /about/
 ---
 
-I'm [Mu Xian Ming](http://www.douban.com/people/marsmxm/).
-
+一个好奇心重的懒人 :)

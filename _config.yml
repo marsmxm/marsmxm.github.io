@@ -1,22 +1,11 @@
-# Dependencies
-markdown:         redcarpet
-pygments:         true
+# Site settings
+title: mxm
+email: marsmxm@gmail.com
+description: > # this means to ignore newlines until "baseurl:"
+  Currently interesting in: programming languages, learning machines...
+baseurl: "" # the subpath of your site, e.g. /blog/
+url: "http://blog.mxm.blue" # the base hostname & protocol for your site
+github_username:  marsmxm
 
-# Permalinks
-permalink:        pretty
-
-# Setup
-title:            Samuel Mu
-tagline:          'A Home Page'
-description:      'Someting needs to be finished...'
-url:              http://mu.xming.me
-
-author:
-  name:           'Mu Xian Ming'
-  url:            http://www.douban.com/people/marsmxm/
-
-paginate:         5
-
-# Custom vars
-github:
-  repo:           https://github.com/marsmxm
+# Build settings
+markdown: kramdown

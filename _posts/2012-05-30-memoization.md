@@ -23,10 +23,8 @@ def fib(n):
     else:
         return fib(n-2) + fib(n-1)
 {% endhighlight %}
-那么fib(5)的计算过程可以用下图来表示：
-<img src="http://blog.xming.me/wp-content/uploads/2012/05/fib5.jpeg" alt="" title="fib(5)" width="742" height="404" class="aligncenter size-full wp-image-63" />
 
-可以看到重复的计算非常多。如果运用memoization，我们可以将每次的计算结果存在一个cache里，这样每次计算前先查看cache，如果有需要的值，直接取，没有再计算：
+重复的计算非常多。如果运用memoization，我们可以将每次的计算结果存在一个cache里，这样每次计算前先查看cache，如果有需要的值，直接取，没有再计算：
 {% highlight python %}
 def gen_fib():
     cache = {0:0, 1:1}
