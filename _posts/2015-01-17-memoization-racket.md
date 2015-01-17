@@ -23,7 +23,8 @@ meta:
                                             (if (= i (vector-length vec))
                                                 #f
                                                 (let ([x (vector-ref vec i)])
-                                                  (if (and (cons? x) (equal? (car x) v))
+                                                  (if (and (cons? x) 
+                                                           (equal? (car x) v))
                                                       x
                                                       (loop (+ i 1))))))])
                              (loop 0)))])

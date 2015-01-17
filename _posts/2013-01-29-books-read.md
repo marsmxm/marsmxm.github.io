@@ -118,4 +118,3 @@ meta:
 <p>计算机界的偶像Linus的自传。在了解了Linux操作系统的诞生过程之外，更值得一提的是原来Linus是如此幽默的一人。</p>
 <hr />
 <p>呼，好歹总结完了。到后来越来越像应付差事了&hellip;&hellip;不多说了，新年愿景是：希望今年是个丰收年。</p>
-![丰收]({{ site.url }}/public/img/feng_shou.jpg)
