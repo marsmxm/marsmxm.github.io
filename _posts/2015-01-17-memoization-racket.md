@@ -13,8 +13,7 @@ meta:
   _edit_last: '1'
 ---
 
-{% highlight cl %}
-#lang racket
+```racket
 
 (define (cached-assoc lst n)
   (letrec ([cache (make-vector n #f)]
@@ -38,4 +37,4 @@ meta:
                                   0
                                   (+ next-to-replace 1)))
                         ans)))))))
-{% endhighlight %}
+```
