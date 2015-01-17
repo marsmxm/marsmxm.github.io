@@ -13,7 +13,7 @@ meta:
   _edit_last: '1'
 ---
 
-{% highlight lisp %}
+{% highlight cl %}
 #lang racket
 
 (define (cached-assoc lst n)
