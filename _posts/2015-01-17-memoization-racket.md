@@ -11,7 +11,7 @@ published: true
 ---
 
 Coursera的[Programming Languages(by Dan Grossman)](https://www.coursera.org/course/proglang)这门课里的Racket部分又一次讲到了这个技巧。记下来权当对n年前的那篇博客的一个补充。
-下面这段程序用对list的存取来模拟一个耗时的操作，缓存下每次成功的读取结果：
+下面这段程序用对list的读取来模拟一个耗时的操作，缓存下每次成功的读取结果：
 
 ```racket
 (define (cached-assoc lst n)
@@ -89,7 +89,7 @@ cpu time: 0 real time: 0 gc time: 0
 9227465
 ```
 
-一个更简洁的写法是用racket的hash：
+一个更简洁的写法是用racket的hash(thanks to [StackOverflow](http://stackoverflow.com/questions/23170706/is-there-a-valid-usecase-for-redefining-define-in-scheme-racket))：
 
 ```racket
 (define (memoize fn)
@@ -105,6 +105,3 @@ cpu time: 0 real time: 0 gc time: 0
 cpu time: 0 real time: 0 gc time: 0
 9227465
 ```
-Thanks to [StackOverflow](http://stackoverflow.com/questions/23170706/is-there-a-valid-usecase-for-redefining-define-in-scheme-racket)。
-
-
