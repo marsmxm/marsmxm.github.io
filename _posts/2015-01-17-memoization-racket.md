@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ! 'Memoization Racket Version'
+title: ! 'Memoization in Racket'
 categories:
 - PL
 - Racket
