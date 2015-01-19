@@ -6,7 +6,7 @@ categories:
 tags: []
 status: publish
 type: post
-published: false
+published: true
 meta:
   _wpas_done_all: '1'
   _edit_last: '1'
