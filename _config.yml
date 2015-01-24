@@ -10,3 +10,5 @@ github_username:  marsmxm
 # Build settings
 markdown: redcarpet
 
+gems:
+  - jekyll-sitemap
