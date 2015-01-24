@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ! '用sdparm实现OpenWRT下的空闲硬盘自动停转'
+title: ! '让OpenWRT下的空闲硬盘自动停转'
 categories:
 - Linux
 tags: []

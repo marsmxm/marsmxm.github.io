@@ -10,7 +10,7 @@ type: post
 published: true
 ---
 
-Coursera的[Programming Languages(by Dan Grossman)](https://www.coursera.org/course/proglang)这门课里的Racket部分又一次讲到了这个技巧。记下来权当对n年前的那篇博客的一个补充。
+Coursera的[Programming Languages(by Dan Grossman)](https://www.coursera.org/course/proglang)这门课里的Racket部分又一次讲到了这个技巧。记下来权当对[n年前的那篇博文]({% post_url 2012-05-30-memoization %})的一个补充。
 下面这段程序用对list的读取来模拟一个耗时的操作，缓存下每次成功的读取结果：
 
 ```racket

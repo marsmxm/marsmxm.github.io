@@ -4,4 +4,4 @@ title: About
 permalink: /about/
 ---
 
-一个好奇心重的懒人 :)
+一个好奇的懒人 :)
