@@ -74,7 +74,7 @@ cpu time: 142 real time: 4009 gc time: 0
 14
 ```
 调用`my-mult`时，当x = 0，会避免对`slow-add`的调用；但是随着x的增大，对`slow-add`的调用次数增多，程序的执行速度会显著地变慢。
-如果把`my-mult`改写成thunk前的形式，虽然当x = 0时，无法避免对`slow-add`不必要的调用，但是至少随着x增大，程序可以保持一个稳定的执行速度：
+如果把`my-mult`改写成thunk前的形式，虽然随着x增大，程序可以保持一个稳定的执行速度，但当x = 0时，还是无法避免对`slow-add`不必要的调用：
 
 ```racket
 (define (my-mult x y)
@@ -95,9 +95,9 @@ cpu time: 74 real time: 2012 gc time: 0
 
 有没有一种办法能同时避免不必要的和重复的计算？答案是有，我们可以使用下面这个手段来达到目的。
 
-### Force 和 Delay
+### Delay 和 Force
 
-Force和Delay的核心思想就是在第一次对thunk求值后把结果缓存，下一次求值时直接使用缓存的结果：
+Delay和Force的核心思想就是在第一次对thunk求值后把结果缓存，下一次求值时直接使用缓存的结果：
 
 ```racket
 (define (slow-add x y)
@@ -135,24 +135,20 @@ cpu time: 119 real time: 2006 gc time: 0
 cpu time: 123 real time: 2002 gc time: 0
 14
 ```
-`my-delay`会构造一个mpair(mutable pair)，其中`mcar`是#f，`mcdr`是传入的thunk。`my-force`接受一个参数p(p代表promise，它也是delay的另一个名字)，当`(mcar p)`为#f，说明delay还未被计算这是第一次调用，这时会调用delay中的thunk，然后将结果存入mpair中，并把`(mcar p)`设为#t。这样对`my-force`的下次调用中，`(mcar p)`为#t，就可以直接使用缓存中的结果了。
+`my-delay`会构造一个含有两个元素的mpair(mutable pair)，其中首元素是#f，第二个元素是传入的thunk。`my-force`接受一个参数p(p代表promise，它也是delay的另一个名字)，当`(mcar p)`为#f，说明delay还未被计算这是第一次调用，这时会调用delay中的thunk，然后将结果存入mpair中，并把`(mcar p)`设为#t。这样对`my-force`的下次调用中，`(mcar p)`为#t，就可以直接使用缓存中的结果了。
 
-Delay和Force是一个广泛使用的技术，在Haskell中被叫做惰性求值(lazy evaluation)或者call-by-need。当然不用每次都需要构建自己的`my-delay`和`my-force`，Racket的函数库提供了[`delay`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28form._%28%28lib._racket%2Fpromise..rkt%29._delay%29%29)和[`force`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28def._%28%28lib._racket%2Fpromise..rkt%29._force%29%29)，实践中可以直接使用：
+Delay和Force是一个广泛使用的技术，有时也被叫做promise或call-by-need，在Haskell中也被叫做惰性求值(lazy evaluation)。
+
+在实践中不用每次都构建自己的`my-delay`和`my-force`，Racket的函数库提供了[`delay`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28form._%28%28lib._racket%2Fpromise..rkt%29._delay%29%29)和[`force`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28def._%28%28lib._racket%2Fpromise..rkt%29._force%29%29)，可以直接使用：
 
 ```racket
-> (time (my-mult 0 
-         (let ([x (delay (slow-add 3 4))]) 
-           (lambda () (force x)))))
+> (time (my-mult 0 (lambda () (force (delay (slow-add 3 4))))))
 cpu time: 0 real time: 0 gc time: 0
 0
-> (time (my-mult 1 
-         (let ([x (delay (slow-add 3 4))]) 
-           (lambda () (force x)))))
+> (time (my-mult 1 (lambda () (force (delay (slow-add 3 4))))))
 cpu time: 137 real time: 2003 gc time: 0
 7
-> (time (my-mult 3 
-         (let ([x (delay (slow-add 3 4))]) 
-           (lambda () (force x)))))
+> (time (my-mult 3 (lambda () (force (delay (slow-add 3 4))))))
 cpu time: 72 real time: 2006 gc time: 0
 21
 ```
