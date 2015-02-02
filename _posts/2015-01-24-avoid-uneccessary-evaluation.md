@@ -14,7 +14,7 @@ published: true
 
 ```racket
 (define (factorial n)
-  (if (= n 1)
+  (if (= n 0)
       1
       (* n (factorial (sub1 n)))))
 ```
