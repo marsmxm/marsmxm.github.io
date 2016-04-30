@@ -8,7 +8,10 @@ url: "http://blog.mxm.blue" # the base hostname & protocol for your site
 github_username:  marsmxm
 
 # Build settings
-markdown: redcarpet
+markdown: kramdown
+
+kramdown:
+  input: GFM
 
 gems:
   - jekyll-sitemap
