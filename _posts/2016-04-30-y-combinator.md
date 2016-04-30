@@ -1,9 +1,9 @@
 ---
 layout: post
-title: ! 'Y Combinator'
+title: ! 'Y Combinator in Scheme'
 categories:
 - PL
-tags: [Scheme]
+tags: [Scheme, Y Combinator]
 status: publish
 type: post
 published: true
