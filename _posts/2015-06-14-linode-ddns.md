@@ -57,3 +57,5 @@ crontab -e
 */30 * * * * /bin/echo `/bin/date`: `/usr/bin/wget -qO- --no-check-certificate https://api.linode.com/?api_key=your-api-key\&api_action=domain.resource.update\&domainid=your-domain-id\&resourceid=your-resource-id\&target=[remote_addr]` >> /var/log/linode_dyndns.log
 ```
 每半小时更新一次动态域名对应的IP。到这就大功告成了:)
+
+P.S. 如果还没有Linode账号希望能用我的referral链接注册:P  [注册Linode](https://www.linode.com/?r=b5e79f5672ed45c37b58ea482f99d13d7f0d347e)
