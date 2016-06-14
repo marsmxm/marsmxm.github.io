@@ -9,7 +9,7 @@ type: post
 published: true
 ---
 
-看了[王垠](http://www.yinwang.org/)的[这个幻灯片](http://www.slideshare.net/yinwang0/reinventing-the-ycombinator)又回忆起了Y combinator的推导过程。感觉他的解释说明比《The Little Schemer》里的来的更直观易懂，也为了以后再忘有个提醒自己的地儿，所以把幻灯片中的程序按推导过程记录如下：
+看了[王垠](http://www.yinwang.org/)的[幻灯片](http://www.slideshare.net/yinwang0/reinventing-the-ycombinator)又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：
 
 ```scheme
 ;; 有define的时候递归是这样的
