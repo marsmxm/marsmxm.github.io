@@ -17,26 +17,29 @@ Coursera的[Programming Languages(by Dan Grossman)](https://www.coursera.org/cou
 (define (cached-assoc lst n)
   (letrec ([cache (make-vector n #f)]
            [next-to-replace 0]
-           [vector-assoc (lambda (v vec)
-                           (letrec ([loop (lambda (i)
-                                            (if (= i (vector-length vec))
-                                                #f
-                                                (let ([x (vector-ref vec i)])
-                                                  (if (and (cons? x) 
-                                                           (equal? (car x) v))
-                                                      x
-                                                      (loop (+ i 1))))))])
-                             (loop 0)))])
+           [vector-assoc 
+            (lambda (v vec)
+              (letrec ([loop 
+                        (lambda (i)
+                          (if (= i (vector-length vec))
+                              #f
+                              (let ([x (vector-ref vec i)])
+                                (if (and (cons? x) 
+                                         (equal? (car x) v))
+                                    x
+                                    (loop (+ i 1))))))])
+                (loop 0)))])
     (lambda (v)
       (or (vector-assoc v cache)
           (let ([ans (assoc v lst)])
             (and ans
-                 (begin (vector-set! cache next-to-replace ans)
-                        (set! next-to-replace 
-                              (if (= (+ next-to-replace 1) n)
-                                  0
-                                  (+ next-to-replace 1)))
-                        ans)))))))
+                 (begin
+                   (vector-set! cache next-to-replace ans)
+                   (set! next-to-replace 
+                         (if (= (+ next-to-replace 1) n)
+                             0
+                             (+ next-to-replace 1)))
+                   ans)))))))
 ```
 可以将上面的程序稍作修改，支持给任意函数一个cache：
 
@@ -44,16 +47,18 @@ Coursera的[Programming Languages(by Dan Grossman)](https://www.coursera.org/cou
 (define (make-cached-function func n)
   (letrec ([cache (make-vector n #f)]
            [next-to-replace 0]
-           [vector-assoc (lambda (arg-lst vec)
-                           (letrec ([loop (lambda (i)
-                                            (if (= i (vector-length vec))
-                                                #f
-                                                (let ([x (vector-ref vec i)])
-                                                  (if (and (cons? x) 
-                                                           (equal? (car x) arg-lst))
-                                                      (second x)
-                                                      (loop (+ i 1))))))])
-                             (loop 0)))])
+           [vector-assoc
+            (lambda (arg-lst vec)
+              (letrec ([loop
+                        (lambda (i)
+                          (if (= i (vector-length vec))
+                              #f
+                              (let ([x (vector-ref vec i)])
+                                (if (and (cons? x) 
+                                         (equal? (car x) arg-lst))
+                                    (second x)
+                                    (loop (+ i 1))))))])
+                (loop 0)))])
     (lambda args
       (or (vector-assoc args cache)
           (let ([ans (apply func args)])
