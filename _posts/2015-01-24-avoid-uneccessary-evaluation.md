@@ -47,6 +47,7 @@ published: true
 ```
 现在程序可以正确地得出结果了。Thunk之所以奏效是因为`lambda`返回的是一个函数，对**函数求值**(而非调用)时不会去执行函数体中的代码(只有在调用时才会)，相反对函数的求值结果是一个闭包(closure)。
 
+<br />
 Racket(以及大多数语言)的call-by-value函数调用语义当然有它的优点，那就是可以避免重复的计算。相反如果使用thunk，每次都需要对thunk包装的表达式进行一次求值，如果我们thunk的是一个特别耗时的表达式，而且这个表达式在函数体中会被用到多次，那么就会对程序执行速度带来特别大的影响。下面这段代码中用`slow-add`模拟一个耗时的计算，在`my-mult`函数会被调用到多次：
 
 ```racket
@@ -137,9 +138,8 @@ cpu time: 123 real time: 2002 gc time: 0
 ```
 `my-delay`会构造一个含有两个元素的mpair(mutable pair)，其中首元素是#f，第二个元素是传入的thunk。`my-force`接受一个参数p(p代表promise，它也是delay的另一个名字)，当`(mcar p)`为#f，说明delay还未被计算这是第一次调用，这时会调用delay中的thunk，然后将结果存入mpair中，并把`(mcar p)`设为#t。这样对`my-force`的下次调用中，`(mcar p)`为#t，就可以直接使用缓存中的结果了。
 
-Delay和Force是一个广泛使用的技术，有时也被叫做promise或call-by-need，在Haskell中也被叫做惰性求值(lazy evaluation)。
-
-在实践中不用每次都构建自己的`my-delay`和`my-force`，Racket的函数库提供了[`delay`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28form._%28%28lib._racket%2Fpromise..rkt%29._delay%29%29)和[`force`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28def._%28%28lib._racket%2Fpromise..rkt%29._force%29%29)，可以直接使用：
+<br />
+Delay和Force是一个广泛使用的技术，有时也被叫做promise或call-by-need，在Haskell中也被叫做惰性求值(lazy evaluation)。在实践中不用每次都构建自己的`my-delay`和`my-force`，Racket的函数库提供了[`delay`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28form._%28%28lib._racket%2Fpromise..rkt%29._delay%29%29)和[`force`](http://docs.racket-lang.org/reference/Delayed_Evaluation.html?q=delay#%28def._%28%28lib._racket%2Fpromise..rkt%29._force%29%29)，可以直接使用：
 
 ```racket
 > (time (my-mult 0 (lambda () (force (delay (slow-add 3 4))))))
@@ -159,6 +159,7 @@ cpu time: 72 real time: 2006 gc time: 0
 
 Stream代表的是一个无限序列。一般来说对stream的使用涉及两方，stream的生产者和它的消费者。生产者负责生成这个无限序列，但是并不知道有多长的stream会被使用；消费者决定使用多少stream，但是对stream是如何生成的并不关心。在计算机和软件领域会经常遇到stream的例子。UNIX中的管道(pipe)就是一个stream，在`cmd1 | cmd2`中，`cmd1`这个生产者只输出消费者`cmd2`所需长度的输入；对Web应用来说，用户的输入也可以看做是一个stream；甚至Lambda Calculus中的Y Combinator也可以看做是函数递归调用的一个stream。
 
+<br />
 在Racket中可以用一个thunk来表示一个stream，当调用它时会得到一个pair，这个pair由两部分组成
 
 	1. stream无限序列中的第一个元素
