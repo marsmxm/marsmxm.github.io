@@ -4,7 +4,7 @@ title: ! 'Racket中的延迟求值'
 categories:
 - PL
 - Racket
-tags: [lazy evaluation, racket, racket]
+tags: [lazy evaluation, racket, Lisp, thunk, force, delay, stream]
 status: publish
 type: post
 published: true
