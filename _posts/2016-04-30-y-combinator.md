@@ -3,7 +3,7 @@ layout: post
 title: ! 'Y Combinator in Scheme'
 categories:
 - PL
-tags: [Scheme, Y Combinator]
+tags: [Scheme, Y Combinator, Recursive, Lisp]
 status: publish
 type: post
 published: true
