@@ -3,7 +3,7 @@ layout: post
 title: ! '用Webpack实现React组件的异步加载'
 categories:
 - Web
-tags: [ReactJS, Web Development, Webpack]
+tags: [React, React Router, Web Development, Webpack, Async, 异步]
 status: publish
 type: post
 published: true
