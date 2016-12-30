@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ! 'Racket中的延迟求值'
+title: ! '几种惰性求值方法的Racket实现'
 categories:
 - PL
 - Racket
