@@ -4,7 +4,7 @@ email: marsmxm@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
   Discrete pieces on programming
 baseurl: "" # the subpath of your site, e.g. /blog/
-url: "http://blog.mxm.blue" # the base hostname & protocol for your site
+url: "http://blog.mxm.host" # the base hostname & protocol for your site
 github_username:  marsmxm
 
 # Build settings
