@@ -31,7 +31,7 @@ published: true
          0
          (add1 ((length length) (cdr xs)))))))
 
-;; abstract outer self-application
+;; abstract outer self-application: (x x) <=> ((lambda (u) (u u)) x)
 ((lambda (u) (u u))
  (lambda (length)
    (lambda (xs)
@@ -39,7 +39,7 @@ published: true
          0
          (add1 ((length length) (cdr xs)))))))
 
-;; abstract inner self-application
+;; abstract inner self-application: (g x) <=> ((lambda (f) (f x)) g)
 ;; 注释掉是因为这个调用会造成无限递归
 ;((lambda (u) (u u))
 ; (lambda (length)
@@ -73,16 +73,14 @@ published: true
          (add1 (g (cdr xs)))))))
 
 ;; 上面的前半部分被调方就是 Y combinator
-(lambda (f)
-  ((lambda (u) (u u))
-   (lambda (x)
-     (f (lambda (v) ((x x) v))))))
-
-;; Test
-(((lambda (f)
+(define Y
+  (lambda (f)
     ((lambda (u) (u u))
      (lambda (x)
-       (f (lambda (v) ((x x) v))))))
+       (f (lambda (v) ((x x) v)))))))
+
+;; Test
+((Y
   (lambda (length)
     (lambda (xs)
       (if (null? xs)
@@ -91,10 +89,7 @@ published: true
  '(1 2 3 4 5))
 ;; => 5
 
-(((lambda (f)
-    ((lambda (u) (u u))
-     (lambda (x)
-       (f (lambda (v) ((x x) v))))))
+((Y
   (lambda (factorial)
     (lambda (n)
       (if (zero? n)
