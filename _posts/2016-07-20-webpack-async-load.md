@@ -1,12 +1,12 @@
 ---
 layout: post
-title: ! '用Webpack实现React组件的异步加载'
+title: ! '用 Webpack 实现 React 组件的异步加载'
 categories:
 - Web
 tags: [React, React Router, Web Development, Webpack, Async, 异步]
 status: publish
 type: post
-published: true
+published: false
 ---
 
 用JavaScript实现单页应用（SPA）的一个问题是，不做优化的情况下会生成一个巨大的JavaScript文件，第一次访问的用户需要很长时间来下载。如果前端使用[Webpack](https://webpack.github.io/)来实现代码集成，就可以通过它的[code splitting](http://webpack.github.io/docs/code-splitting.html)特性来实现代码分块，并按需异步加载代码块。

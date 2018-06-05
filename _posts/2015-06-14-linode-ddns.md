@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ! '通过Linode API实现动态DNS'
+title: ! '通过 Linode API 实现动态 DNS'
 categories:
 - Linux
 tags: [Linode, DDNS]
