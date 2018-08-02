@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<?xml-stylesheet type="text/xsl" href="http://blog.mxm.host/sitemap.xsl"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2018-07-31-oop-vs-fp/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2016-04-30-y-combinator/</loc>
+    <lastmod>2016-04-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2015-06-14-linode-ddns/</loc>
+    <lastmod>2015-06-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2015-01-24-avoid-uneccessary-evaluation/</loc>
+    <lastmod>2015-01-24T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2012-07-14-x2x-for-rspi/</loc>
+    <lastmod>2012-07-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2012-05-30-memoization/</loc>
+    <lastmod>2012-05-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/2012-04-14-openwrt-stop-harddisk/</loc>
+    <lastmod>2012-04-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/categories/</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/ddns/</loc>
+    <lastmod>2015-06-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/fp/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/categories/infra/</loc>
+    <lastmod>2015-06-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/java/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/lazy-evaluation/</loc>
+    <lastmod>2015-01-24T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/linode/</loc>
+    <lastmod>2015-06-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/linux/</loc>
+    <lastmod>2015-06-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/lisp/</loc>
+    <lastmod>2016-04-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/ocaml/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/oop/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/categories/pl/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/post/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/python/</loc>
+    <lastmod>2012-05-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/racket/</loc>
+    <lastmod>2015-01-24T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/raspberry-pi/</loc>
+    <lastmod>2012-07-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/recursive/</loc>
+    <lastmod>2016-04-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/scheme/</loc>
+    <lastmod>2016-04-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/</loc>
+    <lastmod>2015-06-14T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/visitor/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/tags/y-combinator/</loc>
+    <lastmod>2016-04-30T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://blog.mxm.host/</loc>
+    <lastmod>2018-07-31T00:00:00+00:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0</priority>
+  </url>
+  
+</urlset>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Memoization - mxm&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Mu Xian Ming" />
+  <meta name="description" content="最近在《JavaScript The Good Parts》和 Udacity的CS212这门课 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。 个人理解，m" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.45.1" />
+
+
+<link rel="canonical" href="http://blog.mxm.host/post/2012-05-30-memoization/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Memoization" />
+<meta property="og:description" content="最近在《JavaScript The Good Parts》和 Udacity的CS212这门课 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。 个人理解，m" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.mxm.host/post/2012-05-30-memoization/" />
+
+
+
+<meta property="article:published_time" content="2012-05-30T00:00:00&#43;00:00"/>
+
+<meta property="article:modified_time" content="2012-05-30T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
+
+<meta itemprop="name" content="Memoization">
+<meta itemprop="description" content="最近在《JavaScript The Good Parts》和 Udacity的CS212这门课 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。 个人理解，m">
+
+
+<meta itemprop="datePublished" content="2012-05-30T00:00:00&#43;00:00" />
+<meta itemprop="dateModified" content="2012-05-30T00:00:00&#43;00:00" />
+<meta itemprop="wordCount" content="787">
+
+
+
+<meta itemprop="keywords" content="Python,Racket," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Memoization"/>
+<meta name="twitter:description" content="最近在《JavaScript The Good Parts》和 Udacity的CS212这门课 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。 个人理解，m"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Mind Serialization</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Mind Serialization</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Memoization</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2012-05-30 </span>
+        <div class="post-category">
+            
+              <a href="/categories/pl/"> PL </a>
+            
+          </div>
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  
+  <div class="post-toc-content always-active">
+    
+  </div>
+</div>
+
+    
+    
+
+    
+    <div class="post-content">
+      <p>最近在《JavaScript The Good Parts》和 <a href="http://www.udacity.com/view#Course/cs212/CourseRev/apr2012">Udacity的CS212这门课</a> 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。</p>
+
+<p>个人理解，memoization 就是一种 cache，用来减少耗时（资源）的程序段的运行次数。以一个 Python 实现的计算 Fibonacci 数列的程序为例：</p>
+
+<pre><code class="language-python">def fib(n):
+    if n &lt; 2:
+        return n
+    else:
+        return fib(n-2) + fib(n-1)
+</code></pre>
+
+<p>重复的计算非常多。如果运用 memoization，我们可以将每次的计算结果存在一个 cache 里，这样每次计算前先查看 cache，如果有需要的值，直接取，没有再计算：</p>
+
+<pre><code class="language-python">def gen_fib():
+    cache = {0:0, 1:1}
+    def fib_memo(n):
+        if n not in cache:
+            cache[n] = fib_memo(n-2) + fib_memo(n-1)
+        return cache[n]
+    return fib_memo
+</code></pre>
+
+<p>这里用了closure在外层函数持久保存一个cache。可以用python的time模块提供的函数来比较一下前后两个版本的fib消耗的时间：</p>
+
+<pre><code class="language-python">import time
+
+def timedcall(fn, *args):
+    &quot;Call function with args; return the time in seconds and result.&quot;
+    t0 = time.clock()
+    result = fn(*args)
+    t1 = time.clock()
+    return t1-t0, result
+
+def fib(n):
+    if n &lt; 2:
+        return n
+    else:
+        return fib(n-2) + fib(n-1)
+
+def gen_fib():
+    cache = {0:0, 1:1}
+    def fib_memo(n):
+        if n not in cache:
+            cache[n] = fib_memo(n-2) + fib_memo(n-1)
+        return cache[n]
+    return fib_memo
+
+print &quot;fib: &quot; + str(timedcall(fib, 40))
+fib_memo = gen_fib()
+print &quot;fib_memo: &quot; + str(timedcall(fib_memo, 40))
+</code></pre>
+
+<p>我这里执行之后得到的结果是：</p>
+
+<pre><code class="language-python">fib: (108.5130336397503, 102334155)
+fib_memo: (4.833016485861208e-05, 102334155)
+</code></pre>
+
+<p>时间相差了足有7个数量级。
+最后这段代码可以作为一个 decorator 来为任何一个函数实现 memoization：</p>
+
+<pre><code class="language-python">def memo(f):
+    &quot;&quot;&quot;Decorator that caches the return value for each call to f(args).
+    Then when called again with same args, we can just look it up.&quot;&quot;&quot;
+    cache = {}
+    def _f(*args):
+        try:
+            return cache[args]
+        except KeyError:
+            result = f(*args)
+            cache[args] = result
+            return result
+        except TypeError:
+            # some element of args can't be a dict key
+            return f(*args)
+    _f.cache = cache
+    return _f
+
+#Take fib for an example
+def fib(n):
+    if n &lt; 2:
+        return n
+    else:
+        return fib(n-2) + fib(n-1)
+fib = memo(fib)
+
+#or
+
+@memo
+def fib(n):
+    if n &lt; 2:
+        return n
+    else:
+        return fib(n-2) + fib(n-1)
+</code></pre>
+
+<p>下面是 Racket 的一个实现：</p>
+
+<pre><code class="language-lisp">(define (make-cached-function func n)
+  (letrec ([cache (make-vector n #f)]
+           [next-to-replace 0]
+           [vector-assoc
+            (lambda (arg-lst vec)
+              (letrec ([loop
+                        (lambda (i)
+                          (if (= i (vector-length vec))
+                              #f
+                              (let ([x (vector-ref vec i)])
+                                (if (and (cons? x) 
+                                         (equal? (car x) arg-lst))
+                                    (second x)
+                                    (loop (+ i 1))))))])
+                (loop 0)))])
+    (lambda args
+      (or (vector-assoc args cache)
+          (let ([ans (apply func args)])
+            (and ans
+                 (begin
+                   (vector-set! cache next-to-replace 
+                                (list args ans))
+                   (set! next-to-replace 
+                         (if (= (+ next-to-replace 1) n)
+                             0
+                             (+ next-to-replace 1)))
+                   ans)))))))
+
+(define (fib n)
+  (if (&lt; n 2)
+      n
+      (+ (fib (- n 2)) (fib (- n 1)))))
+
+(define fib-cached 
+  (make-cached-function 
+   (lambda (n)
+     (if (&lt; n 2)
+         n
+         (+ (fib-cached  (- n 2)) (fib-cached  (- n 1)))))
+   100))
+
+&gt; (time (fib 35))
+cpu time: 1181 real time: 1230 gc time: 0
+9227465
+
+&gt; (time (fib-cached 35))
+cpu time: 0 real time: 0 gc time: 0
+9227465
+</code></pre>
+
+<p>一个更简洁的写法是用 Racket 的 hash (thanks to <a href="http://stackoverflow.com/questions/23170706/is-there-a-valid-usecase-for-redefining-define-in-scheme-racket">StackOverflow</a>)：</p>
+
+<pre><code class="language-lisp">(define (memoize fn)
+  (let ((cache (make-hash)))
+    (lambda arg (hash-ref! cache arg (thunk (apply fn arg))))))
+
+(define fib
+  (memoize
+   (lambda (n)
+     (if (&lt; n 2) n (+ (fib (sub1 n)) (fib (- n 2)))))))
+
+&gt; (time (fib 35))
+cpu time: 0 real time: 0 gc time: 0
+9227465
+</code></pre>
+
+    </div>
+
+    
+    
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/python/">Python</a>
+          
+          <a href="/tags/racket/">Racket</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+          <a class="prev" href="/post/2012-07-14-x2x-for-rspi/">
+            <i class="iconfont icon-left"></i>
+            <span class="prev-text nav-default">与 Raspberry Pi 共享鼠标键盘</span>
+            <span class="prev-text nav-mobile">Prev</span>
+          </a>
+        
+          <a class="next" href="/post/2012-04-14-openwrt-stop-harddisk/">
+            <span class="next-text nav-default">让 OpenWRT 下的空闲硬盘自动停转</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://www.douban.com/people/marsmxm" class="iconfont icon-douban" title="douban"></a>
+      <a href="https://getpocket.com/@marsmxm" class="iconfont icon-pocket" title="pocket"></a>
+  <a href="http://blog.mxm.host/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2012 - 
+    2018
+
+    <span class="author">Mu Xian Ming</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+<script type="text/javascript" src="/dist/even.min.js?v=3.2.0"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

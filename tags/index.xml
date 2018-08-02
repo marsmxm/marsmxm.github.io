@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Tags on mxm&#39;s blog</title>
+    <link>http://blog.mxm.host/tags/</link>
+    <description>Recent content in Tags on mxm&#39;s blog</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en</language>
+    <lastBuildDate>Sun, 14 Jun 2015 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="http://blog.mxm.host/tags/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>DDNS</title>
+      <link>http://blog.mxm.host/tags/ddns/</link>
+      <pubDate>Sun, 14 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/ddns/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>FP</title>
+      <link>http://blog.mxm.host/tags/fp/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/fp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Java</title>
+      <link>http://blog.mxm.host/tags/java/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/java/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lazy evaluation</title>
+      <link>http://blog.mxm.host/tags/lazy-evaluation/</link>
+      <pubDate>Sat, 24 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/lazy-evaluation/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linode</title>
+      <link>http://blog.mxm.host/tags/linode/</link>
+      <pubDate>Sun, 14 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/linode/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Linux</title>
+      <link>http://blog.mxm.host/tags/linux/</link>
+      <pubDate>Sun, 14 Jun 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/linux/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Lisp</title>
+      <link>http://blog.mxm.host/tags/lisp/</link>
+      <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/lisp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OCaml</title>
+      <link>http://blog.mxm.host/tags/ocaml/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/ocaml/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>OOP</title>
+      <link>http://blog.mxm.host/tags/oop/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/oop/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Python</title>
+      <link>http://blog.mxm.host/tags/python/</link>
+      <pubDate>Wed, 30 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/python/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Racket</title>
+      <link>http://blog.mxm.host/tags/racket/</link>
+      <pubDate>Sat, 24 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/racket/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Raspberry Pi</title>
+      <link>http://blog.mxm.host/tags/raspberry-pi/</link>
+      <pubDate>Sat, 14 Jul 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/raspberry-pi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Recursive</title>
+      <link>http://blog.mxm.host/tags/recursive/</link>
+      <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/recursive/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Scheme</title>
+      <link>http://blog.mxm.host/tags/scheme/</link>
+      <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/scheme/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Visitor</title>
+      <link>http://blog.mxm.host/tags/visitor/</link>
+      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/visitor/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Y Combinator</title>
+      <link>http://blog.mxm.host/tags/y-combinator/</link>
+      <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/y-combinator/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
