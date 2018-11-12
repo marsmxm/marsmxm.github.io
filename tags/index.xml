@@ -39,15 +39,6 @@
     </item>
     
     <item>
-      <title>Lazy evaluation</title>
-      <link>http://blog.mxm.host/tags/lazy-evaluation/</link>
-      <pubDate>Sat, 24 Jan 2015 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.mxm.host/tags/lazy-evaluation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>Linode</title>
       <link>http://blog.mxm.host/tags/linode/</link>
       <pubDate>Sun, 14 Jun 2015 00:00:00 +0000</pubDate>
@@ -152,6 +143,15 @@
       <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.mxm.host/tags/y-combinator/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>lazy evaluation</title>
+      <link>http://blog.mxm.host/tags/lazy-evaluation/</link>
+      <pubDate>Sat, 24 Jan 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/lazy-evaluation/</guid>
       <description></description>
     </item>
     
