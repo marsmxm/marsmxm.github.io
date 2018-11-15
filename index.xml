@@ -6,10 +6,19 @@
     <description>Recent content on mxm&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 31 Jul 2018 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 13 Nov 2018 01:14:13 +0800</lastBuildDate>
     
 	<atom:link href="http://blog.mxm.host/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>Subtyping</title>
+      <link>http://blog.mxm.host/post/2018-11-06-java-subtyping/</link>
+      <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
+      
+      <guid>http://blog.mxm.host/post/2018-11-06-java-subtyping/</guid>
+      <description>概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和</description>
+    </item>
     
     <item>
       <title>OOP vs FP：用 Visitor 模式克服 OOP 的局限</title>

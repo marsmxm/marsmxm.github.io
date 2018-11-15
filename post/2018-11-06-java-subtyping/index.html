@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+  <title>Subtyping - mxm&#39;s blog</title>
+  <meta name="renderer" content="webkit" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"/>
+
+<meta http-equiv="Cache-Control" content="no-transform" />
+<meta http-equiv="Cache-Control" content="no-siteapp" />
+
+<meta name="theme-color" content="#f8f5ec" />
+<meta name="msapplication-navbutton-color" content="#f8f5ec">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="#f8f5ec">
+
+
+<meta name="author" content="Mu Xian Ming" />
+  <meta name="description" content="概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和" />
+
+
+
+
+
+
+
+<meta name="generator" content="Hugo 0.51" />
+
+
+<link rel="canonical" href="http://blog.mxm.host/post/2018-11-06-java-subtyping/" />
+
+<link rel="apple-touch-icon" sizes="180x180" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon.ico">
+<link rel="manifest" href="/manifest.json">
+<link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+
+
+
+
+
+
+
+<link href="/dist/even.min.css?v=3.2.0" rel="stylesheet">
+<link href="/lib/fancybox/jquery.fancybox-3.1.20.min.css" rel="stylesheet">
+
+
+
+
+<meta property="og:title" content="Subtyping" />
+<meta property="og:description" content="概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和" />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="http://blog.mxm.host/post/2018-11-06-java-subtyping/" /><meta property="article:published_time" content="2018-11-13T01:14:13&#43;08:00"/>
+<meta property="article:modified_time" content="2018-11-13T01:14:13&#43;08:00"/>
+
+<meta itemprop="name" content="Subtyping">
+<meta itemprop="description" content="概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和">
+
+
+<meta itemprop="datePublished" content="2018-11-13T01:14:13&#43;08:00" />
+<meta itemprop="dateModified" content="2018-11-13T01:14:13&#43;08:00" />
+<meta itemprop="wordCount" content="3101">
+
+
+
+<meta itemprop="keywords" content="Typed Racket,Java,Subtyping," />
+<meta name="twitter:card" content="summary"/>
+<meta name="twitter:title" content="Subtyping"/>
+<meta name="twitter:description" content="概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和"/>
+
+<!--[if lte IE 9]>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
+<![endif]-->
+
+<!--[if lt IE 9]>
+  <script src="https://cdn.jsdelivr.net/npm/html5shiv@3.7.3/dist/html5shiv.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/respond.js@1.4.2/dest/respond.min.js"></script>
+<![endif]-->
+
+</head>
+<body>
+  <div id="mobile-navbar" class="mobile-navbar">
+  <div class="mobile-header-logo">
+    <a href="/" class="logo">Mind Serialization</a>
+  </div>
+  <div class="mobile-navbar-icon">
+    <span></span>
+    <span></span>
+    <span></span>
+  </div>
+</div>
+<nav id="mobile-menu" class="mobile-menu slideout-menu">
+  <ul class="mobile-menu-list">
+    <a href="/">
+        <li class="mobile-menu-item">Home</li>
+      </a><a href="/post/">
+        <li class="mobile-menu-item">Archives</li>
+      </a><a href="/categories/">
+        <li class="mobile-menu-item">Categories</li>
+      </a>
+  </ul>
+</nav>
+  <div class="container" id="mobile-panel">
+    <header id="header" class="header">
+        <div class="logo-wrapper">
+  <a href="/" class="logo">Mind Serialization</a>
+</div>
+
+<nav class="site-navbar">
+  <ul id="menu" class="menu">
+    <li class="menu-item">
+        <a class="menu-item-link" href="/">Home</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/post/">Archives</a>
+      </li><li class="menu-item">
+        <a class="menu-item-link" href="/categories/">Categories</a>
+      </li>
+  </ul>
+</nav>
+    </header>
+
+    <main id="main" class="main">
+      <div class="content-wrapper">
+        <div id="content" class="content">
+          <article class="post">
+    
+    <header class="post-header">
+      <h1 class="post-title">Subtyping</h1>
+
+      <div class="post-meta">
+        <span class="post-time"> 2018-11-13 </span>
+        <div class="post-category">
+            
+              <a href="/categories/p/"> P </a>
+            
+          </div>
+        
+        
+      </div>
+    </header>
+
+    
+    
+<div class="post-toc" id="post-toc">
+  <h2 class="post-toc-title">Contents</h2>
+  
+  <div class="post-toc-content always-active">
+    <nav id="TableOfContents">
+<ul>
+<li>
+<ul>
+<li><a href="#概述">概述</a></li>
+<li><a href="#深度-subtyping">深度 Subtyping</a></li>
+<li><a href="#函数的-subtyping">函数的 Subtyping</a></li>
+<li><a href="#java-中-的-depth-subtyping">Java 中 的 Depth Subtyping</a></li>
+<li><a href="#参考">参考</a></li>
+</ul></li>
+</ul>
+</nav>
+  </div>
+</div>
+
+    
+    
+
+    
+    <div class="post-content">
+      
+
+<h2 id="概述">概述</h2>
+
+<p>类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和类型相关的错误。<strong>子类型（Subtyping）</strong>概念的引入是为了增加类型系统的表达力同时也增强了它的实用性。先通过 Typed Racket 来更好的理解一些通用的概念。下面是用<code>struct</code>定义的一个 point 类型<code>pt</code>，以及计算<code>pt</code>到原点距离的函数<code>dist-to-origin</code>：</p>
+
+<pre><code class="language-racket">(struct pt ([x : Real] [y : Real]))
+
+(: dist-to-origin (-&gt; pt Real))
+(define (dist-to-origin pt)
+  (sqrt (+ (sqr (pt-x pt))
+           (sqr (pt-y pt)))))
+
+(dist-to-origin (pt 3 4))
+;; =&gt; 5
+</code></pre>
+
+<p>第三行<code>(: dist-to-origin (-&gt; pt Real))</code>用来声明<code>dist-to-origin</code>的参数和返回值类型分别为<code>pt</code>和<code>Real</code>。如果现在有另一个 point 类型<code>color-pt</code>，除横纵坐标（x，y）外增加了一个颜色属性:</p>
+
+<pre><code class="language-racket">;; color-pt 继承自 pt，同时也增加了新属性 c
+(struct color-pt pt ([c : String]))
+</code></pre>
+
+<p>一个很自然的想法是希望类型系统也允许<code>dist-to-origin</code>接受<code>color-pt</code>这个参数类型，毕竟计算到原点的距离只需要 x，y 两个属性就足够。这也正是子类型系统的核心思想：允许一个类型的值同时也属于另一个含有更少信息的类型，前者叫做后者的子类型。在上例中<code>pt</code>相较于<code>color-pt</code>含有更少的信息（没有颜色属性），所以<code>color-pt</code>的值同时也属于<code>pt</code>类型，<code>color-pt</code>是<code>pt</code>的一个子类型。引入了子类型这个概念也使得类型系统有了一个新的特性，可替代性：程序中接受某一类型值的位置可以替换成子类型的值而不会造成类型错误。所以 Typed Racket 允许<code>dist-to-origin</code>函数接受<code>color-pt</code>类型的参数：</p>
+
+<pre><code class="language-racket">(dist-to-origin (color-pt 3 4 &quot;red&quot;))
+;; =&gt; 5
+</code></pre>
+
+<h2 id="深度-subtyping">深度 Subtyping</h2>
+
+<p>为了增强类型系统的表达力，Typed Racket、ML 等语言引入了多态（polymorphism），或者更准确的说，参数多态（parametric polymorphism）的概念，所以就有了含有类型参数的类型（类似的概念在 Java 中被叫做 generics，而 polymorphism 则被 Java 的设计者用来指代 OOP 的一个核心特性，dynamic dispatch）。比如<code>(Listof t)</code>和<code>'a list</code>分别是 Typed Racket 和 ML 中的列表类型，<code>t</code>和<code>'a</code>是类型参数，用来表示列表中元素的类型。一个很自然的问题是，列表会因为所含元素的类型的父子关系而也有了相同的父子关系吗？比如在 Typed Racket 中，<code>(Listof color-pt)</code>是<code>(Listof pt)</code>的子类型吗？答案是，对于列表类型来说，这个父子关系是成立的，使得这个关系成立的规则就叫做 <strong>深度（Depth）Subtyping</strong>。用一个例子来说明：</p>
+
+<pre><code class="language-racket">(: sum-of-dist (-&gt; (Listof pt) Real))
+(define (sum-of-dist pt-list)
+  (foldl (lambda ([p : pt] [accu : Real])
+           (+ (dist-to-origin p) accu))
+         0
+         pt-list))
+
+(sum-of-dist (list (pt 3 4) (pt 3 4)))
+;; =&gt; 10
+
+(sum-of-dist
+  (list (color-pt 3 4 &quot;red&quot;)
+        (color-pt 3 4 &quot;green&quot;)))
+;; =&gt; 10
+</code></pre>
+
+<p>用<code>sum-of-dist</code>来对列表中所有点到原点的距离求和。虽然声明的参数类型是<code>(Listof pt)</code>，它也接受了<code>(Listof color-pt)</code>这个类型的参数，进而说明<code>(Listof color-pt)</code>是<code>(Listof pt)</code>的子类型。对于列表来说，使得 depth subtyping 成立的一个关键特性是它的<strong>不可更改性（immutability）</strong>。如果将上例中的 List 换成 Mutable List，那么 depth subtyping 将不再成立：</p>
+
+<pre><code class="language-racket">(: m-pts (MListof pt))
+(define m-pts
+  (mcons (pt 1 1) '()))
+
+(: m-color-pts (MListof color-pt))
+(define m-color-pts
+  (mcons (color-pt 1 1 &quot;yellow&quot;) '()))
+
+(: replace-first (-&gt; (MListof pt) Real Real Void))
+(define (replace-first pts x y)
+  (when (not (null? pts))
+      (set-mcar! pts (pt x y))))
+
+(replace-first m-pts 2 2)
+m-pts
+;; =&gt; (mcons (pt 2 2) '())
+
+(replace-first m-color-pts 2 2)
+;; Type Checker: type mismatch
+;;  expected: (MListof pt)
+;;  given: (MListof color-pt) in: m-color-pts
+</code></pre>
+
+<p>为什么是否 mutable 会决定 depth subtyping 的成立与否？假设上例中 18 行的函数调用被类型系统所允许，那么接下来如果执行<code>(color-pt-c (mcar m-color-pts))</code>将会导致运行时错误，这个错误的原因是值与类型的错误匹配，而这本该是类型系统在程序运行前就检查出进而阻止的。像这样没能阻止不该发生的错误的类型系统，我们说它不是 <strong>sound</strong> 的。所以 depth subtyping 对于 immutability 的依赖是为了保证类型系统的 soundness。</p>
+
+<h2 id="函数的-subtyping">函数的 Subtyping</h2>
+
+<p>把函数作为值来传递时所要遵从的 subtyping 规则要更复杂一些。因为函数的类型由它的参数和返回值的类型所决定，所以相应的 subtyping 规则需要从参数和返回值两方面分别考虑。下面的<code>transform-then-dist</code>是一个高阶函数，它接受一个类型为<code>(-&gt; color-pt pt)</code>的函数<code>f</code>以及一个<code>color-pt</code>类型的<code>cpt</code>作为参数，用<code>f</code>将<code>cpt</code>转换后求到原点的距离：</p>
+
+<pre><code class="language-racket">(: transform-then-dist (-&gt; (-&gt; color-pt pt) color-pt Real))
+(define (transform-then-dist f cpt)
+  (dist-to-origin (f cpt)))
+
+(: f1 (-&gt; color-pt pt))
+(define (f1 cp)
+  (pt (pt-x cp) (pt-y cp)))
+
+(transform-then-dist f1 (color-pt 3 4 &quot;blue&quot;))
+;; =&gt; 5
+</code></pre>
+
+<p><code>f1</code>的返回值作为参数又传给了<code>dist-to-origin</code>函数，而在前面已经知道<code>dist-to-origin</code>是可以接受<code>pt</code>以及它的子类型<code>color-pt</code>作为参数，所以如果把<code>f1</code>换成一个返回值为<code>pt</code>子类型的函数应该也会被类型系统所接受：</p>
+
+<pre><code class="language-racket">(: f2 (-&gt; color-pt color-pt))
+(define (f2 cpt) cpt)
+
+(transform-then-dist f2 (color-pt 3 4 &quot;blue&quot;))
+;; =&gt; 5
+</code></pre>
+
+<p>因此<code>f2</code>也就是<code>f1</code>的子类型。一般来说，如果函数 2 的返回值是函数 1 的返回值的<strong>子类型</strong>，那么函数 2 本身也是函数 1 的子类型。返回值类型的父子关系与函数类型的父子关系保持一致的这种关系叫做<strong>协变的（covariant）</strong>。现在再从参数类型的角度考虑。<code>f1</code>（以及<code>f2</code>）在<code>transform-then-dist</code>的实现中是作为消费者来消费<code>transform-then-dist</code>的另一个参数<code>cpt</code>。作为消费者来说，如果要消费的值的类型（也就是声明的参数类型）是 t1，然后得到了一个比 t1 含有更多信息的 t2 类型的值，那么它的需求也是会得到满足。因为 t2 比 t1 含有更多信息，那么 t2 是 t1 的子类型。对于<code>f1</code>来说，t1 是它的参数类型<code>color-pt</code>，t2 是<code>transform-then-dist</code>传给它的类型即参数<code>cpt</code>的类型，也是<code>color-pt</code>。现在的情况是对于<code>f1</code>来说，它要消费的<code>cpt</code>的类型（t2）是固定的<code>color-pt</code>，那么把<code>f1</code>替换成任何参数类型是<code>f1</code>参数的父类型的函数（这里称作<code>f3</code>），等到的程序也应该是合法的。还是得通过一个例子来使这个概念阐述的更明白：</p>
+
+<pre><code class="language-racket">(: f3 (-&gt; pt pt))
+(define (f3 p) p)
+
+(transform-then-dist f3 (color-pt 3 4 &quot;blue&quot;))
+;; =&gt; 5
+</code></pre>
+
+<p>因为<code>transform-then-dist</code>的参数<code>f</code>声明的类型是<code>(-&gt; color-pt pt)</code>，所以<code>f3</code>的类型<code>(-&gt; pt pt)</code>是<code>(-&gt; color-pt pt)</code>的子类型。更宽泛的说，如果函数 2 的参数是 函数 1 参数的<strong>父类型</strong>，那么函数 2 本身也是函数 1 的子类型。参数类型的父子关系与函数类型的父子关系相反的这种关系叫做<strong>逆变的（contravariant）</strong>。所以对于函数的 subtyping 规则只需记住，函数与参数的类型是逆变的，与返回值的类型是协变的。</p>
+
+<h2 id="java-中-的-depth-subtyping">Java 中 的 Depth Subtyping</h2>
+
+<p>Java 中实现 subtyping 的途径是继承类和实现接口。但是需要认清的是，类（class）和类型（type）是不同的两个概念，类定义了对象的行为，而类型描述的是对象含有哪些 field 和 method（在这一点上接口和类型有更多的共同点）。</p>
+
+<p>在<a href="#深度-subtyping">前面</a>提到过 depth subtyping 必须建立在 immutablity 先决条件上才能保证类型系统的 soundness。但是 Java 中的数组是 mutable 的，同时也允许 depth subtyping，这就导致有些情况下程序会抛出运行时异常<code>ArrayStoreException</code>：</p>
+
+<pre><code class="language-java">ColorPoint[] cpts = {new ColorPoint(1, 2, &quot;red&quot;)};
+Point[] pts = cpts;
+pts[0] = new Point(1, 2); // throws unchecked java.lang.ArrayStoreException
+System.out.println(cpts[0].color);
+</code></pre>
+
+<p>Java 选择把检查放在写值入数组的时候，这样保证了数组元素类型的一致，也减少了在每次读元素时再检查造成的性能开销。Generics 被加到 Java 里后不再自动支持 depth subtyping，<code>List&lt;ColorPoint&gt;</code> 不再是<code>List&lt;Point&gt;</code>的子类型，如果想得到类似 depth subtyping 的表达力，可以使用叫做 <strong>bounded wildcards</strong> 的特殊语法：</p>
+
+<pre><code class="language-java">List&lt;Point&gt; pts = Lists.newArrayList(new Point(1, 2));
+List&lt;ColorPoint&gt; cpts = Lists.newArrayList(new ColorPoint(1, 2, &quot;red&quot;));
+List&lt;? extends Point&gt; subPoints = cpts;
+List&lt;? super ColorPoint&gt; superColorPoints = pts;
+</code></pre>
+
+<p>但是为了保证类型系统的 soundness，用 bounded wildcards 声明的变量的使用上也有一些限制：1) 对<code>? extends T</code>声明的变量读操作可以得到类型为<code>T</code>的值，但不能对其进行写操作；2) 可以将<code>T</code>类型的值写入<code>? super T</code>声明的变量，但不能对其进行读操作。</p>
+
+<pre><code class="language-java">Point p = subPoints.get(0);
+subPoints.add(new Point(1, 2)); // 编译错误
+
+superColorPoints.add(new ColorPoint(1, 2, &quot;red&quot;));
+ColorPoint cp = superColorPoints.get(0); // 编译错误
+</code></pre>
+
+<h2 id="参考">参考</h2>
+
+<ul>
+<li><a href="https://www.coursera.org/learn/programming-languages-part-c">Programming Languages, Part C</a> on Coursera</li>
+<li><a href="https://docs.racket-lang.org/ts-guide/index.html">The Typed Racket Guide</a></li>
+<li><a href="https://www.oreilly.com/library/view/effective-java-3rd/9780134686097/">Effective Java, 3rd Edition</a></li>
+</ul>
+
+    </div>
+
+    
+    
+
+    
+    
+
+    <footer class="post-footer">
+      <div class="post-tags">
+          
+          <a href="/tags/typed-racket/">Typed Racket</a>
+          
+          <a href="/tags/java/">Java</a>
+          
+          <a href="/tags/subtyping/">Subtyping</a>
+          
+        </div>
+
+      
+      <nav class="post-nav">
+        
+        
+          <a class="next" href="/post/2018-07-31-oop-vs-fp/">
+            <span class="next-text nav-default">OOP vs FP：用 Visitor 模式克服 OOP 的局限</span>
+            <span class="next-text nav-mobile">Next</span>
+            <i class="iconfont icon-right"></i>
+          </a>
+      </nav>
+    </footer>
+  </article>
+        </div>
+        
+  
+
+  
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="social-links">
+      <a href="https://www.douban.com/people/marsmxm" class="iconfont icon-douban" title="douban"></a>
+      <a href="https://getpocket.com/@marsmxm" class="iconfont icon-pocket" title="pocket"></a>
+  <a href="http://blog.mxm.host/index.xml" type="application/rss+xml" class="iconfont icon-rss" title="rss"></a>
+</div>
+
+<div class="copyright">
+  
+
+  
+
+  <span class="copyright-year">
+    &copy; 
+    
+      2012 - 
+    2018
+
+    <span class="author">Mu Xian Ming</span>
+  </span>
+</div>
+    </footer>
+
+    <div class="back-to-top" id="back-to-top">
+      <i class="iconfont icon-up"></i>
+    </div>
+  </div>
+  
+<script src="/lib/highlight/highlight.pack.js?v=20171001"></script><script type="text/javascript" src="/lib/jquery/jquery-3.2.1.min.js"></script>
+  <script type="text/javascript" src="/lib/slideout/slideout-1.0.1.min.js"></script>
+  <script type="text/javascript" src="/lib/fancybox/jquery.fancybox-3.1.20.min.js"></script>
+
+
+<script type="text/javascript" src="/dist/even.min.js?v=3.2.0"></script>
+
+
+
+
+
+
+
+
+</body>
+</html>

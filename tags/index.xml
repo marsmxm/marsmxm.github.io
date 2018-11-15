@@ -32,7 +32,7 @@
     <item>
       <title>Java</title>
       <link>http://blog.mxm.host/tags/java/</link>
-      <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
       
       <guid>http://blog.mxm.host/tags/java/</guid>
       <description></description>
@@ -125,6 +125,24 @@
       <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
       
       <guid>http://blog.mxm.host/tags/scheme/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Subtyping</title>
+      <link>http://blog.mxm.host/tags/subtyping/</link>
+      <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/subtyping/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Typed Racket</title>
+      <link>http://blog.mxm.host/tags/typed-racket/</link>
+      <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
+      
+      <guid>http://blog.mxm.host/tags/typed-racket/</guid>
       <description></description>
     </item>
     
