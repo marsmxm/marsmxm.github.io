@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.51" />
+<meta name="generator" content="Hugo 0.40.1" />
 
 
 <link rel="canonical" href="http://blog.mxm.host/post/2018-07-31-oop-vs-fp/" />
@@ -51,8 +51,23 @@
 <meta property="og:title" content="OOP vs FP：用 Visitor 模式克服 OOP 的局限" />
 <meta property="og:description" content="OOP vs FP 在把一个业务领域的模型分解成各自的编程范式的最小单位的时候，过程/函数式的方式和面向对象的方式采用的是不同的甚至相反的途径。具体采用哪" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.mxm.host/post/2018-07-31-oop-vs-fp/" /><meta property="article:published_time" content="2018-07-31T00:00:00&#43;00:00"/>
+<meta property="og:url" content="http://blog.mxm.host/post/2018-07-31-oop-vs-fp/" />
+
+
+
+<meta property="article:published_time" content="2018-07-31T00:00:00&#43;00:00"/>
+
 <meta property="article:modified_time" content="2018-07-31T00:00:00&#43;00:00"/>
+
+
+
+
+
+
+
+
+
+
 
 <meta itemprop="name" content="OOP vs FP：用 Visitor 模式克服 OOP 的局限">
 <meta itemprop="description" content="OOP vs FP 在把一个业务领域的模型分解成各自的编程范式的最小单位的时候，过程/函数式的方式和面向对象的方式采用的是不同的甚至相反的途径。具体采用哪">
@@ -60,7 +75,7 @@
 
 <meta itemprop="datePublished" content="2018-07-31T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-07-31T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2381">
+<meta itemprop="wordCount" content="2335">
 
 
 
@@ -170,7 +185,7 @@
 
 <h1 id="oop-vs-fp">OOP vs FP</h1>
 
-<p>在把一个业务领域的模型分解成各自的编程范式的最小单位的时候，过程/函数式的方式和面向对象的方式采用的是不同的甚至相反的途径。具体采用哪种，一是取决于个人喜好，二是得依据对程序未来扩展纬度的预测。用一个简单的算术运算程序来举例：</p>
+<p>在把一个业务领域的模型分解成各自的编程范式的最小单位的时候，过程/函数式的方式和面向对象的方式采用的是不同的甚至相反的途径。具体采用哪种，一是取决于个人喜好，二是得依据对程序未来扩展维度的预测。用一个简单的算术运算程序来举例：</p>
 
 <ul>
 <li>程序需要应对不同的表达式，如整型数值<code>Int</code>，负数<code>Negate</code>以及相加<code>Add</code></li>
@@ -420,7 +435,7 @@ let rec eval_ext = function (f, e) -&gt;
 
 <h1 id="visitor-模式">Visitor 模式</h1>
 
-<p>Visitor 模式可以看作是在通常的面向对象模式的基础上进一步加工，把各个数据类型类里的代表相同操作的方法封装到一个 Visitor 类，这些 Visitor 本质上就是函数式模式里的函数，使得在面向对象模式中也可以按“列”来分解，这样也就可以让程序更容易的在操作纬度上扩展。前文的例子如果使用 Visitor 模式，可以这样来实现：</p>
+<p>Visitor 模式可以看作是在通常的面向对象模式的基础上进一步加工，把各个数据类型类里的代表相同操作的方法封装到一个 Visitor 类，这些 Visitor 本质上就是函数式模式里的函数，使得在面向对象模式中也可以按“列”来分解，这样也就可以让程序更容易的在操作维度上扩展。前文的例子如果使用 Visitor 模式，可以这样来实现：</p>
 
 <pre><code class="language-java">public final class SimpleExpression {
     static class BadResultException extends RuntimeException {
