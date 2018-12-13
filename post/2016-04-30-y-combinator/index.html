@@ -17,7 +17,7 @@
 
 
 <meta name="author" content="Mu Xian Ming" />
-  <meta name="description" content="看了王垠的幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下" />
+  <meta name="description" content="看了这个幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：" />
 
 
 
@@ -49,25 +49,25 @@
 
 
 <meta property="og:title" content="Y Combinator in Scheme" />
-<meta property="og:description" content="看了王垠的幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下" />
+<meta property="og:description" content="看了这个幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://blog.mxm.host/post/2016-04-30-y-combinator/" /><meta property="article:published_time" content="2016-04-30T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2016-04-30T00:00:00&#43;00:00"/>
 
 <meta itemprop="name" content="Y Combinator in Scheme">
-<meta itemprop="description" content="看了王垠的幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下">
+<meta itemprop="description" content="看了这个幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：">
 
 
 <meta itemprop="datePublished" content="2016-04-30T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2016-04-30T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="418">
+<meta itemprop="wordCount" content="554">
 
 
 
 <meta itemprop="keywords" content="Scheme,Y Combinator,Recursive,Lisp," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="Y Combinator in Scheme"/>
-<meta name="twitter:description" content="看了王垠的幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下"/>
+<meta name="twitter:description" content="看了这个幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下："/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -155,7 +155,7 @@
 
     
     <div class="post-content">
-      <p>看了<a href="http://www.yinwang.org/">王垠</a>的<a href="http://www.slideshare.net/yinwang0/reinventing-the-ycombinator">幻灯片</a>又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：</p>
+      <p>看了这个<a href="http://www.slideshare.net/yinwang0/reinventing-the-ycombinator">幻灯片</a>又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：</p>
 
 <pre><code class="language-scheme">;; 有define的时候递归是这样的
 (define length
@@ -242,6 +242,36 @@
           (* n (factorial (sub1 n)))))))
  5)
 ;; =&gt; 120
+</code></pre>
+
+<p>从类型的角度也许可以加深对 Y combinator 的理解，下面是用 OCaml 的 module 系统来实现：</p>
+
+<pre><code class="language-ocaml">module type Ysig =
+  sig
+    val y : (('a -&gt; 'a) -&gt; ('a -&gt; 'a)) -&gt; ('a -&gt; 'a)
+  end
+
+module Yfunc () : Ysig = struct
+  type 'a t = Into of ('a t -&gt; 'a)
+
+  let rec y f =
+    h f (Into (h f))
+  and h f a =
+    f (g a)
+  and g (Into a) x =
+    a (Into a) x
+end
+
+module Ystruct = Yfunc ()
+
+(* test *)
+let mk_fact fact n =
+  if n = 0
+  then 1
+  else n * fact (n - 1)
+
+let _ = Ystruct.y mk_fact 10
+(* - : int = 3628800 *)
 </code></pre>
 
     </div>
