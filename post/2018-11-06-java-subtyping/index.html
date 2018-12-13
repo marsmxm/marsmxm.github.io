@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.40.1" />
+<meta name="generator" content="Hugo 0.52" />
 
 
 <link rel="canonical" href="http://blog.mxm.host/post/2018-11-06-java-subtyping/" />
@@ -51,23 +51,8 @@
 <meta property="og:title" content="Subtyping" />
 <meta property="og:description" content="概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和" />
 <meta property="og:type" content="article" />
-<meta property="og:url" content="http://blog.mxm.host/post/2018-11-06-java-subtyping/" />
-
-
-
-<meta property="article:published_time" content="2018-11-13T01:14:13&#43;08:00"/>
-
+<meta property="og:url" content="http://blog.mxm.host/post/2018-11-06-java-subtyping/" /><meta property="article:published_time" content="2018-11-13T01:14:13&#43;08:00"/>
 <meta property="article:modified_time" content="2018-11-13T01:14:13&#43;08:00"/>
-
-
-
-
-
-
-
-
-
-
 
 <meta itemprop="name" content="Subtyping">
 <meta itemprop="description" content="概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和">
@@ -75,7 +60,7 @@
 
 <meta itemprop="datePublished" content="2018-11-13T01:14:13&#43;08:00" />
 <meta itemprop="dateModified" content="2018-11-13T01:14:13&#43;08:00" />
-<meta itemprop="wordCount" content="3046">
+<meta itemprop="wordCount" content="3100">
 
 
 
@@ -255,7 +240,7 @@ m-pts
 ;;  given: (MListof color-pt) in: m-color-pts
 </code></pre>
 
-<p>为什么是否 mutable 会决定 depth subtyping 的成立与否？假设上例中 18 行的函数调用被类型系统所允许，那么接下来如果执行<code>(color-pt-c (mcar m-color-pts))</code>将会导致运行时错误，这个错误的原因是值与类型的错误匹配，而这本该是类型系统在程序运行前就检查出进而阻止的。像这样没能阻止不该发生的错误的类型系统，我们说它不是 <strong>sound</strong> 的。所以 depth subtyping 对于 immutability 的依赖是为了保证类型系统的 soundness。</p>
+<p>为什么是否 mutable 会决定 depth subtyping 的成立与否？假设上例中 18 行的函数调用被类型系统所允许，那么接下来如果执行<code>(color-pt-c (mcar m-color-pts))</code>将会导致运行时错误，这个错误的原因是值与类型的错误匹配，而这本该是类型系统在程序运行前就检查出进而阻止的。像这样没能阻止不该发生的错误的类型系统，我们说它是 <strong>unsound</strong> 的。所以 depth subtyping 对于 immutability 的依赖是为了保证类型系统的 soundness。</p>
 
 <h2 id="函数的-subtyping">函数的 Subtyping</h2>
 
