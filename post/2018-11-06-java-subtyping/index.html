@@ -60,7 +60,7 @@
 
 <meta itemprop="datePublished" content="2018-11-13T01:14:13&#43;08:00" />
 <meta itemprop="dateModified" content="2018-11-13T01:14:13&#43;08:00" />
-<meta itemprop="wordCount" content="3100">
+<meta itemprop="wordCount" content="3143">
 
 
 
@@ -170,7 +170,7 @@
 
 <h2 id="概述">概述</h2>
 
-<p>类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和类型相关的错误。<strong>子类型（Subtyping）</strong>概念的引入是为了增加类型系统的表达力同时也增强了它的实用性。先通过 Typed Racket 来更好的理解一些通用的概念。下面是用<code>struct</code>定义的一个 point 类型<code>pt</code>，以及计算<code>pt</code>到原点距离的函数<code>dist-to-origin</code>：</p>
+<p>类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和类型相关的错误。<strong>子类型（Subtyping）</strong>概念的引入是为了增加类型系统的表达力同时也增强了它的实用性。先通过 Typed Racket 来更好的理解一些通用的概念（本文中的程序可以通过在 <a href="https://racket-lang.org/">DrRacket</a> 编辑器的第一行加上<code>#lang typed/racket</code>来运行）。下面是用<code>struct</code>定义的一个 point 类型<code>pt</code>，以及计算<code>pt</code>到原点距离的函数<code>dist-to-origin</code>：</p>
 
 <pre><code class="language-racket">(struct pt ([x : Real] [y : Real]))
 
