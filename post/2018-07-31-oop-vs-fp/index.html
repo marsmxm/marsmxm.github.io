@@ -60,7 +60,7 @@
 
 <meta itemprop="datePublished" content="2018-07-31T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-07-31T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2381">
+<meta itemprop="wordCount" content="2379">
 
 
 
@@ -234,7 +234,7 @@ type exp =
   | Negate of exp
   | Add    of exp * exp
 
-let rec eval = function  e -&gt;
+let rec eval e =
   match e with
       Int _      -&gt; e
     | Negate e1  -&gt; (match eval e1 with
@@ -244,20 +244,18 @@ let rec eval = function  e -&gt;
                         (Int i, Int j) -&gt; Int (i+j)
                       | _ -&gt; raise (BadResult &quot;non-ints in addition&quot;))
 
-let rec toString = function e -&gt;
-  match e with
-      Int i      -&gt; string_of_int i
-    | Negate e1  -&gt; &quot;-(&quot; ^ (toString e1) ^ &quot;)&quot;
-    | Add(e1,e2) -&gt; &quot;(&quot; ^ (toString e1) ^ &quot; + &quot; ^ (toString e2) ^ &quot;)&quot;
+let rec toString = function
+    Int i      -&gt; string_of_int i
+  | Negate e1  -&gt; &quot;-(&quot; ^ (toString e1) ^ &quot;)&quot;
+  | Add(e1,e2) -&gt; &quot;(&quot; ^ (toString e1) ^ &quot; + &quot; ^ (toString e2) ^ &quot;)&quot;
 
-let rec hasZero = function e -&gt;
-  match e with
-      Int i      -&gt; i = 0
-    | Negate e1  -&gt; hasZero e1
-    | Add(e1,e2) -&gt; (hasZero e1) || (hasZero e2)
-
+let rec hasZero = function
+    Int i      -&gt; i = 0
+  | Negate e1  -&gt; hasZero e1
+  | Add(e1,e2) -&gt; (hasZero e1) || (hasZero e2)
 ;;
 toString (eval (Add ((Negate (Int 5)), (Int 6))))
+(* - : string = &quot;1&quot; *)
 </code></pre>
 
 <p>第 3 到 6 行集中定义了所有的数据类型，剩下的部分是所有的函数实现，最后是一个简单的测试。通过这段代码可以看出前述表格中的 9 个单元是按列来封装，每一列对应一个函数。</p>
@@ -408,11 +406,11 @@ toString (eval (Add ((Negate (Int 5)), (Int 6))))
   | Add    of ’a ext_exp * ’a ext_exp
   | OtherExtExp  of ’a
 
-let rec eval_ext = function (f, e) -&gt;
+let rec eval_ext (f, e) =
   match e with
       Int i -&gt; i
-    | Negate e1 -&gt; 0 - (eval_ext (f,e1))
-    | Add(e1,e2) -&gt; (eval_ext (f,e1)) + (eval_ext (f,e2))
+    | Negate e1 -&gt; 0 - (eval_ext (f, e1))
+    | Add (e1, e2) -&gt; (eval_ext (f, e1)) + (eval_ext (f, e2))
     | OtherExtExp e -&gt; f e
 </code></pre>
 
