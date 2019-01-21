@@ -25,7 +25,7 @@
 
 
 
-<meta name="generator" content="Hugo 0.52" />
+<meta name="generator" content="Hugo 0.53" />
 
 
 <link rel="canonical" href="http://blog.mxm.host/post/2018-07-31-oop-vs-fp/" />
@@ -60,7 +60,7 @@
 
 <meta itemprop="datePublished" content="2018-07-31T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2018-07-31T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2379">
+<meta itemprop="wordCount" content="2374">
 
 
 
@@ -309,8 +309,8 @@ toString (eval (Add ((Negate (Int 5)), (Int 6))))
 
         @Override
         public Exp eval() {
-            Int intExp = (Int) exp.eval();
             try {
+                Int intExp = (Int) exp.eval();
                 return new Int(-intExp.value);
             } catch (ClassCastException cce) {
                 throw new BadResultException(&quot;non-int in negation&quot;);
@@ -363,8 +363,7 @@ toString (eval (Add ((Negate (Int 5)), (Int 6))))
 
 <p>从这个例子可以看出来，针对由数据类型和操作组成的表格，函数式和面向对象的编程模式分别围绕列和行来实现程序中的基本单位（函数和类）。这也造成了两种模式在程序扩展性上的差异。假设需要在现有程序中增加一个用<code>Negate</code>替代常量中负号的操作<code>noNegConstants</code>，在函数式模式中不需要更改现有的代码，只需简单的增加一个函数：</p>
 
-<pre><code class="language-ocaml">let rec noNegConstants = function e -&gt;
-  match e with
+<pre><code class="language-ocaml">let rec noNegConstants = function
       Int i      -&gt; if i &lt; 0 then Negate(Int(-i)) else e
     | Negate e1  -&gt; Negate(noNegConstants e1)
     | Add(e1,e2) -&gt; Add(noNegConstants e1, noNegConstants e2)
@@ -636,7 +635,7 @@ let rec eval_ext (f, e) =
     &copy; 
     
       2012 - 
-    2018
+    2019
 
     <span class="author">Mu Xian Ming</span>
   </span>
