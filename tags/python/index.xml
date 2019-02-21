@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Python on mxm&#39;s blog</title>
-    <link>http://blog.mxm.host/tags/python/</link>
+    <link>http://mxm.ink/tags/python/</link>
     <description>Recent content in Python on mxm&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Wed, 30 May 2012 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.mxm.host/tags/python/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://mxm.ink/tags/python/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Memoization</title>
-      <link>http://blog.mxm.host/post/2012-05-30-memoization/</link>
+      <link>http://mxm.ink/post/2012-05-30-memoization/</link>
       <pubDate>Wed, 30 May 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.mxm.host/post/2012-05-30-memoization/</guid>
+      <guid>http://mxm.ink/post/2012-05-30-memoization/</guid>
       <description>最近在《JavaScript The Good Parts》和 Udacity的CS212这门课 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。 个人理解，m</description>
     </item>
     

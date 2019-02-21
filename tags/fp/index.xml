@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>FP on mxm&#39;s blog</title>
-    <link>http://blog.mxm.host/tags/fp/</link>
+    <link>http://mxm.ink/tags/fp/</link>
     <description>Recent content in FP on mxm&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 31 Jul 2018 00:00:00 +0000</lastBuildDate>
     
-	<atom:link href="http://blog.mxm.host/tags/fp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://mxm.ink/tags/fp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>OOP vs FP：用 Visitor 模式克服 OOP 的局限</title>
-      <link>http://blog.mxm.host/post/2018-07-31-oop-vs-fp/</link>
+      <link>http://mxm.ink/post/2018-07-31-oop-vs-fp/</link>
       <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.mxm.host/post/2018-07-31-oop-vs-fp/</guid>
+      <guid>http://mxm.ink/post/2018-07-31-oop-vs-fp/</guid>
       <description>OOP vs FP 在把一个业务领域的模型分解成各自的编程范式的最小单位的时候，过程/函数式的方式和面向对象的方式采用的是不同的甚至相反的途径。具体采用哪</description>
     </item>
     

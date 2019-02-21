@@ -1,2 +1,2 @@
 User-agent: *
-Sitemap: http://blog.mxm.host/sitemap.xml
+Sitemap: http://mxm.ink/sitemap.xml

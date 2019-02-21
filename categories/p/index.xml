@@ -2,57 +2,57 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>P on mxm&#39;s blog</title>
-    <link>http://blog.mxm.host/categories/p/</link>
+    <link>http://mxm.ink/categories/p/</link>
     <description>Recent content in P on mxm&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <lastBuildDate>Tue, 13 Nov 2018 01:14:13 +0800</lastBuildDate>
     
-	<atom:link href="http://blog.mxm.host/categories/p/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="http://mxm.ink/categories/p/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>Subtyping</title>
-      <link>http://blog.mxm.host/post/2018-11-06-java-subtyping/</link>
+      <link>http://mxm.ink/post/2018-11-06-java-subtyping/</link>
       <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
       
-      <guid>http://blog.mxm.host/post/2018-11-06-java-subtyping/</guid>
+      <guid>http://mxm.ink/post/2018-11-06-java-subtyping/</guid>
       <description>概述 类型可以看作是满足某一条件的一类值的集合的名称。编程语言中的静态类型系统是为了（静态地）防止值与类型的错误匹配，从而在程序运行前就发现和</description>
     </item>
     
     <item>
       <title>OOP vs FP：用 Visitor 模式克服 OOP 的局限</title>
-      <link>http://blog.mxm.host/post/2018-07-31-oop-vs-fp/</link>
+      <link>http://mxm.ink/post/2018-07-31-oop-vs-fp/</link>
       <pubDate>Tue, 31 Jul 2018 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.mxm.host/post/2018-07-31-oop-vs-fp/</guid>
+      <guid>http://mxm.ink/post/2018-07-31-oop-vs-fp/</guid>
       <description>OOP vs FP 在把一个业务领域的模型分解成各自的编程范式的最小单位的时候，过程/函数式的方式和面向对象的方式采用的是不同的甚至相反的途径。具体采用哪</description>
     </item>
     
     <item>
       <title>Y Combinator in Scheme</title>
-      <link>http://blog.mxm.host/post/2016-04-30-y-combinator/</link>
+      <link>http://mxm.ink/post/2016-04-30-y-combinator/</link>
       <pubDate>Sat, 30 Apr 2016 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.mxm.host/post/2016-04-30-y-combinator/</guid>
+      <guid>http://mxm.ink/post/2016-04-30-y-combinator/</guid>
       <description>看了这个幻灯片又回忆起了Y combinator的推导过程。感觉他的解释比《The Little Schemer》来的更易懂，作为备忘，把推导过程记录如下：</description>
     </item>
     
     <item>
       <title>几种惰性求值方法的 Racket 实现</title>
-      <link>http://blog.mxm.host/post/2015-01-24-avoid-uneccessary-evaluation/</link>
+      <link>http://mxm.ink/post/2015-01-24-avoid-uneccessary-evaluation/</link>
       <pubDate>Sat, 24 Jan 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.mxm.host/post/2015-01-24-avoid-uneccessary-evaluation/</guid>
+      <guid>http://mxm.ink/post/2015-01-24-avoid-uneccessary-evaluation/</guid>
       <description>避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当n = 0时，</description>
     </item>
     
     <item>
       <title>Memoization</title>
-      <link>http://blog.mxm.host/post/2012-05-30-memoization/</link>
+      <link>http://mxm.ink/post/2012-05-30-memoization/</link>
       <pubDate>Wed, 30 May 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.mxm.host/post/2012-05-30-memoization/</guid>
+      <guid>http://mxm.ink/post/2012-05-30-memoization/</guid>
       <description>最近在《JavaScript The Good Parts》和 Udacity的CS212这门课 里都遇到了 memoization 这个概念。所以打算记下来方便以后参考。 个人理解，m</description>
     </item>
     
