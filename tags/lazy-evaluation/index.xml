@@ -17,7 +17,7 @@
       <pubDate>Sat, 24 Jan 2015 00:00:00 +0000</pubDate>
       
       <guid>http://mxm.ink/post/2015-01-24-avoid-uneccessary-evaluation/</guid>
-      <description>避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当n = 0时，</description>
+      <description>避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当 n = 0 时，</description>
     </item>
     
   </channel>

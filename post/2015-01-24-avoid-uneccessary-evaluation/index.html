@@ -17,7 +17,7 @@
 
 
 <meta name="author" content="Mu Xian Ming" />
-  <meta name="description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当n = 0时，" />
+  <meta name="description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当 n = 0 时，" />
 
 
 
@@ -49,26 +49,26 @@
 
 
 <meta property="og:title" content="几种惰性求值方法的 Racket 实现" />
-<meta property="og:description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当n = 0时，" />
+<meta property="og:description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当 n = 0 时，" />
 <meta property="og:type" content="article" />
 <meta property="og:url" content="http://mxm.ink/post/2015-01-24-avoid-uneccessary-evaluation/" />
 <meta property="article:published_time" content="2015-01-24T00:00:00&#43;00:00"/>
 <meta property="article:modified_time" content="2015-01-24T00:00:00&#43;00:00"/>
 
 <meta itemprop="name" content="几种惰性求值方法的 Racket 实现">
-<meta itemprop="description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当n = 0时，">
+<meta itemprop="description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当 n = 0 时，">
 
 
 <meta itemprop="datePublished" content="2015-01-24T00:00:00&#43;00:00" />
 <meta itemprop="dateModified" content="2015-01-24T00:00:00&#43;00:00" />
-<meta itemprop="wordCount" content="2561">
+<meta itemprop="wordCount" content="2563">
 
 
 
 <meta itemprop="keywords" content="Lisp,lazy evaluation,Racket," />
 <meta name="twitter:card" content="summary"/>
 <meta name="twitter:title" content="几种惰性求值方法的 Racket 实现"/>
-<meta name="twitter:description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当n = 0时，"/>
+<meta name="twitter:description" content="避免不必要的计算有时候是对程序的优化，有时候却是一个必要的手段。用求阶乘的递归函数作为一个简单的例子： (define (factorial n) (if (= n 0) 1 (* n (factorial (sub1 n))))) 当 n = 0 时，"/>
 
 <!--[if lte IE 9]>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/classlist/1.1.20170427/classList.min.js"></script>
@@ -177,7 +177,7 @@
       (* n (factorial (sub1 n)))))
 </code></pre>
 
-<p>当n = 0时，<code>if</code>表达式的值即整个函数的值就是 1，而且解释器不会再去尝试计算另一个分支<code>(* 1 (factorial 0))</code>的值。如果<code>if</code>没有这种&rdquo;避免不必要求值&rdquo;的语义，那么这个函数会无限地递归下去直到把调用栈填满，比如这个例子：</p>
+<p>当 n = 0 时，<code>if</code>表达式的值即整个函数的值就是 1，而且解释器不会再去尝试计算另一个分支<code>(* n (factorial (sub1 n)))</code>的值。如果<code>if</code>没有这种&rdquo;避免不必要求值&rdquo;的语义，那么这个函数会无限地递归下去直到把调用栈填满，比如这个例子：</p>
 
 <pre><code class="language-racket">(define (my-bad-if e1 e2 e3) (if e1 e2 e3))
 
