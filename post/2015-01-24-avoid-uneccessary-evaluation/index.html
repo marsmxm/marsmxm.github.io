@@ -177,7 +177,7 @@
       (* n (factorial (sub1 n)))))
 </code></pre>
 
-<p>当n = 0时，<code>if</code>表达式的值即整个函数的值就是1，而且解释器不会再去额外的计算<code>(* 1 (factorial 0))</code>的值。如果<code>if</code>没有这种&rdquo;避免不必要求值&rdquo;的语义，那么这个函数会无限地递归下去直到把内存填满，比如这个例子：</p>
+<p>当n = 0时，<code>if</code>表达式的值即整个函数的值就是 1，而且解释器不会再去尝试计算另一个分支<code>(* 1 (factorial 0))</code>的值。如果<code>if</code>没有这种&rdquo;避免不必要求值&rdquo;的语义，那么这个函数会无限地递归下去直到把调用栈填满，比如这个例子：</p>
 
 <pre><code class="language-racket">(define (my-bad-if e1 e2 e3) (if e1 e2 e3))
 
@@ -187,7 +187,7 @@
              (* n (factorial-wrong (sub1 n)))))
 </code></pre>
 
-<p>即使n = 0，<code>factorial-wrong</code>也会继续无限递归下去。这是因为<code>my-bad-if</code>是函数，而 Racket 里函数调用时的求值方式是call-by-value，即先对参数<code>e1</code>，<code>e2</code>和<code>e3</code>求值，再把结果带入函数体里进行求值。如果想在 Racket 里用函数实现<code>if</code>相同的语义，就需要用到本文要讨论的第一个延迟求值技术。</p>
+<p>即使 n = 0，<code>factorial-wrong</code>也会继续无限递归下去。这是因为<code>my-bad-if</code>是函数，而 Racket 里函数调用时的求值方式是 call-by-value，即先对参数<code>e1</code>，<code>e2</code>和<code>e3</code>求值，再把结果带入函数体里进行求值。如果想在 Racket 里用函数实现<code>if</code>相同的语义，就需要用到本文要讨论的第一个延迟求值技术。</p>
 
 <h3 id="thunk">Thunk</h3>
 
@@ -206,7 +206,7 @@
 
 <p>现在程序可以正确地得出结果了。Thunk 之所以奏效是因为<code>lambda</code>返回的是一个函数，对<strong>函数求值</strong>(而非调用)时不会去执行函数体中的代码(只有在调用时才会)，相反对函数的求值结果是一个闭包(closure)。</p>
 
-<p>Racket(以及大多数语言)的 call-by-value 函数调用语义当然有它的优点，那就是可以避免重复的计算。相反如果使用 thunk，每次都需要对 thunk 包装的表达式进行一次求值，如果我们thunk的是一个特别耗时的表达式，而且这个表达式在函数体中会被用到多次，那么就会对程序执行速度带来特别大的影响。下面这段代码中用<code>slow-add</code>模拟一个耗时的计算，在<code>my-mult</code>函数会被调用到多次：</p>
+<p>Racket (以及大多数语言)的 call-by-value 函数调用语义当然有它的优点，那就是可以避免重复的计算。相反如果使用 thunk，每次都需要对 thunk 包装的表达式进行一次求值，如果我们thunk的是一个特别耗时的表达式，而且这个表达式在函数体中会被用到多次，那么就会对程序执行速度带来特别大的影响。下面这段代码中用<code>slow-add</code>模拟一个耗时的计算，在<code>my-mult</code>函数会被调用到多次：</p>
 
 <pre><code class="language-racket">(define (slow-add x y)
   (sleep 2)
