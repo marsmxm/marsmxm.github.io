@@ -3,24 +3,67 @@
   
   <url>
     <loc>http://mxm.ink/categories/</loc>
-    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://mxm.ink/tags/java/</loc>
-    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://mxm.ink/categories/p/</loc>
-    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
     <priority>0</priority>
   </url>
   
   <url>
     <loc>http://mxm.ink/post/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/tags/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/tags/coq/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/tags/dependent-type/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/tags/idris/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/tags/pie/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/post/2019-02-22-dependent-type/</loc>
+    <lastmod>2019-04-14T00:56:13+08:00</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  
+  <url>
+    <loc>http://mxm.ink/tags/java/</loc>
     <lastmod>2018-11-13T01:14:13+08:00</lastmod>
     <priority>0</priority>
   </url>
@@ -39,19 +82,7 @@
   </url>
   
   <url>
-    <loc>http://mxm.ink/tags/</loc>
-    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
     <loc>http://mxm.ink/tags/typed-racket/</loc>
-    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
-    <priority>0</priority>
-  </url>
-  
-  <url>
-    <loc>http://mxm.ink/</loc>
     <lastmod>2018-11-13T01:14:13+08:00</lastmod>
     <priority>0</priority>
   </url>
