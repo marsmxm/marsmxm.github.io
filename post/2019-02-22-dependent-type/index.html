@@ -61,7 +61,7 @@
 
 <meta itemprop="datePublished" content="2019-04-14T00:56:13&#43;08:00" />
 <meta itemprop="dateModified" content="2019-04-14T00:56:13&#43;08:00" />
-<meta itemprop="wordCount" content="11479">
+<meta itemprop="wordCount" content="13707">
 
 
 
@@ -161,9 +161,10 @@
 <li><a href="#依赖于值的类型-vec">依赖于值的类型：Vec</a>
 <ul>
 <li><a href="#更强大的归纳式-eliminator">更强大的归纳式 eliminator</a></li>
-<li><a href="#ind-list">ind-List</a></li>
+<li><a href="#list-和-vec-的归纳式-eliminator">List 和 Vec 的归纳式 eliminator</a></li>
 </ul></li>
 </ul></li>
+<li><a href="#定理证明">定理证明</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -713,7 +714,7 @@ plus (S k) m = S (plus k m)
       (vec:: '成吉思汗 vecnill))))
 </code></pre>
 
-<p>如果不小心多写了一个<code>vec::</code>，则声明的类型和实际定义的不一样，解释器就会指出这个错误，虽然错误描述不是很明确：
+<p>如果不小心多写了一个<code>vec::</code>，则声明的类型和实际定义的不一致，解释器就会指出这个错误，虽然错误描述不是很明确：
 <img src="/dt/err2.png" alt="err2" /></p>
 
 <p>在深入讨论 Vec 类型前需要再介绍另一个<code>Nat</code>类型的 eliminator，因为它与 Vec 类型有着非常密切的关系。仍然是通过一个例子来说明，假设定义一个函数<code>repeat</code>，它可以重复<code>count</code>次某个任意类型<code>E</code>的值<code>e</code>，返回的结果是一个长度为<code>count</code>、元素类型<code>E</code>且所有元素都是<code>e</code>的 Vec。这个函数声明如下：</p>
@@ -846,9 +847,9 @@ plus (S k) m = S (plus k m)
         step))))
 </code></pre>
 
-<p>归纳式 eliminator 之所以被这样称呼是因为它们包含了和数学中归纳式证明相类似的想法。如果要证明一个关于自然数的定理，首先证明 x = 0 的情况成立，然后假设 x = n - 1 时定理成立，如果可以从这个假设推出 x = n 时定理也成立，那么就可以肯定这个定理在自然数范围内都成立。同样的，如果我们告诉<code>ind-Nat</code>当<code>target</code>等于<code>zero</code>时表达式的值，以及当<code>target</code>等于<code>(add1 n)</code>时，如何从<code>n</code>所对应的结果得到<code>(add1 n)</code>所对应的结果，那么<code>ind-Nat</code>就可以得到所有自然数范围内的参数所对应的表达式的值。Pie 语言中所有以 ind- 开头的 eliminator 都包含同样的思想，区别只在于<code>target</code>和<code>step</code>参数的类型。接下来再看一下 List 和 Vec 的归纳式 eliminator。</p>
+<p>归纳式 eliminator 之所以被这样称呼是因为它们包含了和数学中归纳式证明相类似的想法。如果要证明一个关于自然数的定理，首先证明 x = 0 的情况成立，然后假设 x = n - 1 时定理成立，如果可以从这个假设推出 x = n 时定理也成立，那么就可以肯定这个定理在自然数范围内都成立。同样的，如果我们告诉<code>ind-Nat</code>当<code>target</code>等于<code>zero</code>时表达式的值，以及当<code>target</code>等于<code>(add1 n)</code>时，如何从<code>n</code>所对应的结果得到<code>(add1 n)</code>所对应的结果，那么<code>ind-Nat</code>就可以得到所有自然数范围内的参数所对应的表达式的值，只不过首先需要通过<code>motive</code>参数指出任意一个<code>Nat</code>所对应的类型。Pie 语言中所有以 ind- 开头的 eliminator 都包含同样的思想，区别只在于<code>target</code>和<code>step</code>参数的类型。接下来再分别看一下 List 和 Vec 的归纳式 eliminator。</p>
 
-<h4 id="ind-list">ind-List</h4>
+<h4 id="list-和-vec-的归纳式-eliminator">List 和 Vec 的归纳式 eliminator</h4>
 
 <p>List 类型的（毫无悬念地）叫作 <a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._ind-.List%29%29">ind-List</a>。
 <img src="/dt/ind-List.png" alt="ind-List" />
@@ -871,6 +872,105 @@ plus (S k) m = S (plus k m)
       (λ (e es list-&gt;vec-es)    ; list-&gt;vec-es 是参数 es 被转换后的结果
         (vec:: e list-&gt;vec-es)))))
 </code></pre>
+
+<p>和使用<code>ind-Nat</code>时运用的归纳式思想一样，在使用<code>ind-List</code>的时候需要，</p>
+
+<ol>
+<li>通过<code>motive</code>告诉解释器任意一个 List 对应的表达式值的类型，这里任意 List 类型的值<code>xs</code>都对应一个元素类型相同，长度也相等的 Vec；</li>
+<li>通过<code>base</code>参数指出当<code>target</code>等于<code>nil</code>时表达式的值，<code>nil</code>的长度为<code>0</code>，所以对应的 Vec 就是<code>vecnil</code>；</li>
+<li>通过<code>step</code>函数告诉解释器，当<code>target</code>等于<code>(:: e es)</code>时如何从<code>es</code>对应的结果，也就是<code>es</code>所转换成为的<code>list-&gt;vec-es</code>，来得到<code>(:: e es)</code>所要转换成为的那个 Vec，可以很容易的知道那就是<code>(vec:: e list-&gt;vec-es)</code>。</li>
+</ol>
+
+<p>这样最终得到的就是一个可以把任意 List 转换成等价的 Vec 的函数。</p>
+
+<pre><code class="language-pie">&gt; (list-&gt;vec Atom philosophers)
+(the (Vec Atom 3)
+  (vec:: 'Descartes
+    (vec:: 'Hume
+      (vec:: 'Kant vecnil))))
+</code></pre>
+
+<p>类似的也可以反过来写一个把 Vec 转换成 List 的函数<code>vec-&gt;list</code>。首先是声明部分：</p>
+
+<pre><code class="language-pie">(claim vec-&gt;list
+  (Π ((E U)
+      (l Nat))
+    (-&gt; (Vec E l)
+      (List E))))
+</code></pre>
+
+<p>可以看到，因为返回值类型变成了不含长度信息的<code>(List E)</code>，所以类型声明中不再包含转换前的 Vec 的长度与转换后的 List 的相等的这个限制，这也使得类型系统无法阻止<code>vec-&gt;list</code>中出现类似上文<code>append-wrong</code>那样可以由长度反映出来的错误。由于参数类型从 List 变成了 Vec，所以这个函数使用的是以 Vec 作为<code>target</code>的 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._ind-.Vec%29%29">ind-Vec</a>。
+<img src="/dt/ind-Vec.png" alt="ind-Vec" />
+因为 Vec 类型多了一个长度属性，所以相应的，<code>ind-Vec</code>增加了一个<code>Nat</code>类型的 target-1 对应于 target-2 的长度，motive 函数也多了一个<code>Nat</code>类型的参数代表另一个参数的长度，最后 step 的<code>Nat</code>类型参数<code>k</code>也对应于<code>es</code>参数的长度。除了参数个数及类型的区别，<code>ind-Vec</code>的用法和<code>ind-List</code>基本一致。所以参照<code>list-&gt;vec</code>应该可以很容易地得到<code>vec-&gt;list</code>的定义：</p>
+
+<pre><code class="language-pie">(claim vec-&gt;list
+  (Π ((E U)
+      (l Nat))
+    (-&gt; (Vec E l)
+      (List E))))
+(define vec-&gt;list
+  (λ (E l)
+    (λ (vec)
+      (ind-Vec l vec
+        (λ (k xs)
+          (List E))
+        nil
+        (λ (l-1 e es vec-&gt;list-es)
+          (:: e vec-&gt;list-es))))))
+</code></pre>
+
+<p>因为<code>list-&gt;vec</code>和<code>vec-list</code>互为逆运算，所以这两个函数可以互相检验对方的正确性。比如下面检查的是对<code>(List Atom)</code>类型的<code>philosophers</code>，接连应用<code>list-&gt;vec</code>和<code>vec-list</code>之后，得到的仍然是原先的 List：</p>
+
+<pre><code class="language-pie">(check-same (List Atom)
+  philosophers
+  (vec-&gt;list Atom 3
+    (list-&gt;vec Atom  philosophers)))
+</code></pre>
+
+<p>不过这也只能验证对于<code>philosophers</code>来说，<code>list-&gt;vec</code>和<code>vec-list</code>两个函数是正确的。我们并不能从此得到足够的信心认为这两个函数对于任何 List 或 Vec 都是正确的。这其实也是大多数语言中的单元测试所处的窘境，它们只能检验出某些错误的“存在”但是却没办法保证这类错误在任何情况下都“不存在”。有的测试工具也提供了一些方法来应对这个局限性，比如 <a href="http://www.scalatest.org/">ScalaTest</a> 所提供的<a href="http://www.scalatest.org/user_guide/property_based_testing">基于属性的测试</a>方法，指的是用一个函数来表达测试对象应该包含的目标属性，然后结合内置的 generator 来模拟对测试对象在整个作用域内的测试。下面就是对一个分数实现类<code>Fraction</code>在整个作用域（所有可能的被除数、除数对）内的一个测试：</p>
+
+<pre><code class="language-scala">class Fraction(n: Int, d: Int) {
+  require(d != 0)
+  require(d != Integer.MIN_VALUE)
+  require(n != Integer.MIN_VALUE)
+
+  val numer = if (d &lt; 0) -1 * n else n
+  val denom = d.abs
+
+  override def toString = numer + &quot; / &quot; + denom
+}
+
+forAll { (n: Int, d: Int) =&gt;
+  whenever (d != 0 &amp;&amp; d != Integer.MIN_VALUE
+      &amp;&amp; n != Integer.MIN_VALUE) {
+
+    val f = new Fraction(n, d)
+
+    if (n &lt; 0 &amp;&amp; d &lt; 0 || n &gt; 0 &amp;&amp; d &gt; 0)
+      f.numer should be &gt; 0
+    else if (n != 0)
+      f.numer should be &lt; 0
+    else
+      f.numer should be === 0
+
+    f.denom should be &gt; 0
+  }
+}
+</code></pre>
+
+<p>不过这里用到的<code>forAll</code>并不是真的对所有可能的<code>n</code>、<code>d</code>组合来生成测试，只是尽可能多得生成一些范围内有代表性的实例。虽然这类工具能让测试更可靠，但是它们仍然没有带给开发者对程序正确性的绝对信心。本文开头提到过，像 Pie 之类的支持依赖类型的语言提供了一个在逻辑上证明程序的某个属性成立与否的途径，有了它我们可以让程序变得更可靠了。</p>
+
+<h2 id="定理证明">定理证明</h2>
+
+<p>为了说明这个证明的方法，需要从 Pie 语言里表达相等关系的类型说起。在 Pie 语言里，表示<code>x</code>等于<code>y</code>的类型写作<code>(= T x y)</code>，其中<code>T</code>是<code>x</code>和<code>y</code>的类型。例如<code>(= Nat (+ 1 1) 2)</code>表示表达式<code>(+ 1 1)</code>和<code>2</code>的值相等。所以<code>=</code>类型也是一个依赖于值的类型。</p>
+
+<p>构造一个<code>=</code>类型的值时用到的 constructor 是<code>same</code>。如果表达式<code>e</code>的类型是<code>E</code>，那么<code>(same e)</code>就是类型为<code>(= E e e)</code>的值。前例中的<code>(= Nat (+ 1 1) 2)</code>类型的值可以写作<code>(same 2)</code>，因为解释器对<code>(+ 1 1)</code>的求值结果也是<code>2</code>。那么<code>(= Nat 3 4)</code>是不是一个合法的类型呢？答案是是的，但是我们没办法构造一个该类型的值：</p>
+
+<p><img src="/dt/3=4.png" alt="3=4" /></p>
+
+<p>在定义中放入<code>(same 4)</code>也会得到类似的错误提示。如果套用传统编程语言对类型的定位来理解<code>=</code>类型的话，会发现很难说得通。因为<code>=</code>类型并不像前面的<code>Nat</code>或<code>Vec</code>类型，它看起来不像是一类值的集合。所以我们应该换一个角度来看待<code>=</code>类型，可以把它看作一个<strong>陈述或命题</strong>。所以<code>(= Nat (+ 1 1) 2)</code>可以读作“<code>(+ 1 1)</code>和<code>2</code>是两个相等的自然数”。这时<code>=</code>类型的值就变成它所代表的那个命题的一个<strong>证明</strong>。那么为什么<code>(same 2)</code>就是<code>(= Nat (+ 1 1) 2)</code>的一个证明呢？因为我们举证出了一个值<code>2</code>，它既等于<code>(+ 1 1)</code>也等于<code>2</code>。同理，不存在<code>(= Nat 3 4)</code>类型的值也是因为我们没法找到一个可以证明<code>3</code>等于<code>4</code>的证据。像这种通过举证来证明的方法在数学中被叫作<a href="https://en.wikipedia.org/wiki/Constructive_proof">构造性证明（Constructive Proof）</a><sup class="footnote-ref" id="fnref:8"><a href="#fn:8">8</a></sup>。</p>
+
+<p>有了这个看待类型的全新角度后，其实我们可以把任意类型都看作一个命题。比如<code>Atom</code>就是一个命题，而任何一个<code>Atom</code>类型的值都是它的证明，只不过这个命题的证明对我们来说没有多大的用处。</p>
 <div class="footnotes">
 
 <hr />
@@ -890,8 +990,10 @@ plus (S k) m = S (plus k m)
  <a class="footnote-return" href="#fnref:5"><sup>[return]</sup></a></li>
 <li id="fn:6">关于 parameter 和 index 的更详细准确的区别可以参考 <a href="https://stackoverflow.com/questions/24600256/difference-between-type-parameters-and-indices">stackoverflow 上的这个问题</a>。
  <a class="footnote-return" href="#fnref:6"><sup>[return]</sup></a></li>
-<li id="fn:7">motive 这个名字应该是来自<a href="http://www.cs.ru.nl/F.Wiedijk/courses/tt-2010/tvftl/conor-elimination.pdf">这篇论文</a>
+<li id="fn:7">motive 这个名字应该是来自<a href="http://www.cs.ru.nl/F.Wiedijk/courses/tt-2010/tvftl/conor-elimination.pdf">这篇论文</a>。
  <a class="footnote-return" href="#fnref:7"><sup>[return]</sup></a></li>
+<li id="fn:8"><a href="https://book.douban.com/subject/26975991/">《计算进化史》</a>这本书里有比较全面的关于这方面的讨论。
+ <a class="footnote-return" href="#fnref:8"><sup>[return]</sup></a></li>
 </ol>
 </div>
 
