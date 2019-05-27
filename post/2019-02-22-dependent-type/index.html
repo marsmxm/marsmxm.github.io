@@ -61,7 +61,7 @@
 
 <meta itemprop="datePublished" content="2019-04-14T00:56:13&#43;08:00" />
 <meta itemprop="dateModified" content="2019-04-14T00:56:13&#43;08:00" />
-<meta itemprop="wordCount" content="14209">
+<meta itemprop="wordCount" content="15927">
 
 
 
@@ -982,14 +982,14 @@ forAll { (n: Int, d: Int) =&gt;
     (= Nat (+ 1 n) (add1 n))))
 </code></pre>
 
-<p>可以把它读作，“对于任意一个自然数<code>n</code>，<code>(+ 1 n)</code>与<code>(add1 n)</code>的值相等”。这样<code>1+=add1</code>就可以看作是对命题的陈述。那么要如何证明这种全称命题？其实就是实现一个由<code>Π</code>表达式声明的函数，这个函数返回一个<code>=</code>类型的值。</p>
+<p>可以把它读作，“对于任意一个自然数<code>n</code>，<code>(+ 1 n)</code>与<code>(add1 n)</code>的值是两个相等的自然数”。这样<code>1+=add1</code>就可以看作是对命题的陈述。那么要如何证明这种全称命题？其实就是实现一个由<code>Π</code>表达式声明的函数，这个函数接受一个<code>Nat</code>类型的参数，返回一个<code>=</code>类型的值。</p>
 
 <pre><code class="language-pie">(define 1+=add1
   (λ (n)
     TODO))
 </code></pre>
 
-<p>这里<code>TODO</code>代表的是<code>=</code>类型的返回值，因为<code>=</code>类型的 constructor 只有<code>same</code>，所以<code>TODO</code>是一个<code>same</code>表达式，现在的问题是应该在<code>same</code>里放入什么样的表达式。回忆一下<code>+</code>函数的定义：</p>
+<p>这里<code>TODO</code>代表的是<code>=</code>类型的返回值，因为<code>=</code>类型的 constructor 只有<code>same</code>，所以<code>TODO</code>是一个<code>same</code>表达式，现在的问题是应该在<code>same</code>里放入什么样的既等于<code>(+ 1 n)</code>又等于<code>(add1 n)</code>的表达式。回忆一下<code>+</code>函数的定义：</p>
 
 <pre><code class="language-pie">(define +
   (λ (n m)
@@ -999,7 +999,7 @@ forAll { (n: Int, d: Int) =&gt;
         (add1 n-1+m)))))
 </code></pre>
 
-<p>可以看出来<code>(+ 1 n)</code>最后结果是<code>(add1 n)</code>，所以应该用<code>(same (add1 n))</code>来替换<code>TODO</code>。其实如果看一下解释器输出的<code>TODO</code>类型提示，已经可以知道<code>same</code>里应该放入<code>(add1 n)</code>：</p>
+<p>可以看出来<code>(+ 1 n)</code>经过两次递归调用<code>rec-Nat</code>后可以简化成<code>(add1 n)</code>，所以应该用<code>(same (add1 n))</code>来替换<code>TODO</code>。其实如果看一下解释器输出的<code>TODO</code>类型提示，已经可以知道<code>same</code>里应该放入<code>(add1 n)</code>：</p>
 
 <pre><code class="language-code">c8.pie:28.4: TODO:
  n : Nat
@@ -1017,6 +1017,80 @@ forAll { (n: Int, d: Int) =&gt;
 (define 1+=add1
   (λ (n)
     (same (add1 n))))
+</code></pre>
+
+<p>这个命题声明中，表达式<code>(+ 1 n)</code>里并不是碰巧把<code>1</code>放在<code>n</code>的前面，故意这么写是为了让命题更容易证明。原因是<code>+</code>函数的定义中是把第一个参数作为了<code>rec-Nat</code>的 target，这样如果<code>1</code>是第一个参数的话，<code>rec-Nat</code>表达式就可以直接简化成<code>(add1 n)</code>。如果反过来把<code>n</code>放在前面写成<code>(+ n 1)</code>的话，<code>(rec-Nat n ...)</code>没办法进一步简化（因为不知道未知参数<code>n</code>是否为零），这样<code>(same (add n))</code>也就不再是这个新命题的证明：
+<img src="/dt/+1=add1.png" alt="+1=add1" /></p>
+
+<p>那么应该怎样来证明这个调换了<code>1</code>和<code>n</code>的位置后所得到的命题呢？前面曾经提过归纳式 eliminator（ind-Nat、ind-List 等）的用法和数学上的归纳式证明非常相似，而对于命题<code>+1=add1</code>我们就要真的用<code>ind-Nat</code>来进行归纳式证明了。对于所有的<code>ind-</code>eliminator 的使用第一步基本都是要写出 motive 函数，这里因为最终要得到是<code>(= Nat (+ n 1) (add1 n))</code>类型的值，如果把<code>n</code>作为<code>ind-Nat</code>的 target 的话，那我们需要的 motive 函数显然就是<code>(λ (k) (= Nat (+ k 1) (add1 k)))</code>，这样 base 的类型就是 motive 的参数<code>k</code>等于<code>0</code>时的返回值，<code>(= Nat (+ 0 1) (add1 0))</code>，简化得到<code>(= Nat 1 1)</code>，所以 base 的值就是<code>(same 1)</code>。包含了 motive 和 base 的定义如下：</p>
+
+<pre><code class="language-pie">(claim +1=add1
+  (Π ((n Nat))
+    (= Nat (+ n 1) (add1 n))))
+(define +1=add1
+  (λ (n)
+    (ind-Nat n
+      (λ (k)
+        (= Nat (+ k 1) (add1 k)))
+      (same 1)
+      TODO)))
+</code></pre>
+
+<p>接下来需要写出 step 函数的定义。回忆一下<code>ind-Nat</code>中 step 的类型是：</p>
+
+<pre><code class="language-pie">(Π ((n-1 Nat))
+  (-&gt; (motive n-1)
+    (motive (add1 n-1))))
+</code></pre>
+
+<p>其中的<code>n-1</code>是比 target 小一的数，把<code>motive</code>替换成写好的定义后得到的 step 的类型就是：</p>
+
+<pre><code class="language-pie">(Π ((n-1 Nat))
+  (-&gt; (= Nat (+ n-1 1) (add1 n-1))
+    (= Nat (+ (add1 n-1) 1) (add1 (add1 n-1)))))
+</code></pre>
+
+<p>如果从求值的角度来看，step 的类型是说接受两个类型为<code>Nat</code>和<code>=</code>的参数得到另一个<code>=</code>类型的的值。不过我们还可以继续从定理证明的角度来解释这个类型，这时可以把<code>-&gt;</code>类型看作是一个“如果&hellip;那么&hellip;”的陈述句。这样整个类型就可以读作，“对于任意自然数 n-1，如果 (+ n-1 1) 等于 (add1 n-1)，那么 (+ (add1 n-1) 1) 也等于 (add1 (add1 n-1))”，这其实就是数学上的归纳证明，所以对 step 函数的实现也是在完成归纳证明的第二步：从假设推导出要证明的结论。</p>
+
+<p>另外要说的一点是返回值类型中的<code>(+ (add1 n-1) 1)</code>这一部分其实还可以进一步简化：根据<code>+</code>函数的定义可以把<code>add1</code>拿到最外层，变成<code>(add1 (+ n-1 1))</code>。为了更容易得实现 step，我们把它作为一个独立的函数来定义（返回值类型变成前述简化后的形式）：</p>
+
+<pre><code class="language-pie">(claim step-+1=add1
+  (Π ((n-1 Nat))
+    (-&gt; (= Nat (+ n-1 1) (add1 n-1))
+      (= Nat (add1 (+ n-1 1)) (add1 (add1 n-1))))))
+(define step-+1=add1
+  (λ (n-1 +1=add1-n-1)
+    TODO))
+</code></pre>
+
+<p>接下来要解决的问题就是，怎样从类型为<code>(= Nat (+ n-1 1) (add1 n-1))</code>的<code>+1=add1-n-1</code>推导出<code>(= Nat (add1 (+ n-1 1)) (add1 (add1 n-1)))</code>这个命题。观察一下可以发现这两个<code>=</code>类型或者说命题的唯一区别是后边两个相等的表达式分别比前面的两个多了一个<code>add1</code>。所以这相当于在证明如果<code>(= Nat x y)</code>那么<code>(= Nat (add1 x) (add1 y))</code>，从直觉来判断这一定是成立的，如果两个自然数相等，那么各自加一后的两个新的自然数仍然是相等的。那么如何在 Pie 语言里表达这样的等价关系？这里我们要用到的是<code>=</code>类型的其中一个 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._cong%29%29">cong</a>，它是 congruent（一致）这个单词的缩写。</p>
+
+<p><code>cong</code>接受两个参数。第一个的类型为<code>(= X from to)</code>，其中<code>from</code>和<code>to</code>的类型都是<code>X</code>。第二个参数是类型为<code>(-&gt; X Y)</code>的函数<code>func</code>，也就是说这是个把<code>X</code>类型的值变为<code>Y</code>类型的函数，当然<code>X</code>和<code>Y</code>可以相同也可以不同。<code>cong</code>的返回值类型是<code>(= Y (func fromt) (func to))</code>。
+<img src="/dt/cong.png" alt="cong" /></p>
+
+<p>用<code>cong</code>来实现<code>step-+1=add1</code>的话，我们就可以把<code>(= Nat (+ n-1 1) (add1 n-1))</code>类型的<code>+1=add1-n-1</code>作为 target，再把一个给任意自然数加一的函数当作<code>cong</code>的第二个参数，这样最后<code>cong</code>最后的返回值就是我们想要的<code>(= Nat (add1 (+ n-1 1)) (add1 (add1 n-1)))</code>这个命题的证明：</p>
+
+<pre><code class="language-pie">(claim step-+1=add1
+  (Π ((n-1 Nat))
+    (-&gt; (= Nat (+ n-1 1) (add1 n-1))
+      (= Nat (add1 (+ n-1 1)) (add1 (add1 n-1))))))
+(define step-+1=add1
+  (λ (n-1 +1=add1-n-1)
+    (cong +1=add1-n-1 (+ 1))))
+</code></pre>
+
+<p>注意这里我们用到了 Pie 的函数 currying，<code>(+ 1)</code>就是一个把任意自然数加一的函数。这样我们就得到了整个命题的证明：</p>
+
+<pre><code class="language-pie">(claim +1=add1
+  (Π ((n Nat))
+    (= Nat (+ n 1) (add1 n))))
+(define +1=add1
+  (λ (n)
+    (ind-Nat n
+      (λ (k)
+        (= Nat (+ k 1) (add1 k)))
+      (same 1)
+      step-+1=add1)))
 </code></pre>
 <div class="footnotes">
 
@@ -1039,7 +1113,7 @@ forAll { (n: Int, d: Int) =&gt;
  <a class="footnote-return" href="#fnref:6"><sup>[return]</sup></a></li>
 <li id="fn:7">motive 这个名字应该是来自<a href="http://www.cs.ru.nl/F.Wiedijk/courses/tt-2010/tvftl/conor-elimination.pdf">这篇论文</a>。
  <a class="footnote-return" href="#fnref:7"><sup>[return]</sup></a></li>
-<li id="fn:8"><a href="https://book.douban.com/subject/26975991/">《计算进化史》</a>这本书里有比较全面的关于这方面的讨论。
+<li id="fn:8"><a href="https://book.douban.com/subject/26975991/">《计算进化史》</a>这本书里有比较深入的关于这方面的讨论。
  <a class="footnote-return" href="#fnref:8"><sup>[return]</sup></a></li>
 </ol>
 </div>
