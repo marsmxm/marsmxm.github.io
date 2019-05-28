@@ -6,9 +6,19 @@
     <description>Recent content in Categories on mxm&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
+    <lastBuildDate>Sun, 14 Apr 2019 00:56:13 +0800</lastBuildDate>
     
 	<atom:link href="http://mxm.ink/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>P</title>
+      <link>http://mxm.ink/categories/p/</link>
+      <pubDate>Sun, 14 Apr 2019 00:56:13 +0800</pubDate>
+      
+      <guid>http://mxm.ink/categories/p/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>I</title>
@@ -16,15 +26,6 @@
       <pubDate>Sun, 14 Jun 2015 00:00:00 +0000</pubDate>
       
       <guid>http://mxm.ink/categories/i/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>P</title>
-      <link>http://mxm.ink/categories/p/</link>
-      <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
-      
-      <guid>http://mxm.ink/categories/p/</guid>
       <description></description>
     </item>
     

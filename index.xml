@@ -6,13 +6,22 @@
     <description>Recent content on mxm&#39;s blog</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
-    <lastBuildDate>Tue, 13 Nov 2018 01:14:13 +0800</lastBuildDate>
+    <lastBuildDate>Sun, 14 Apr 2019 00:56:13 +0800</lastBuildDate>
     
 	<atom:link href="http://mxm.ink/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
-      <title>Subtyping</title>
+      <title>依赖类型与定理证明</title>
+      <link>http://mxm.ink/post/2019-02-22-dependent-type/</link>
+      <pubDate>Sun, 14 Apr 2019 00:56:13 +0800</pubDate>
+      
+      <guid>http://mxm.ink/post/2019-02-22-dependent-type/</guid>
+      <description>什么是依赖类型 传统的静态类型语言对类型和值有明确的区分，对于类型信息可以出现在哪也有严格的限制。而在支持依赖类型（dependent type</description>
+    </item>
+    
+    <item>
+      <title>浅析 Subtyping</title>
       <link>http://mxm.ink/post/2018-11-06-java-subtyping/</link>
       <pubDate>Tue, 13 Nov 2018 01:14:13 +0800</pubDate>
       
