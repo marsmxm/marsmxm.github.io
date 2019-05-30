@@ -61,7 +61,7 @@
 
 <meta itemprop="datePublished" content="2019-04-14T00:56:13&#43;08:00" />
 <meta itemprop="dateModified" content="2019-04-14T00:56:13&#43;08:00" />
-<meta itemprop="wordCount" content="15927">
+<meta itemprop="wordCount" content="16312">
 
 
 
@@ -183,7 +183,7 @@
 
 <h2 id="什么是依赖类型">什么是依赖类型</h2>
 
-<p>传统的静态类型语言对类型和值有明确的区分，对于类型信息可以出现在哪也有严格的限制。而在支持依赖类型（dependent type）的语言里，类型和值之间的界限变得模糊，类型可以像值一样被计算（即所谓的 first-class 类型 <sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>），同时值也可以出现在类型信息里，依赖类型的“依赖”两个字指的就是类型可以依赖于值。因此类型和值的关系不再是单向的，两者变得可以互相描述了。这样的好处一是类型系统变得更加强大，可以检测并阻止更多的错误类型，让程序更可靠；二是有了依赖类型之后，我们甚至可以让计算机像运行传统的计算类程序一样来运行数学证明 <sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>，从而在逻辑上保证程序关键属性的成立。</p>
+<p>传统的静态类型语言对类型和值有明确的区分，对于类型信息可以出现在哪也有严格的限制。而在支持依赖类型（dependent type）的语言里，类型和值之间的界限变得模糊，类型可以像值一样被计算（即所谓的 first-class 类型 <sup class="footnote-ref" id="fnref:1"><a href="#fn:1">1</a></sup>），同时值也可以出现在类型信息里，“依赖”两个字指的就是类型可以依赖于值。因此类型和值之间不再是单向的而变成了双向的描述关系。支持依赖类型的好处一是类型系统变得更加强大，可以检测并阻止更多的错误类型，让程序更可靠；二是依赖类型可以让计算机像运行传统的程序一样来运行数学证明 <sup class="footnote-ref" id="fnref:2"><a href="#fn:2">2</a></sup>，从而在逻辑上保证程序关键属性的成立。</p>
 
 <p>为了对依赖类型有一个直观的感受，举一个假想的例子。假如 Java 中加入了对依赖类型的支持，那么以 Java 的数组类型为例，可以让它包含更多的信息，比如数组的长度：</p>
 
@@ -213,16 +213,16 @@ valToString x val = case x of
   False =&gt; val
 </code></pre>
 
-<p>这段程序里的<code>StringOrInt</code>、<code>getStringOrInt</code>和<code>valToString</code>是三个函数，第 1、6、11 行分别声明的这三个函数的类型。<code>StringOrInt</code>接受一个布尔类型的参数，返回值的类型是<code>Type</code>（也就是<strong>类型的类型</strong>，因为类型也是一种值），当参数是<code>True</code>，返回<code>Int</code>类型，参数为<code>False</code>时，返回<code>String</code>类型。而在<code>getStringOrInt</code>的类型声明中可以看到它的返回值类型是<code>StringOrInt x</code>，也就是说返回值类型依赖于参数<code>x</code>的值：当<code>x</code>的值为<code>True</code>时，返回值类型是<code>StringOrInt True</code>的值，也就是<code>Int</code>；当<code>x</code>是<code>False</code>是，返回值类型就变成了<code>String</code>。<code>getStringOrInt</code>的类型声明体现了依赖类型的两个特性：</p>
+<p>这段程序的第 1、6、11 行分别声明了三个函数<code>StringOrInt</code>、<code>getStringOrInt</code>和<code>valToString</code>的类型。<code>StringOrInt</code>接受一个布尔类型的参数，返回值的类型是<code>Type</code>（也就是<strong>类型的类型</strong>，因为类型也是一种值），当参数是<code>True</code>，返回<code>Int</code>类型，参数为<code>False</code>时，返回<code>String</code>类型。而在<code>getStringOrInt</code>的类型声明中可以看到它的返回值类型是<code>StringOrInt x</code>，也就是说返回值类型依赖于参数<code>x</code>的值：当<code>x</code>的值为<code>True</code>时，返回值类型是<code>StringOrInt True</code>的值，也就是<code>Int</code>；当<code>x</code>是<code>False</code>是，返回值类型就变成了<code>String</code>。函数<code>StringOrInt</code>和<code>getStringOrInt</code>体现了依赖类型的两个特性：</p>
 
 <ol>
-<li>类型中可以包括变量或者复杂的表达式，如<code>StringOrInt x</code>。</li>
-<li>声明的类型可以处于一个动态的状态，最后具体是什么取决于所依赖的值。</li>
+<li>类型可以由函数动态地计算出来。</li>
+<li>类型声明中可以包括变量或者复杂的表达式，如<code>StringOrInt x</code>，最后实际的类型取决于所依赖的值。</li>
 </ol>
 
-<p>最后一个函数<code>valToString</code>的类型和<code>getStringOrInt</code>的类似，区别只在于它的第二个参数类型依赖于参数<code>x</code>的值。如果<code>x</code>是<code>True</code>，参数<code>val</code>的类型就是<code>Int</code>，又因为返回值类型是<code>String</code>，所以需要用<code>cast</code>函数做一个类型转换；若<code>x</code>等于<code>False</code>，参数<code>val</code>的类型和返回值类型一致，就可以直接返回。</p>
+<p>最后一个函数<code>valToString</code>的类型和<code>getStringOrInt</code>的类似，区别只在于它的第二个参数类型（而不是返回值类型）依赖于参数<code>x</code>的值。如果<code>x</code>是<code>True</code>，参数<code>val</code>的类型就是<code>Int</code>，又因为返回值类型是<code>String</code>，所以需要用<code>cast</code>函数做一个类型转换；若<code>x</code>等于<code>False</code>，参数<code>val</code>的类型和返回值类型一致，就可以直接返回。</p>
 
-<p>有了一个直观的感受后，为了更详细准确地阐释依赖类型以及基于依赖类型的定理证明，本文将要用到一个叫做 <a href="https://github.com/the-little-typer/pie">Pie</a> 的语言。它是为了 Friedman 和 Christiansen 的<a href="http://thelittletyper.com/">《The Little Typer》</a>这本书而被开发出来的包含依赖类型所有核心功能的一个小巧简洁（完整的<a href="https://docs.racket-lang.org/pie/index.html">参考手册</a>只有不到 3000 字）的语言。</p>
+<p>有了一个直观的感受后，为了更详细准确地阐释依赖类型以及基于依赖类型的定理证明，本文会围绕一个叫做 <a href="https://github.com/the-little-typer/pie">Pie</a> 的语言进行下去。Pie 是为了 Friedman 和 Christiansen 的<a href="http://thelittletyper.com/">《The Little Typer》</a>这本书而被开发出来的包含依赖类型所有核心功能的一个小巧简洁（完整的<a href="https://docs.racket-lang.org/pie/index.html">参考手册</a>只有不到 3000 字）的语言。</p>
 
 <h3 id="准备工作">准备工作</h3>
 
@@ -362,7 +362,7 @@ plus (S k) m = S (plus k m)
 
 <p>不幸的是如果把上面这段程序输入到定义区域，DrRacket 会在最后一行提示 “Unknown variable +”。所以我们只能改成使用“内置了递归”的 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._rec-.Nat%29%29">rec-Nat</a>。<code>rec-Nat</code>和<code>which-Nat</code>类似，接受的三个参数也是<code>target</code>、<code>base</code>和<code>step</code>，而且当<code>target</code>等于<code>0</code>时同样把<code>base</code>作为自身的值返回。
 <img src="/dt/rec-Nat.png" alt="rec-Nat" />
-不同的是<code>rec-Nat</code>的<code>step</code>参数类型是<code>(-&gt; Nat X X)</code>。当<code>target</code>可以表示成<code>(add1 n-1)</code>的非零自然数时，<code>step</code>的两个参数分别是<code>n-1</code>和<code>(rec-Nat n-1 base step)</code>。也就是说<code>rec-Nat</code>内置了对自身的递归调用，作为<code>rec-Nat</code>的使用者只需要知道<code>step</code>的<strong>第一个参数是比当前的非零<code>target</code>小一的自然数，第二个参数等于把第一个参数作为新的<code>target</code>传递给递归的<code>rec-Nat</code>所得到的值</strong>。在上面的加法例子中，<code>step</code>函数体里只用到了第二个参数，即比<code>n</code>小一的自然数与<code>m</code>的和。</p>
+不同的是<code>rec-Nat</code>的<code>step</code>参数类型是<code>(-&gt; Nat X X)</code>。当<code>target</code>可以表示成<code>(add1 n-1)</code>的非零自然数时，<code>step</code>的两个参数分别是<code>n-1</code>和<code>(rec-Nat n-1 base step)</code>。也就是说<code>rec-Nat</code>内置了对自身的递归调用，作为<code>rec-Nat</code>的使用者只需要知道<code>step</code>的<strong>第一个参数是比当前的非零<code>target</code>小一的自然数，第二个参数等于把第一个参数作为新的<code>target</code>传递给递归的<code>rec-Nat</code>所得到的值</strong>。</p>
 
 <p>用<code>rec-Nat</code>来实现<code>+</code>函数同样可以把<code>n</code>作为<code>target</code>，<code>n</code>等于<code>0</code>时<code>base</code>的值应该为<code>m</code>，因为<code>(+ 0 m)</code>等于<code>m</code>：</p>
 
@@ -506,7 +506,7 @@ plus (S k) m = S (plus k m)
       b)))
 </code></pre>
 
-<p>这几个函数无论是有声明类型上的差异，还是声明类型的形式和函数定义的形式是否一致，在 Pie 的解释器看来都是完全相同的：</p>
+<p>这几个函数无论是否有声明类型上的差异，还是声明和定义形式是否一致，在 Pie 的解释器看来都是完全相同的：</p>
 
 <pre><code class="language-pie">&gt; currying-test1
 (the (→ Atom Atom
@@ -893,7 +893,30 @@ plus (S k) m = S (plus k m)
       (vec:: 'Kant vecnil))))
 </code></pre>
 
-<p>类似的也可以反过来写一个把 Vec 转换成 List 的函数<code>vec-&gt;list</code>。首先是声明部分：</p>
+<p>在前面<code>repeat</code>的例子里展示过，Vec 类型使得类型系统可以在程序运行前就检测出导致长度不一致的一类错误。但是仍然有可能写出长度和类型都正确而实际值却不是所预期的错误程序。比如下面这个只是重复第一个元素的错误版<code>list-&gt;vec</code>：</p>
+
+<pre><code class="language-pie">(claim list-&gt;vec-wrong
+  (Π ((E U)
+      (lst (List E)))
+    (Vec E (length E lst))))
+(define list-&gt;vec-wrong
+  (λ (E lst)
+    (ind-List lst
+      (λ (xs)
+        (Vec E (length E xs)))
+      vecnil
+      (λ (e es list-&gt;vec-es)
+        (repeat E (length E (:: e es)) e)))))
+
+
+&gt; (list-&gt;vec-wrong Atom philosophers)
+(the (Vec Atom 3)
+  (vec:: 'Descartes
+    (vec:: 'Descartes
+      (vec:: 'Descartes vecnil))))
+</code></pre>
+
+<p>那么怎样才能检测出这一类的错误呢？一个可行的办法是，我们可以写出<code>list-&gt;vec</code>的“逆运算”<code>vec-&gt;list</code>，这样就可以让这俩个函数互相检验对方的正确性。<code>vec-&gt;list</code>的声明部分写作：</p>
 
 <pre><code class="language-pie">(claim vec-&gt;list
   (Π ((E U)
@@ -902,7 +925,7 @@ plus (S k) m = S (plus k m)
       (List E))))
 </code></pre>
 
-<p>可以看到，因为返回值类型变成了不含长度信息的<code>(List E)</code>，所以类型声明中不再包含转换前的 Vec 的长度与转换后的 List 的相等的这个限制，这也使得类型系统无法阻止<code>vec-&gt;list</code>中出现类似上文<code>append-wrong</code>那样可以由长度反映出来的错误。由于参数类型从 List 变成了 Vec，所以这个函数使用的是以 Vec 作为<code>target</code>的 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._ind-.Vec%29%29">ind-Vec</a>。
+<p>由于参数类型从 List 变成了 Vec，所以这个函数使用的是以 Vec 作为<code>target</code>的 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._ind-.Vec%29%29">ind-Vec</a>。
 <img src="/dt/ind-Vec.png" alt="ind-Vec" />
 因为 Vec 类型多了一个长度属性，所以相应的，<code>ind-Vec</code>增加了一个<code>Nat</code>类型的 target-1 对应于 target-2 的长度，motive 函数也多了一个<code>Nat</code>类型的参数代表另一个参数的长度，最后 step 的<code>Nat</code>类型参数<code>k</code>也对应于<code>es</code>参数的长度。除了参数个数及类型的区别，<code>ind-Vec</code>的用法和<code>ind-List</code>基本一致。所以参照<code>list-&gt;vec</code>应该可以很容易地得到<code>vec-&gt;list</code>的定义：</p>
 
@@ -922,7 +945,7 @@ plus (S k) m = S (plus k m)
           (:: e vec-&gt;list-es))))))
 </code></pre>
 
-<p>因为<code>list-&gt;vec</code>和<code>vec-list</code>互为逆运算，所以这两个函数可以互相检验对方的正确性。比如下面检查的是对<code>(List Atom)</code>类型的<code>philosophers</code>，接连应用<code>list-&gt;vec</code>和<code>vec-list</code>之后，得到的仍然是原先的 List：</p>
+<p>有了<code>vec-&gt;list</code>之后要解决的问题是，如何用程序表达出“连续两次调用<code>list-&gt;vec</code>和<code>vec-&gt;list</code>仍然得到原先的 List”这个意思。我们现在知道的最接近这个需求的工具是<code>check-same</code>。比如下面检查的是对<code>(List Atom)</code>类型的<code>philosophers</code>接连应用<code>list-&gt;vec</code>和<code>vec-list</code>之后，内容不变：</p>
 
 <pre><code class="language-pie">(check-same (List Atom)
   philosophers
@@ -961,7 +984,7 @@ forAll { (n: Int, d: Int) =&gt;
 }
 </code></pre>
 
-<p>不过这里用到的<code>forAll</code>并不是真的对所有可能的<code>n</code>、<code>d</code>组合来生成测试，只是尽可能多得生成一些范围内有代表性的实例。虽然这类工具能让测试更可靠，但是它们仍然没有带给开发者对程序正确性的绝对信心。本文开头提到过，像 Pie 之类的支持依赖类型的语言提供了一个在逻辑上证明程序的某个属性成立与否的途径，有了它我们可以让程序变得更可靠了。</p>
+<p>不过这里用到的<code>forAll</code>并不是真的对所有可能的<code>n</code>、<code>d</code>组合来生成测试（不然测试程序会无限期的运行下去），只是尽可能多得生成一些范围内有代表性的实例。虽然这类工具能让测试更可靠，但是它们仍然没有带给开发者对程序正确性的绝对信心。本文开头提到过，像 Pie 之类的支持依赖类型的语言提供了一个在逻辑上证明程序某些属性成立与否的途径，有了它我们可以让程序变得更可靠了。</p>
 
 <h2 id="定理证明">定理证明</h2>
 
@@ -971,18 +994,18 @@ forAll { (n: Int, d: Int) =&gt;
 
 <p><img src="/dt/3=4.png" alt="3=4" /></p>
 
-<p>在定义中放入<code>(same 4)</code>也会得到类似的错误提示。如果套用传统编程语言对类型的定位来理解<code>=</code>类型的话，可能会觉得它有些怪异，因为<code>=</code>类型并不像前面的<code>Nat</code>或<code>Vec</code>类型，它看起来不像是一类值的集合。所以不如换一个角度来看待<code>=</code>类型，可以把它看作一个<strong>陈述或命题</strong>。<code>(= Nat (+ 1 1) 2)</code>可以读作“<code>(+ 1 1)</code>和<code>2</code>是两个相等的自然数”。这时<code>=</code>类型的值就变成它所代表的那个命题的一个<strong>证明</strong>。那么为什么<code>(same 2)</code>就是<code>(= Nat (+ 1 1) 2)</code>的一个证明呢？因为我们举证出了一个值<code>2</code>，它既等于<code>(+ 1 1)</code>也等于<code>2</code>。同理，不存在<code>(= Nat 3 4)</code>类型的值也是因为我们没法找到一个可以证明<code>3</code>等于<code>4</code>的证据。像这种通过举证来证明的方法在数学中被叫作<a href="https://en.wikipedia.org/wiki/Constructive_proof">构造性证明（Constructive Proof）</a><sup class="footnote-ref" id="fnref:8"><a href="#fn:8">8</a></sup>。</p>
+<p>在定义中放入<code>(same 4)</code>也会得到类似的错误提示。如果套用传统编程语言对类型的定位来理解<code>=</code>类型的话，可能会觉得它有些怪异，因为<code>=</code>类型并不像前面的<code>Nat</code>或<code>Vec</code>类型，它看起来不像是一类值的集合。所以不如换一个角度来看待<code>=</code>类型，可以把它看作一个<strong>陈述或命题</strong>。这样就可以把<code>(= Nat (+ 1 1) 2)</code>读作“<code>(+ 1 1)</code>和<code>2</code>是两个相等的自然数”。这时<code>=</code>类型的值就变成它所代表的那个命题的一个<strong>证明</strong>。那么为什么<code>(same 2)</code>是<code>(= Nat (+ 1 1) 2)</code>的一个证明呢？这是因为我们举证出了一个值<code>2</code>，它既等于<code>(+ 1 1)</code>也等于<code>2</code>。同理，不存在<code>(= Nat 3 4)</code>类型的值也是因为我们没法找到一个可以证明<code>3</code>等于<code>4</code>的证据。像这种通过举证来证明的方法在数学中被叫作<a href="https://en.wikipedia.org/wiki/Constructive_proof">构造式证明（Constructive Proof）</a><sup class="footnote-ref" id="fnref:8"><a href="#fn:8">8</a></sup>。</p>
 
 <h3 id="全称量词">全称量词</h3>
 
-<p>有了这个看待类型的全新角度后，其实我们可以把任意类型都看作一个命题。比如<code>Atom</code>就是一个命题，而任何一个<code>Atom</code>类型的值都是它的证明，只不过这个命题的证明对我们来说没有多大的用处。而让我们感兴趣的是把<code>Π</code>表达式与<code>=</code>类型结合所得到的那一类命题。因为<code>=</code>类型也是依赖类型，所以它是可以放在<code>Π</code>表达式里，此时可以把<code>Π</code>看作全称量词，整个表达式就变成了一个全称命题。比如下面这个声明：</p>
+<p>有了这个看待类型的全新角度后，其实我们可以把任意类型都看作一个命题。比如<code>Atom</code>就是一个命题，而任何一个<code>Atom</code>类型的值都是它的证明，只不过这个命题的证明对我们来说没有多大的用处。而让我们感兴趣的是把<code>Π</code>表达式与<code>=</code>类型结合所得到的一类命题。因为<code>=</code>是依赖类型，所以可以放在<code>Π</code>表达式里，此时<code>Π</code>可以被看作是全称量词，整个表达式就变成了一个全称命题。比如下面这个声明：</p>
 
 <pre><code class="language-pie">(claim 1+=add1
   (Π ((n Nat))
     (= Nat (+ 1 n) (add1 n))))
 </code></pre>
 
-<p>可以把它读作，“对于任意一个自然数<code>n</code>，<code>(+ 1 n)</code>与<code>(add1 n)</code>的值是两个相等的自然数”。这样<code>1+=add1</code>就可以看作是对命题的陈述。那么要如何证明这种全称命题？其实就是实现一个由<code>Π</code>表达式声明的函数，这个函数接受一个<code>Nat</code>类型的参数，返回一个<code>=</code>类型的值。</p>
+<p>可以把<code>1+=add1</code>的类型读作，“对于任意一个自然数<code>n</code>，<code>(+ 1 n)</code>与<code>(add1 n)</code>的值是两个相等的自然数”。这样声明的变量<code>1+=add1</code>代表的就是对命题的陈述。那么要如何证明这种全称命题？其实证明的过程也就是实现由<code>Π</code>表达式声明的函数的过程。</p>
 
 <pre><code class="language-pie">(define 1+=add1
   (λ (n)
@@ -999,7 +1022,7 @@ forAll { (n: Int, d: Int) =&gt;
         (add1 n-1+m)))))
 </code></pre>
 
-<p>可以看出来<code>(+ 1 n)</code>经过两次递归调用<code>rec-Nat</code>后可以简化成<code>(add1 n)</code>，所以应该用<code>(same (add1 n))</code>来替换<code>TODO</code>。其实如果看一下解释器输出的<code>TODO</code>类型提示，已经可以知道<code>same</code>里应该放入<code>(add1 n)</code>：</p>
+<p>可以看出来<code>(+ 1 n)</code>经过一次递归调用<code>rec-Nat</code>后可以简化成<code>(add1 n)</code>，所以应该用<code>(same (add1 n))</code>来替换<code>TODO</code>。其实如果看一下解释器输出的<code>TODO</code>类型提示，已经可以知道<code>same</code>里应该放入<code>(add1 n)</code>：</p>
 
 <pre><code class="language-code">c8.pie:28.4: TODO:
  n : Nat
@@ -1019,7 +1042,7 @@ forAll { (n: Int, d: Int) =&gt;
     (same (add1 n))))
 </code></pre>
 
-<p>这个命题声明中，表达式<code>(+ 1 n)</code>里并不是碰巧把<code>1</code>放在<code>n</code>的前面，故意这么写是为了让命题更容易证明。原因是<code>+</code>函数的定义中是把第一个参数作为了<code>rec-Nat</code>的 target，这样如果<code>1</code>是第一个参数的话，<code>rec-Nat</code>表达式就可以直接简化成<code>(add1 n)</code>。如果反过来把<code>n</code>放在前面写成<code>(+ n 1)</code>的话，<code>(rec-Nat n ...)</code>没办法进一步简化（因为不知道未知参数<code>n</code>是否为零），这样<code>(same (add n))</code>也就不再是这个新命题的证明：
+<p>这个命题声明中，表达式<code>(+ 1 n)</code>里并不是碰巧把<code>1</code>放在<code>n</code>的前面，故意这么写是为了让命题更容易证明。原因是<code>+</code>函数的定义中是把第一个参数作为了<code>rec-Nat</code>的 target，这样把<code>1</code>放在前面就可以使<code>rec-Nat</code>表达式直接简化成<code>(add1 n)</code>。如果反过来把<code>n</code>放在前面写成<code>(+ n 1)</code>的话，<code>(rec-Nat n ...)</code>没办法进一步简化（因为不知道未知参数<code>n</code>是否为零），这样<code>(same (add n))</code>也就不再是这个新命题的证明：
 <img src="/dt/+1=add1.png" alt="+1=add1" /></p>
 
 <p>那么应该怎样来证明这个调换了<code>1</code>和<code>n</code>的位置后所得到的命题呢？前面曾经提过归纳式 eliminator（ind-Nat、ind-List 等）的用法和数学上的归纳式证明非常相似，而对于命题<code>+1=add1</code>我们就要真的用<code>ind-Nat</code>来进行归纳式证明了。对于所有的<code>ind-</code>eliminator 的使用第一步基本都是要写出 motive 函数，这里因为最终要得到是<code>(= Nat (+ n 1) (add1 n))</code>类型的值，如果把<code>n</code>作为<code>ind-Nat</code>的 target 的话，那我们需要的 motive 函数显然就是<code>(λ (k) (= Nat (+ k 1) (add1 k)))</code>，这样 base 的类型就是 motive 的参数<code>k</code>等于<code>0</code>时的返回值，<code>(= Nat (+ 0 1) (add1 0))</code>，简化得到<code>(= Nat 1 1)</code>，所以 base 的值就是<code>(same 1)</code>。包含了 motive 和 base 的定义如下：</p>
@@ -1063,12 +1086,12 @@ forAll { (n: Int, d: Int) =&gt;
     TODO))
 </code></pre>
 
-<p>接下来要解决的问题就是，怎样从类型为<code>(= Nat (+ n-1 1) (add1 n-1))</code>的<code>+1=add1-n-1</code>推导出<code>(= Nat (add1 (+ n-1 1)) (add1 (add1 n-1)))</code>这个命题。观察一下可以发现这两个<code>=</code>类型或者说命题的唯一区别是后边两个相等的表达式分别比前面的两个多了一个<code>add1</code>。所以这相当于在证明如果<code>(= Nat x y)</code>那么<code>(= Nat (add1 x) (add1 y))</code>，从直觉来判断这一定是成立的，如果两个自然数相等，那么各自加一后的两个新的自然数仍然是相等的。那么如何在 Pie 语言里表达这样的等价关系？这里我们要用到的是<code>=</code>类型的其中一个 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._cong%29%29">cong</a>，它是 congruent（一致）这个单词的缩写。</p>
+<p>接下来要解决的问题就是，怎样从类型为<code>(= Nat (+ n-1 1) (add1 n-1))</code>的<code>+1=add1-n-1</code>推导出<code>(= Nat (add1 (+ n-1 1)) (add1 (add1 n-1)))</code>这个命题。观察一下可以发现这两个<code>=</code>类型或者说命题的唯一区别是后边两个相等的表达式分别比前面的两个多了一个<code>add1</code>。所以这相当于在证明如果<code>(= Nat x y)</code>那么<code>(= Nat (add1 x) (add1 y))</code>，从直觉来判断这一定是成立的，如果两个自然数相等，那么各自加一后仍然相等。但是要如何在 Pie 语言里表达这样的等价关系？这里我们要用到的是<code>=</code>类型的其中一个 eliminator，<a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._cong%29%29">cong</a>，它是 congruent（一致）的缩写。</p>
 
-<p><code>cong</code>接受两个参数。第一个的类型为<code>(= X from to)</code>，其中<code>from</code>和<code>to</code>的类型都是<code>X</code>。第二个参数是类型为<code>(-&gt; X Y)</code>的函数<code>func</code>，也就是说这是个把<code>X</code>类型的值变为<code>Y</code>类型的函数，当然<code>X</code>和<code>Y</code>可以相同也可以不同。<code>cong</code>的返回值类型是<code>(= Y (func fromt) (func to))</code>。
+<p><code>cong</code>接受两个参数。第一个的类型为<code>(= X from to)</code>，其中<code>from</code>和<code>to</code>的类型都是<code>X</code>。第二个参数是类型为<code>(-&gt; X Y)</code>的函数<code>fun</code>，也就是说这是个把<code>X</code>类型的值变为<code>Y</code>类型的函数，当然<code>X</code>和<code>Y</code>可以相同也可以不同。<code>cong</code>的返回值类型是<code>(= Y (fun fromt) (fun to))</code>。
 <img src="/dt/cong.png" alt="cong" /></p>
 
-<p>用<code>cong</code>来实现<code>step-+1=add1</code>的话，我们就可以把<code>(= Nat (+ n-1 1) (add1 n-1))</code>类型的<code>+1=add1-n-1</code>作为 target，再把一个给任意自然数加一的函数当作<code>cong</code>的第二个参数，这样最后<code>cong</code>最后的返回值就是我们想要的<code>(= Nat (add1 (+ n-1 1)) (add1 (add1 n-1)))</code>这个命题的证明：</p>
+<p>用<code>cong</code>来实现<code>step-+1=add1</code>的话，我们就可以把<code>(= Nat (+ n-1 1) (add1 n-1))</code>类型的<code>+1=add1-n-1</code>作为 target，再把一个给任意自然数加一的函数当作<code>cong</code>的第二个参数，这样最后<code>cong</code>的返回值就是我们想要的<code>(= Nat (add1 (+ n-1 1)) (add1 (add1 n-1)))</code>这个命题的证明：</p>
 
 <pre><code class="language-pie">(claim step-+1=add1
   (Π ((n-1 Nat))
@@ -1079,7 +1102,7 @@ forAll { (n: Int, d: Int) =&gt;
     (cong +1=add1-n-1 (+ 1))))
 </code></pre>
 
-<p>注意这里我们用到了 Pie 的函数 currying，<code>(+ 1)</code>就是一个把任意自然数加一的函数。这样我们就得到了整个命题的证明：</p>
+<p>请注意这里我们用到了 Pie 的<a href="#柯里化">函数 currying 的特性</a>，<code>(+ 1)</code>就是一个把任意自然数加一的函数。这样我们就完成了对命题的证明：</p>
 
 <pre><code class="language-pie">(claim +1=add1
   (Π ((n Nat))
@@ -1091,6 +1114,20 @@ forAll { (n: Int, d: Int) =&gt;
         (= Nat (+ k 1) (add1 k)))
       (same 1)
       step-+1=add1)))
+</code></pre>
+
+<p>可以看到，在 Pie 语言里对命题的证明就是一个实现类型定义的过程，只要写出了类型系统可以接受的实现，也就完成了对命题的证明。解释器对证明的解释是一个静态的过程，我们并不需要去“运行”写好的定义（不过后面会看到有的证明被运行时也可以提供附加的功能）。</p>
+
+<p>有了这些了解后，我们可以着手解决上节结尾处，关于<code>vec-&gt;list</code>和<code>list-&gt;vec</code>的正确性证明了。首先将命题陈述为，“对于任意一个 List，连续作用于函数<code>list-&gt;vec</code>和<code>vec-&gt;list</code>后得到的结果和它本身相等”。和这个命题等价的类型声明是：</p>
+
+<pre><code class="language-pie">(claim list-&gt;vec-&gt;list=
+  (Π ((E U)
+      (lst (List E)))
+    (= (List E)
+       lst
+       (vec-&gt;list E
+         (length E lst)
+         (list-&gt;vec E lst)))))
 </code></pre>
 <div class="footnotes">
 
@@ -1157,7 +1194,7 @@ forAll { (n: Int, d: Int) =&gt;
         
         
           <a class="next" href="/post/2018-11-06-java-subtyping/">
-            <span class="next-text nav-default">Subtyping 浅析</span>
+            <span class="next-text nav-default">浅析 Subtyping</span>
             <span class="next-text nav-mobile">下一篇</span>
             <i class="iconfont icon-right"></i>
           </a>

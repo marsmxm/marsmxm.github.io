@@ -75,16 +75,16 @@
   </url>
   
   <url>
+    <loc>http://mxm.ink/tags/typed-racket/</loc>
+    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
+    <priority>0</priority>
+  </url>
+  
+  <url>
     <loc>http://mxm.ink/post/2018-11-06-java-subtyping/</loc>
     <lastmod>2018-11-13T01:14:13+08:00</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
-  </url>
-  
-  <url>
-    <loc>http://mxm.ink/tags/typed-racket/</loc>
-    <lastmod>2018-11-13T01:14:13+08:00</lastmod>
-    <priority>0</priority>
   </url>
   
   <url>
