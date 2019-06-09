@@ -61,7 +61,7 @@
 
 <meta itemprop="datePublished" content="2019-04-14T00:56:13&#43;08:00" />
 <meta itemprop="dateModified" content="2019-04-14T00:56:13&#43;08:00" />
-<meta itemprop="wordCount" content="16312">
+<meta itemprop="wordCount" content="21895">
 
 
 
@@ -167,7 +167,9 @@
 <li><a href="#定理证明">定理证明</a>
 <ul>
 <li><a href="#全称量词">全称量词</a></li>
+<li><a href="#存在量词">存在量词</a></li>
 </ul></li>
+<li><a href="#结尾">结尾</a></li>
 </ul></li>
 </ul>
 </nav>
@@ -259,6 +261,7 @@ valToString x val = case x of
 <li>自然数<code>Nat</code>。表示所有大于等于 0 的整数。</li>
 <li>原子<code>Atom</code>。相当于 Lisp 中的 symbol 类型，或者也可以粗略的近似于大部分语言里的字符串。<code>Atom</code>的值由单撇号和一个或多个字母或连字符组成，例如<code>'abc</code>，<code>'---</code>和<code>'Atom</code>。</li>
 <li>函数<code>(-&gt; Type-1 Type-2 ... Type-n)</code>。这里最后的<code>Type-n</code>是函数的返回值类型，其他的<code>Type-1 Type-2 ...</code>是参数类型。</li>
+<li>全集<code>U</code>。因为在 Pie 里所有的类型可以像值一样被计算和传递，所以它们本身也需要一个类型，这个类型就是<code>U</code>。<code>U</code>是除自身外所有类型的类型。</li>
 </ul>
 
 <p>还有一些复合类型会在后面用到的时候再作详细解释。Pie 的每个类型都有对应的 constructor 和 eliminator。前者用来构造该类型的值；后者的用处是<strong>运用该类型的值所包含的信息来得到所需要的新值</strong>，如果把某种类型的值看作一个罐头的话，那它对应的 eliminator 就像一个起子，而且不同构造的罐头需要用到不一样的起子。</p>
@@ -323,7 +326,7 @@ Nat ::= (add1 Nat)
 
 <p>函数<code>pred</code>用到的 eliminator 是 <a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._which-.Nat%29%29">which-Nat</a>。<code>which-Nat</code>的使用方式是<code>(which-Nat target base step)</code>，它的值由<code>target</code>、<code>base</code>和<code>step</code>三个参数决定。如果用<code>X</code>指代<code>which-Nat</code>的返回值类型，那么<code>target</code>的类型是<code>Nat</code>，<code>base</code>的类型是<code>X</code>，而<code>step</code>是一个类型为<code>(-&gt; Nat X)</code>的函数。
 <img src="/dt/which-Nat.png" alt="which-Nat" />
-当<code>target</code>等于<code>0</code>时，<code>base</code>的值即为<code>which-Nat</code>的值；如果<code>target</code>不为<code>0</code>即<code>target</code>可以表示成形如<code>(add1 n-1)</code>的自然数（这里的<code>n-1</code>是一个普通的标识符，不是<code>n</code>减<code>1</code>的表达式），这时<code>which-Nat</code>的值等于<code>step</code>函数作用于<code>n-1</code>（即比<code>target</code>小<code>1</code>的自然数）所得到的值。</p>
+当<code>target</code>等于<code>0</code>时，<code>base</code>的值即为整个<code>which-Nat</code>表达式的值；如果<code>target</code>不为<code>0</code>或者说<code>target</code>可以表示成形如<code>(add1 n-1)</code>的自然数（这里的<code>n-1</code>是一个普通的标识符，不是<code>n</code>减<code>1</code>的表达式），这时<code>which-Nat</code>的值等于<code>step</code>函数作用于<code>n-1</code>（即比<code>target</code>小<code>1</code>的自然数）所得到的值。</p>
 
 <p>在上述函数<code>pred</code>中，<code>which-Nat</code>的<code>target</code>是<code>pred</code>的参数<code>n</code>，<code>base</code>是<code>0</code>，<code>step</code>是函数<code>(λ (n-1) n-1)</code>。所以当<code>n</code>等于<code>0</code>时，<code>which-Nat</code>返回<code>base</code>的值，<code>0</code>；当<code>n</code>大于<code>0</code>或者说<code>n</code>等于<code>(add1 n-1)</code>时，<code>which-Nat</code>返回的就是<code>(step n-1)</code>的值，即参数<code>n-1</code>本身。</p>
 
@@ -333,23 +336,23 @@ Nat ::= (add1 Nat)
 (the Nat 0)
 </code></pre>
 
-<p>如果熟悉所谓的函数式语言，可以看出来<code>which-Nat</code>其实就是这些语言里的 pattern matching（虽然并不完全等同，后边会说到区别在哪）。如果用 Idris 实现<code>pred</code>的话，会是这个样子：</p>
+<p>如果熟悉所谓的函数式语言，可以看出来<code>which-Nat</code>其实就是这些语言里的 pattern matching（虽然并不完全等同，后边会说到区别）。如果用 Idris 实现<code>pred</code>的话，会是这个样子：</p>
 
-<pre><code class="language-Idris">pred : Nat -&gt; Nat
+<pre><code class="language-idris">pred : Nat -&gt; Nat
 pred Z = Z
 pred (S k) = k
 </code></pre>
 
-<p>在 Idris 里，<code>Z</code>和<code>S k</code>分别是<code>Nat</code>类型的两个 constructor，等同于 Pie 里的<code>zero</code>和<code>(add1 n)</code>。后两行的两个 pattern matching 的分支也对应于<code>which-Nat</code>的<code>base</code>和<code>step</code>。前面说到的<code>which-Nat</code>和 pattern matching 的区别指的是，在常规的 pattern matching 中可以对函数递归调用，而 Pie 并不允许用户定义的函数对自身的递归调用，这个限制的目的是为了保证所有的函数都是 <a href="https://en.wikipedia.org/wiki/Partial_function#Total_function"><strong>total</strong></a> 的。举实现自然数加法运算的函数为例，在支持递归调用的语言比如 Idris 中可以这样实现（递归在最后一行）：</p>
+<p>在 Idris 里，<code>Z</code>和<code>S</code>分别是<code>Nat</code>类型的两个 constructor，等同于 Pie 里的<code>zero</code>和<code>add1</code>。后两行的两个 pattern matching 的分支也对应于<code>which-Nat</code>的<code>base</code>和<code>step</code>。前面说到的<code>which-Nat</code>和 pattern matching 的区别指的是，在常规的 pattern matching 中可以对函数递归调用，而 Pie 并不允许用户定义的函数对自身的递归调用，这个限制的目的是为了保证所有的函数都是 <a href="https://en.wikipedia.org/wiki/Partial_function#Total_function"><strong>total</strong></a> 的。举实现自然数加法运算的函数为例，在支持递归调用的语言比如 Idris 中可以这样实现（递归在最后一行）：</p>
 
-<pre><code class="language-Idris">plus : Nat -&gt; Nat -&gt; Nat
+<pre><code class="language-idris">plus : Nat -&gt; Nat -&gt; Nat
 plus Z m = m
 plus (S k) m = S (plus k m)
 </code></pre>
 
 <p>如果 Pie 允许函数的递归调用，完全可以用<code>which-Nat</code>实现同样的逻辑：</p>
 
-<pre><code class="language-Pie">(claim +
+<pre><code class="language-pie">(claim +
   (-&gt; Nat Nat
     Nat))
 (define +
@@ -584,7 +587,7 @@ plus (S k) m = S (plus k m)
       Nat)))
 </code></pre>
 
-<p><code>Pi</code>表达式的第一个列表里可以写多个类型变量<code>(Π ((x X) (y Y) ...) ...)</code>，其中<code>x</code>、<code>y</code>是变量名，<code>X</code>和<code>Y</code>是变量的类型。<code>length</code>的类型声明里只需要一个变量<code>E</code>，它的类型<code>U</code>代表的是<strong>类型的类型</strong>（相当于前面 Idris 程序片段里的<code>Type</code>）。因为 List 类型必须是以 (List 类型) 的形式存在，所以这里<code>E</code>的取值范围必须是类型，即<code>U</code>。如果类比 Java 的泛型，</p>
+<p><code>Pi</code>表达式的第一个列表里可以写多个类型变量<code>(Π ((x X) (y Y) ...) ...)</code>，其中<code>x</code>、<code>y</code>是变量名，<code>X</code>和<code>Y</code>是变量的类型。<code>length</code>的类型声明里只需要一个变量<code>E</code>，因为<code>E</code>是 List 里元素的类型，所以<code>E</code>的类型是<code>U</code>。如果类比 Java 的泛型，</p>
 
 <pre><code class="language-java">&lt;E&gt; int length(List&lt;E&gt; lst) {...}
 </code></pre>
@@ -618,7 +621,7 @@ plus (S k) m = S (plus k m)
         (add1 length-es)))))
 </code></pre>
 
-<p><code>Π</code>和箭头表达式组合在一起声明了一个接受两个参数返回一个<code>Nat</code>的函数，定义中对应的两个参数一个是类型为任意类型<code>U</code>的参数<code>E</code>，另一个是类型为<code>(List E)</code>的参数<code>lst</code>。函数体中只用到了第二个参数<code>lst</code>，把它作为<code>target</code>传给<code>rec-List</code>表达式。当<code>lst</code>为<code>nil</code>时长度为<code>0</code>；若<code>lst</code>可以表示为<code>(:: e es)</code>形式的非空 List，则<code>step</code>函数的第三个参数是把<code>es</code>作为新的<code>target</code>的递归<code>rec-List</code>表达式，<code>(rec-List es 0 step)</code>的值，因为这个值其实就是<code>es</code>的长度，所以起名叫<code>length-es</code>。又因为<code>es</code>比<code>lst</code>少一个元素<code>e</code>，所以<code>lst</code>长度等于<code>es</code>的长度加一，即<code>(add1 length-es)</code>。</p>
+<p><code>Π</code>和箭头表达式组合在一起声明了一个接受两个参数返回一个<code>Nat</code>的函数，定义中对应的两个参数一个是类型为<code>U</code>的参数<code>E</code>，另一个是类型为<code>(List E)</code>的参数<code>lst</code>。函数体中只用到了第二个参数<code>lst</code>，把它作为<code>target</code>传给<code>rec-List</code>表达式。当<code>lst</code>为<code>nil</code>时长度为<code>0</code>；若<code>lst</code>可以表示为<code>(:: e es)</code>形式的非空 List，则<code>step</code>函数的第三个参数是表达式<code>(rec-List es 0 step)</code>的值，因为这个值其实就是<code>es</code>的长度，所以起名叫<code>length-es</code>。又因为<code>es</code>比<code>lst</code>少一个元素<code>e</code>，所以<code>lst</code>长度等于<code>es</code>的长度加一，即<code>(add1 length-es)</code>。</p>
 
 <p>有了<code>length</code>就可以得到任意 List 的长度了：</p>
 
@@ -696,7 +699,7 @@ plus (S k) m = S (plus k m)
      (length Atom existentialists)))
 </code></pre>
 
-<p>这里我们通过<code>append</code>函数应有的一个属性—— append 后得到的 List 的长度等于两个参数 List 长度的和——来检验函数的正确性。<code>check-same</code>表达式的使用方式是<code>(check-same type expr1 expr2)</code>，如果<code>expr1</code>和<code>expr2</code>不是<code>type</code>类型的相等的两个值，解释器会“静态”地指出这个错误：
+<p>这里我们通过<code>append</code>函数应有的一个属性—— append 后得到的 List 的长度等于两个参数 List 长度的和——来检验函数的正确性。<code>check-same</code>表达式的使用方式是<code>(check-same type expr1 expr2)</code>，如果<code>expr1</code>和<code>expr2</code>不是两个相等的<code>type</code>类型的值，解释器会“静态”地指出这个错误：
 <img src="/dt/check-same.png" alt="check-same" /></p>
 
 <p>下面要介绍的这个新类型可以说是有长度属性的 List，和这个新类型相关的函数都可以借助参数和返回值的类型来自动实现类似于上面程序片段中的对于长度属性的检查。</p>
@@ -731,7 +734,7 @@ plus (S k) m = S (plus k m)
 
 <p>因为类型<code>E</code>和次数<code>count</code>在后面的类型声明中都会用到，所以被放在了<code>Π</code>表达式的参数列表里。表达式<code>(-&gt; E (Vec E count))</code>指的是一个接受一个类型为<code>E</code>的值作为参数，返回一个<code>(Vec E count)</code>的函数。假设我们用已有的<code>rec-Nat</code>来实现的话，大概会这样写：</p>
 
-<pre><code class="language-pie">;; initial try, won't work
+<pre><code class="language-pie">;; 一次失败的尝试😢
 (define repeat
   (λ (E count)
     (λ (e)
@@ -741,13 +744,13 @@ plus (S k) m = S (plus k m)
           (vec:: e repeat-c-1))))))
 </code></pre>
 
-<p>但是问题出在<code>rec-Nat</code>要求<code>base</code>、<code>step</code>以及整个<code>rec-Nat</code>表达式的值的类型必须一致，在上述定义中，<code>repeat</code>的声明类型即整个<code>rec-Nat</code>表达式的类型是<code>(Vec E count)</code>；<code>base</code>是类型为<code>(Vec E 0)</code>的<code>vecnil</code>；而<code>step</code>每次递归调用所返回的类型都不一样，在<code>target</code>从<code>1</code>到<code>count</code>变化的过程中，返回值也从<code>(Vec E 1)</code>变到<code>(Vec E count)</code>。所以解释器不会接受这个函数定义。</p>
+<p>但是问题是<code>rec-Nat</code>要求<code>base</code>、<code>step</code>以及整个<code>rec-Nat</code>表达式的值的类型必须一致，在上述定义中，<code>repeat</code>的声明类型即整个<code>rec-Nat</code>表达式的类型是<code>(Vec E count)</code>；<code>base</code>是类型为<code>(Vec E 0)</code>的<code>vecnil</code>；而<code>step</code>每次递归调用所返回的类型都不一样，在<code>target</code>从<code>1</code>到<code>count</code>变化的过程中，返回值也从<code>(Vec E 1)</code>变到<code>(Vec E count)</code>。所以解释器不会接受这个函数定义。</p>
 
 <h4 id="更强大的归纳式-eliminator">更强大的归纳式 eliminator</h4>
 
 <p>像 Vec 这样接受参数的类型在类型理论里被叫做 type family，随着传入的参数的不同，得到的类型也在变化。所以上例中的<code>(Vec E 0)</code>、<code>(Vec E 1)</code>…… 在类型系统看来都是不同的类型。而类似于<code>E</code>这样不变的参数被称作 <strong>parameter</strong>，像<code>0</code>、<code>1</code>…… 这样变化着的参数被叫做 <strong>index</strong> <sup class="footnote-ref" id="fnref:6"><a href="#fn:6">6</a></sup>。在 Pie 语言里处理包含不同 index 的一类类型时，需要用到的一类 eliminator 都以 ind- 开头（ind 是 inductive 的缩写）。在<code>repeat</code>函数中，因为 target 是<code>Nat</code>类型的，所以用到的 eliminator 是 <a href="https://docs.racket-lang.org/pie/index.html#%28def._%28%28lib._pie%2Fmain..rkt%29._ind-.Nat%29%29">ind-Nat</a>。<code>ind-Nat</code>除了接受和<code>rec-Nat</code>类似的<code>target</code>、<code>base</code>和<code>step</code>三个参数外，还需要一个额外的参数<code>motive</code><sup class="footnote-ref" id="fnref:7"><a href="#fn:7">7</a></sup>。
 <img src="/dt/ind-Nat.png" alt="ind-Nat" />
-<code>motive</code>的类型是<code>(-&gt; Nat U)</code>，它根据传入的自然数参数返回一个对应的<strong>类型</strong>。在<code>ind-Nat</code>中，<code>target</code>的类型仍然为<code>Nat</code>；<code>base</code>的类型变成了<code>(motive zero)</code>，也就是传入的函数<code>motive</code>作用于自然数<code>zero</code>时返回的类型；整个<code>ind-Nat</code>表达式的值的类型是<code>(motive target)</code>；而<code>step</code>的类型要更复杂一些：</p>
+<code>motive</code>的类型是<code>(-&gt; Nat U)</code>，它根据传入的自然数参数返回一个对应的<strong>类型</strong>。在<code>ind-Nat</code>中，<code>target</code>的类型仍然为<code>Nat</code>；<code>base</code>的类型变成了<code>(motive zero)</code>，也就是函数<code>motive</code>作用于自然数<code>zero</code>时返回的类型；整个<code>ind-Nat</code>表达式的值的类型是<code>(motive target)</code>；而<code>step</code>的类型要更复杂一些：</p>
 
 <pre><code class="language-pie">(Π ((n Nat))
   (-&gt; (motive n)
@@ -864,7 +867,7 @@ plus (S k) m = S (plus k m)
     (Vec E (length E lst))))
 </code></pre>
 
-<p>首先<code>list-&gt;vec</code>需要一个<code>(List E)</code>类型的参数，所以在这个参数之前要有一个类型为<code>U</code>的类型变量<code>E</code>，另外返回值类型中也会用到 List 类型的参数，这样就把<code>lst</code>参数也作为类型变量放到<code>Π</code>表达式的括号内。返回值类型中包含的表达式<code>(length E lst)</code>是用来表达转换前后长度相同的语义，这里的<code>length</code>是上文中实现的返回 List 长度的函数。下面是函数<code>list-&gt;vec</code>的实现：</p>
+<p>首先<code>list-&gt;vec</code>需要一个<code>(List E)</code>类型的参数，所以在这个参数之前要有一个类型为<code>U</code>的变量<code>E</code>，另外返回值类型中也会用到 List 类型的参数，这样就把<code>lst</code>参数也作为类型变量放到<code>Π</code>表达式的括号内。返回值类型中包含的表达式<code>(length E lst)</code>是用来表达转换前后长度相同的语义，这里的<code>length</code>是上文中实现的计算 List 长度的函数。下面是函数<code>list-&gt;vec</code>的实现：</p>
 
 <pre><code class="language-pie">(define list-&gt;vec
   (λ (E lst)
@@ -879,9 +882,9 @@ plus (S k) m = S (plus k m)
 <p>和使用<code>ind-Nat</code>时运用的归纳式思想一样，在使用<code>ind-List</code>的时候需要，</p>
 
 <ol>
-<li>通过<code>motive</code>告诉解释器任意一个 List 对应的表达式值的类型，这里任意 List 类型的值<code>xs</code>都对应一个元素类型相同，长度也相等的 Vec；</li>
-<li>通过<code>base</code>参数指出当<code>target</code>等于<code>nil</code>时表达式的值，<code>nil</code>的长度为<code>0</code>，所以对应的 Vec 就是<code>vecnil</code>；</li>
-<li>通过<code>step</code>函数告诉解释器，当<code>target</code>等于<code>(:: e es)</code>时如何从<code>es</code>对应的结果，也就是<code>es</code>所转换成为的<code>list-&gt;vec-es</code>，来得到<code>(:: e es)</code>所要转换成为的那个 Vec，可以很容易的知道那就是<code>(vec:: e list-&gt;vec-es)</code>。</li>
+<li>通过<code>motive</code>定义如何从<code>(List E)</code>得到所需的类型，这里<code>motive</code>的参数<code>xs</code>对应一个元素类型为<code>E</code>，长度与<code>xs</code>相等的 Vec；</li>
+<li>通过<code>base</code>参数指出当<code>target</code>等于<code>nil</code>时整个<code>ind-List</code>表达式的值，<code>nil</code>的长度为<code>0</code>，所以对应的 Vec 就是<code>vecnil</code>；</li>
+<li>通过<code>step</code>函数告诉解释器，当<code>target</code>等于<code>(:: e es)</code>时如何从<code>es</code>对应的结果，也就是<code>es</code>所转换成为的<code>list-&gt;vec-es</code>，来得到<code>(:: e es)</code>所要转换成为的那个 Vec，可以很容易的知道就是<code>(vec:: e list-&gt;vec-es)</code>。</li>
 </ol>
 
 <p>这样最终得到的就是一个可以把任意 List 转换成等价的 Vec 的函数。</p>
@@ -916,7 +919,7 @@ plus (S k) m = S (plus k m)
       (vec:: 'Descartes vecnil))))
 </code></pre>
 
-<p>那么怎样才能检测出这一类的错误呢？一个可行的办法是，我们可以写出<code>list-&gt;vec</code>的“逆运算”<code>vec-&gt;list</code>，这样就可以让这俩个函数互相检验对方的正确性。<code>vec-&gt;list</code>的声明部分写作：</p>
+<p>类型系统没能检测出这个错误，程序运行的结果也不是预期的。那么怎样才能检测出这类错误呢？一个可行的办法是，我们可以写出<code>list-&gt;vec</code>的“逆运算”<code>vec-&gt;list</code>，继而就可以让这俩个函数互相检验对方的正确性。<code>vec-&gt;list</code>的声明部分写作：</p>
 
 <pre><code class="language-pie">(claim vec-&gt;list
   (Π ((E U)
@@ -953,7 +956,7 @@ plus (S k) m = S (plus k m)
     (list-&gt;vec Atom  philosophers)))
 </code></pre>
 
-<p>不过这也只能验证对于<code>philosophers</code>来说，<code>list-&gt;vec</code>和<code>vec-list</code>两个函数是正确的。我们并不能从此得到足够的信心认为这两个函数对于任何 List 或 Vec 都是正确的。这其实也是大多数语言中的单元测试所处的窘境，它们只能检验出某些错误的“存在”但是却没办法保证这类错误在任何情况下都“不存在”。有的测试工具也提供了一些方法来应对这个局限性，比如 <a href="http://www.scalatest.org/">ScalaTest</a> 所提供的<a href="http://www.scalatest.org/user_guide/property_based_testing">基于属性的测试</a>方法，指的是用一个函数来表达测试对象应该包含的目标属性，然后结合内置的 generator 来模拟对测试对象在整个作用域内的测试。下面就是对一个分数实现类<code>Fraction</code>在整个作用域（所有可能的被除数、除数对）内的一个测试：</p>
+<p>不过这也只能验证对于<code>philosophers</code>来说，<code>list-&gt;vec</code>和<code>vec-list</code>两个函数是正确的。这个测试并不能保证这两个函数对于任何 List 或 Vec 都是正确的。这其实也是大多数语言中的单元测试所处的窘境，它们只能检验出某些错误的“存在”但是却没办法保证这类错误在任何情况下都“不存在”。有的测试工具也提供了一些方法来应对这个局限性，比如 <a href="http://www.scalatest.org/">ScalaTest</a> 所提供的<a href="http://www.scalatest.org/user_guide/property_based_testing">基于属性的测试</a>方法，指的是用一个函数来表达测试对象应该包含的目标属性，然后结合内置的 generator 来模拟对测试对象在整个作用域内的测试。下面就是对一个分数实现类<code>Fraction</code>在整个作用域（所有可能的被除数、除数对）内的一个测试：</p>
 
 <pre><code class="language-scala">class Fraction(n: Int, d: Int) {
   require(d != 0)
@@ -994,7 +997,7 @@ forAll { (n: Int, d: Int) =&gt;
 
 <p><img src="/dt/3=4.png" alt="3=4" /></p>
 
-<p>在定义中放入<code>(same 4)</code>也会得到类似的错误提示。如果套用传统编程语言对类型的定位来理解<code>=</code>类型的话，可能会觉得它有些怪异，因为<code>=</code>类型并不像前面的<code>Nat</code>或<code>Vec</code>类型，它看起来不像是一类值的集合。所以不如换一个角度来看待<code>=</code>类型，可以把它看作一个<strong>陈述或命题</strong>。这样就可以把<code>(= Nat (+ 1 1) 2)</code>读作“<code>(+ 1 1)</code>和<code>2</code>是两个相等的自然数”。这时<code>=</code>类型的值就变成它所代表的那个命题的一个<strong>证明</strong>。那么为什么<code>(same 2)</code>是<code>(= Nat (+ 1 1) 2)</code>的一个证明呢？这是因为我们举证出了一个值<code>2</code>，它既等于<code>(+ 1 1)</code>也等于<code>2</code>。同理，不存在<code>(= Nat 3 4)</code>类型的值也是因为我们没法找到一个可以证明<code>3</code>等于<code>4</code>的证据。像这种通过举证来证明的方法在数学中被叫作<a href="https://en.wikipedia.org/wiki/Constructive_proof">构造式证明（Constructive Proof）</a><sup class="footnote-ref" id="fnref:8"><a href="#fn:8">8</a></sup>。</p>
+<p>在定义中放入<code>(same 4)</code>也会得到类似的错误提示。如果套用传统编程语言对类型的定位来理解<code>=</code>类型的话，可能会觉得它有些怪异，因为<code>=</code>类型并不像前面的<code>Nat</code>或<code>Vec</code>类型，它看起来不像是一类值的集合。所以不如换一个角度来看待<code>=</code>类型，可以把它看作一个<strong>陈述或命题</strong>。这样就可以把<code>(= Nat (+ 1 1) 2)</code>读作“<code>(+ 1 1)</code>和<code>2</code>是两个相等的自然数”。这时<code>=</code>类型的<strong>值</strong>就变成它所代表的那个命题的一个<strong>证明</strong>。那么为什么<code>(same 2)</code>是<code>(= Nat (+ 1 1) 2)</code>的一个证明呢？这是因为我们举证出了一个值<code>2</code>，它既等于<code>(+ 1 1)</code>也等于<code>2</code>。同理，不存在<code>(= Nat 3 4)</code>类型的值也是因为我们没法找到一个可以证明<code>3</code>等于<code>4</code>的证据。像这种通过举证来证明的方法在数学中被叫作<a href="https://en.wikipedia.org/wiki/Constructive_proof">构造式证明（Constructive Proof）</a><sup class="footnote-ref" id="fnref:8"><a href="#fn:8">8</a></sup>。</p>
 
 <h3 id="全称量词">全称量词</h3>
 
@@ -1073,7 +1076,7 @@ forAll { (n: Int, d: Int) =&gt;
     (= Nat (+ (add1 n-1) 1) (add1 (add1 n-1)))))
 </code></pre>
 
-<p>如果从求值的角度来看，step 的类型是说接受两个类型为<code>Nat</code>和<code>=</code>的参数得到另一个<code>=</code>类型的的值。不过我们还可以继续从定理证明的角度来解释这个类型，这时可以把<code>-&gt;</code>类型看作是一个“如果&hellip;那么&hellip;”的陈述句。这样整个类型就可以读作，“对于任意自然数 n-1，如果 (+ n-1 1) 等于 (add1 n-1)，那么 (+ (add1 n-1) 1) 也等于 (add1 (add1 n-1))”，这其实就是数学上的归纳证明，所以对 step 函数的实现也是在完成归纳证明的第二步：从假设推导出要证明的结论。</p>
+<p>如果从求值的角度来看，step 的类型是说接受两个类型为<code>Nat</code>和<code>=</code>的参数得到另一个<code>=</code>类型的的值。不过我们还可以继续从定理证明的角度来解释这个类型，这时可以把<code>-&gt;</code>类型看作是一个“如果&hellip;那么&hellip;”的陈述句。这样整个类型就可以读作，“对于任意自然数<code>n-1</code>，如果<code>(+ n-1 1)</code>等于<code>(add1 n-1)</code>，那么<code>(+ (add1 n-1) 1)</code>也等于<code>(add1 (add1 n-1))</code>”，这其实就是数学上的归纳证明，所以对 step 函数的实现也是在完成归纳证明的第二步：从假设推导出要证明的结论。</p>
 
 <p>另外要说的一点是返回值类型中的<code>(+ (add1 n-1) 1)</code>这一部分其实还可以进一步简化：根据<code>+</code>函数的定义可以把<code>add1</code>拿到最外层，变成<code>(add1 (+ n-1 1))</code>。为了更容易得实现 step，我们把它作为一个独立的函数来定义（返回值类型变成前述简化后的形式）：</p>
 
@@ -1116,9 +1119,9 @@ forAll { (n: Int, d: Int) =&gt;
       step-+1=add1)))
 </code></pre>
 
-<p>可以看到，在 Pie 语言里对命题的证明就是一个实现类型定义的过程，只要写出了类型系统可以接受的实现，也就完成了对命题的证明。解释器对证明的解释是一个静态的过程，我们并不需要去“运行”写好的定义（不过后面会看到有的证明被运行时也可以提供附加的功能）。</p>
+<p>可以看到，在 Pie 语言里对命题的证明就是一个实现类型定义的过程，只要写出了类型系统可以接受的实现，也就完成了对命题的证明。解释器对证明的解释是一个静态的过程，我们并不需要去“运行”写好的定义。</p>
 
-<p>有了这些了解后，我们可以着手解决上节结尾处，关于<code>vec-&gt;list</code>和<code>list-&gt;vec</code>的正确性证明了。首先将命题陈述为，“对于任意一个 List，连续作用于函数<code>list-&gt;vec</code>和<code>vec-&gt;list</code>后得到的结果和它本身相等”。和这个命题等价的类型声明是：</p>
+<p>有了这些了解后，我们可以着手解决上节结尾处留下来的关于<code>vec-&gt;list</code>和<code>list-&gt;vec</code>的正确性证明了。这个命题可以陈述为，“对于任意一个 List，连续应用函数<code>list-&gt;vec</code>和<code>vec-&gt;list</code>后得到的结果和它本身相等”。和这个命题等价的类型声明是：</p>
 
 <pre><code class="language-pie">(claim list-&gt;vec-&gt;list=
   (Π ((E U)
@@ -1129,6 +1132,358 @@ forAll { (n: Int, d: Int) =&gt;
          (length E lst)
          (list-&gt;vec E lst)))))
 </code></pre>
+
+<p>前面证明<code>+1=add1</code>的时候，因为是关于自然数的定理，所以用的是<code>ind-Nat</code>。现在要证明的是一个关于 List 的命题，自然会选择<code>ind-List</code>作为入手点。因为<code>lst</code>参数应该作为 target，这样只需要把返回值类型中的<code>lst</code>都替换成 motive 函数的参数<code>xs</code>就可以得到 motive 的定义：</p>
+
+<pre><code class="language-pie">(λ (xs)
+  (= (List E)
+    xs
+    (vec-&gt;list E
+      (length E xs)
+      (list-&gt;vec E xs))))
+</code></pre>
+
+<p>继而可以知道 base 的类型，即<code>(motive nil)</code>的值是：</p>
+
+<pre><code class="language-pie">(= (List E)
+  nil
+  (vec-&gt;list E
+    (length E nil)
+    (list-&gt;vec E nil)))
+</code></pre>
+
+<p>这个表达式可以简化成<code>(= (List E) nil nil)</code>。所以应该用<code>(same nil)</code>作为 base 的值。有了 motive 和 base 之后<code>list-&gt;vec-&gt;list=</code>的定义如下：</p>
+
+<pre><code class="language-pie">(claim list-&gt;vec-&gt;list=
+  (Π ((E U)
+      (lst (List E)))
+    (= (List E)
+       lst
+       (vec-&gt;list E
+         (length E lst)
+         (list-&gt;vec E lst)))))
+(define list-&gt;vec-&gt;list=
+  (λ (E lst)
+    (ind-List lst
+      (λ (xs)
+        (= (List E)
+          xs
+          (vec-&gt;list E
+            (length E xs)
+            (list-&gt;vec E xs))))
+      (same nil)
+      TODO)))
+</code></pre>
+
+<p>接下来需要确定 step 函数的类型及定义。<code>ind-List</code>的 step 参数类型是：</p>
+
+<pre><code class="language-pie">(Π ((e E)
+    (es (List E)))
+  (-&gt; (motive es)
+    (motive (:: e es))))
+</code></pre>
+
+<p>把<code>motive</code>替换成我们写好的定义后得到的类型是：</p>
+
+<pre><code class="language-pie">(Π ((e E)
+    (es (List E)))
+  (-&gt; (= (List E)
+        es
+        (vec-&gt;list E
+          (length E es)
+          (list-&gt;vec E es)))
+    (= (List E)
+      (:: e es)
+      (vec-&gt;list E
+        (length E (:: e es))
+        (list-&gt;vec E (:: e es))))))
+</code></pre>
+
+<p>这个类型乍看起来比较复杂，直接证明的话可能会觉得无从下手。我们可以试着简化一下最后的返回值类型。根据<code>length</code>函数的定义，可以知道<code>(length E (:: e es))</code>其实等于<code>(add1 (length E es))</code>；同样的，<code>(list-&gt;vec E (:: e es))</code>表达式也可以简化成<code>(vec:: e (list-&gt;vec E es))</code>。这样转换后的返回值类型就变成了：</p>
+
+<pre><code class="language-pie">(= (List E)
+  (:: e es)
+  (vec-&gt;list E
+    (add1 (length E es))
+    (vec:: e (list-&gt;vec E es))))
+</code></pre>
+
+<p>最后再根据<code>vec-&gt;list</code>的定义，把这个类型进一步简化成：</p>
+
+<pre><code class="language-pie">(= (List E)
+  (:: e es)
+  (:: e
+    (vec-&gt;list E
+      (length E es)
+      (list-&gt;vec E es))))
+</code></pre>
+
+<p>把这个结果带回 step 的类型中，就得到了简化后的 step 类型：</p>
+
+<pre><code class="language-pie">(Π ((e E)
+    (es (List E)))
+  (-&gt; (= (List E)
+        es
+        (vec-&gt;list E
+          (length E es)
+          (list-&gt;vec E es)))
+    (= (List E)
+      (:: e es)
+      (:: e
+        (vec-&gt;list E
+          (length E es)
+          (list-&gt;vec E es))))))
+</code></pre>
+
+<p>现在从假设（<code>-&gt;</code>的参数）到结论（<code>-&gt;</code>的返回值）的途径变得更明显了：分别把元素<code>e</code>加到假设中的<code>es</code>和<code>(vec-list ...)</code>表达式的前面。所以仍然可以借助<code>cong</code>来写出 step 的定义：</p>
+
+<pre><code class="language-pie">(λ (e es =-es)
+  (cong =-es
+    (λ (xs) (:: e xs))))
+</code></pre>
+
+<p>这里<code>=-es</code>参数代表的是类型中<code>-&gt;</code>的参数，即对于<code>es</code>来说，等式成立的假设；<code>(λ (xs) (:: e xs))</code>是一个把<code>e</code>加到任意 List 前面的匿名函数，它会被用来把<code>e</code>分别加到<code>=-es</code>中的 from 和 to 之前。不过把这个 step 的定义放回<code>list-&gt;vec-&gt;list=</code>的定义中后，解释器却无法确定<code>(λ (xs) (:: e xs))</code>的类型：
+<img src="/dt/list-vec-error.png" alt="list-vec-error" /></p>
+
+<p>所以我们需要用<code>the</code>表达式来加入一个类型提示：</p>
+
+<pre><code class="language-pie">(λ (e es =-es)
+  (cong =-es
+    (the (-&gt; (List E) (List E))
+      (λ (xs) (:: e xs)))))
+</code></pre>
+
+<p>这样我们就写出了完整的对于<code>list-&gt;vec-&gt;list=</code>命题的证明：</p>
+
+<pre><code class="language-pie">(claim list-&gt;vec-&gt;list=
+  (Π ((E U)
+      (es (List E)))
+    (= (List E)
+       es
+       (vec-&gt;list E
+         (length E es)
+         (list-&gt;vec E es)))))
+(define list-&gt;vec-&gt;list=
+  (λ (E lst)
+    (ind-List lst
+      (λ (xs)
+        (= (List E)
+          xs
+          (vec-&gt;list E
+            (length E xs)
+            (list-&gt;vec E xs))))
+      (same nil)
+      (λ (e es =-es)
+        (cong =-es
+          (the (-&gt; (List E) (List E))
+            (λ (xs) (:: e xs))))))))
+</code></pre>
+
+<p>因为类型系统接受了这个定义，也就意味着“对于任意一个 List，连续应用<code>list-&gt;vec</code>和<code>vec-&gt;list</code>后值不变”这个定理是成立的。这样我们也就基本能够确定函数<code>list-&gt;vec</code>和<code>vec-&gt;list</code>的定义是正确的。为了进一步说明，我们可以试着把<code>list-&gt;vec-&gt;list=</code>的声明和定义·中的<code>list-&gt;vec</code>换成上节里的<code>list-&gt;vec-wrong</code>，看看解释器会给出什么样的回应：
+<img src="/dt/list-vec-wrong.png" alt="list-vec-wrong" /></p>
+
+<p>类型系统不再接受这个证明了，虽然错误消息比较抽象，但至少能看出来如果函数定义错误的话，类型系统就会拒绝我们对定理的证明。</p>
+
+<h3 id="存在量词">存在量词</h3>
+
+<p>上节说了如果把类型看作定理的话，<code>Π</code>就相当于全称量词。那么谓词逻辑中的存在量词在 Pie 的类型中是如何表达的呢。先介绍一个新的类型<code>Pair</code>。从名字就可以看出来，一个<code>Pair</code>类型的值由两个值组成，这两个值的类型可以相同也可以不同。<code>Pair</code>类型可以写作<code>(Pair A D)</code>，其中<code>A</code>是第一个元素的类型，<code>D</code>则是第二个的类型。构造一个<code>Pair</code>用到的 constructor 是<code>cons</code>:</p>
+
+<pre><code class="language-pie">(claim a-pair
+  (Pair Nat Atom))
+(define a-pair
+  (cons 5 'men))
+</code></pre>
+
+<p>另外<code>Pair</code>有两个 eliminator，<code>car</code>和<code>cdr</code>，可以分别用来得到第一个和第二个元素：</p>
+
+<pre><code class="language-pie">&gt; a-pair
+(the (Pair Nat Atom)
+  (cons 5 'men))
+
+&gt; (car a-pair)
+(the Nat 5)
+
+&gt; (cdr a-pair)
+(the Atom 'men)
+</code></pre>
+
+<p>就像<code>Π</code>表达式是<code>-&gt;</code>类型的一个更一般的表现形式一样，<code>Pair</code>也有一个更通用的类型表达式<code>Sigma</code>，也可以简写成希腊字母<code>Σ</code><sup class="footnote-ref" id="fnref:9"><a href="#fn:9">9</a></sup>。<code>Σ</code>类型表达式的用法是<code>(Σ ((x A1) (y A2) ...) D)</code>，其中<code>x</code>和<code>y</code>是两个变量，可以出现在类型<code>D</code>中。当<code>Σ</code>和<code>=</code>类型一起使用时，我们就可以把<code>Σ</code>看作是存在量词。例如这个类型：</p>
+
+<pre><code class="language-pie">(Σ ((name Atom))
+  (= Atom name 'Jack))
+</code></pre>
+
+<p>可以把它读作，“存在一个<code>Atom</code>类型的值<code>name</code>，它的值等于<code>'Jack</code>”。这个命题的证明也很简单，和<code>'Jack</code>相等的<code>Atom</code>值也只有<code>'Jack</code>：</p>
+
+<pre><code class="language-pie">(cons 'Jack (same 'Jack))
+</code></pre>
+
+<p>里面的<code>same</code>是用来构造<code>=</code>类型的值，<code>cons</code>是用来构造<code>Σ</code>表达式所声明的<code>Pair</code>类型的值，这个值也是这个存在命题的证明。</p>
+
+<p>有了存在量词<code>Σ</code>，我们可以用它来表达更多有意思的命题了，比如可以用定理来表示某个自然数是否是偶数。回想一下数学书上对偶数的定义：能被 2 整除的数叫做偶数。如果直接套用这个定义的话我们首先需要实现一个针对自然数的除法函数，不过也可以换个思路，能被 2 整除也意味着这个自然数等于另一个数与 2 的乘积，如果把乘法换成加法的话，就是另一个数与自身的和。所以这个偶数命题可以表达为，“如果自然数 n 是偶数，那么存在另一个数 m 使得 n 等于 m + m”。这样“0 是偶数”就可以用类型写成：</p>
+
+<pre><code class="language-pie">(Σ ((m Nat))
+  (= Nat 0 (+ m m)))
+</code></pre>
+
+<p>我们可以进一步把类型中的<code>0</code>抽象成一个函数参数，来得到一个生成“某个自然数是偶数”这个定理的函数：</p>
+
+<pre><code class="language-pie">(claim Even
+  (-&gt; Nat U))
+(define Even
+  (λ (n)
+    (Σ ((half Nat))
+      (= Nat n (+ half half)))))
+</code></pre>
+
+<p>因为<code>Even</code>接受一个自然数类型的参数<code>n</code>，返回一个关于<code>n</code>的定理（<code>n</code>是偶数），而定理即类型，所以<code>Even</code>也是一个生成类型的函数，这就需要在声明中把返回值类型写作<code>U</code>，而在函数定义中才返回一个<code>Σ</code>表达式。现在就可以把“0 是偶数”这个命题声明为：</p>
+
+<pre><code class="language-pie">(claim zero-is-even
+  (Even 0))
+</code></pre>
+
+<p>证明<code>zero-is-even</code>这个命题就是去构造一个<code>(Σ ((half Nat)) (= Nat 0 (+ half half)))</code>类型的值。因为<code>0</code>的一半还是<code>0</code>，所以它的证明是：</p>
+
+<pre><code class="language-pie">(claim zero-is-even
+  (Even 0))
+(define zero-is-even
+  (cons 0 (same 0)))
+</code></pre>
+
+<p>同理，“10 是偶数”这个命题的证明可以写作：</p>
+
+<pre><code class="language-pie">(claim ten-is-even
+  (Even 10))
+(define ten-is-even
+  (cons 5 (same 10)))
+</code></pre>
+
+<p>我们还知道把任意一个偶数加 2 得到的仍然是偶数，那么如何证明这个定理呢？先写出它的类型声明：</p>
+
+<pre><code class="language-pie">(claim +two-even
+  (Π ((n Nat))
+    (-&gt; (Even n)
+      (Even (+ 2 n)))))
+</code></pre>
+
+<p>要证明这个命题，就得想办法从<code>(Even n)</code>类型也就是<code>(Σ ((half Nat)) (= Nat n (+ half half)))</code>类型的值得到<code>(Even (+ 2 n))</code>类型即<code>(Σ ((new-half Nat)) (= Nat (+ 2 n) (+ new-half new-half)))</code>类型的值。这两个类型里的<code>half</code>和<code>new-half</code>是有一定关联性的，想一下会发现<code>new-half</code>其实等于<code>(add1 half)</code>，因为偶数加 2 后的一半比原来的一半大一。所以返回值的<code>cdr</code>部分的等式可以进一步写成<code>(= Nat (+ 2 n) (+ (add1 half) (add1 half)))</code>。下面是证明的开头部分：</p>
+
+<pre><code class="language-pie">(define +two-even
+  (λ (n)
+    (λ (even-n)                 ; (Σ ((half Nat)) (= Nat n (+ half half)))
+      (cons (add1 (car even-n)) ; (car even-n) 就是 (Even n) 中的 half
+        TODO))))                ; (= Nat (+ 2 n) (+ (add1 half) (add1 half)))
+</code></pre>
+
+<p>如果对比一下<code>(cdr even-n)</code>的类型<code>(= Nat n (+ half half))</code>和<code>TODO</code>的类型<code>(= Nat (+ 2 n) (+ (add1 half) (add1 half))</code>，会发现其实后者其实就是把前者的两个加数分别加 2 后得到的（两个<code>(add1 half)</code>相加相当于把<code>(+ half half)</code>整个加 2）。这样看起我们可以用<code>cong</code>从<code>(cdr even-n)</code>来得到期望的类型的值：</p>
+
+<pre><code class="language-pie">(define +two-even
+  (λ (n)
+    (λ (even-n)
+      (cons (add1 (car even-n)) 
+        (cong (cdr even-n) (+ 2)))))) ; 错误：类型不匹配
+</code></pre>
+
+<p>但是实际运行的结果是解释器在最后一行报出类型不匹配的错误：
+<img src="/dt/plus2even.png" alt="plus2even" />
+我们用<code>cong</code>做的尝试还是失败了，上面的 Expected 指的是声明的类型<code>(= Nat (+ 2 n) (+ (add1 half) (add1 half))</code>，下面的 but given 则是表达式<code>(cong (cdr even-n) (+ 2))</code>的类型。仔细对比上下两个类型会发现问题出在<code>(+ (add1 half) (add1 half))</code>只能把第一个<code>add1</code>提到最外层，但是对后一个却无能为力。像我们之前说的，根源还是在<code>+</code>函数的定义中是把第一个参数作为了 target。那么我们是不是可以先试着声明“<code>+</code>的第二个参数的<code>add1</code>也是可以提到最外层的”这个中间定理。这个中间命题的证明可以被用来把上图中不匹配的两个类型串到一起。下面就是这个中间定理的声明：</p>
+
+<pre><code class="language-pie">(claim lift-right-add1
+  (Π ((n Nat)
+      (m Nat))
+    (= Nat (add1 (+ n m)) (+ n (add1 m)))))
+</code></pre>
+
+<p>这里<code>=</code>类型的 from 部分的<code>add1</code>在<code>+</code>的外面，to 部分的<code>add1</code>则在第二个加数的前面，如果 from 和 to 相等也就意味着第二个加数前的<code>add1</code>是可以提到<code>+</code>函数外层的。这是个关于自然数的命题，可以用<code>ind-Nat</code>来证明：</p>
+
+<pre><code class="language-pie">(define lift-right-add1
+  (λ (n m)
+    (ind-Nat n
+      (λ (k)
+        (= Nat (add1 (+ k m)) (+ k (add1 m))))
+      (same (add1 m))
+      (λ (n-1 lra-n-1)  ; (= Nat (add1 (+ n-1 m)) (+ n-1 (add1 m)))
+        TODO))))        ; (= Nat (add1 (+ (add1 n-1) m)) (+ (add1 n-1) (add1 m)))
+</code></pre>
+
+<p>这里为了让证明更简单，选择把第一个参数<code>n</code>作为 target。注释中分别写出了<code>lra-n-1</code>和<code>TODO</code>的类型，<code>TODO</code>的类型可以通过把两个<code>n-1</code>前面的<code>add1</code>都提到最外层进一步简化成<code>(= Nat (add1 (add1 (+ n-1 m))) (add1 (+ n-1 (add1 m))))</code>，这样我们就又可以用<code>cong</code>来证明了：</p>
+
+<pre><code class="language-pie">(define lift-right-add1
+  (λ (n m)
+    (ind-Nat n
+      (λ (k)
+        (= Nat (add1 (+ k m)) (+ k (add1 m))))
+      (same (add1 m))
+      (λ (n-1 lra-n-1)            ; (= Nat (add1 (+ n-1 m)) (+ n-1 (add1 m)))
+        (cong lra-n-1 (+ 1))))))  ; (= Nat (add1 (add1 (+ n-1 m))) (add1 (+ n-1 (add1 m))))
+</code></pre>
+
+<p>有了<code>lift-right-add1</code>，剩下的问题就是怎样用它来解决<code>+two-even</code>中类型不匹配的问题，再回顾总结一下这个问题。我们声明的类型（也就是要证明的命题）是<code>(= Nat (+ 2 n) (+ (add1 half) (add1 half)))</code>，现在已经从已有的<code>(Even n)</code>类型的值<code>even-n</code>通过<code>cong</code>得到了一个类型是<code>(= Nat (+ 2 n) (add1 (add1 (+ half half))))</code>的值<code>(cong (cdr even-n) (+ 2))</code>。这两个类型不匹配的原因是<code>(+ (add1 half) (add1 half))</code>的第二个<code>add1</code>没法提到<code>+</code>的外层，所以我们又证明了可以把第二个<code>add1</code>提出来的中间定理<code>lift-right-add1</code>，现在的问题就是怎样用这个中间定理把我们已有的类型转成要得到的类型。这就要用到<code>=</code>类型的另一个叫作<code>replace</code>的 eliminator 了：
+<img src="/dt/replace.png" alt="replace" />
+直接从<code>replace</code>的这个类型描述上看它的用法不是很直观，所以我们结合<code>+two-even</code>中要解决的问题来说明一下：
+<img src="/dt/+two-even.png" alt="+two-even" />
+上图中，箭头 1 指向的是中间定理<code>lift-right-add1</code>，我们把它作为<code>replace</code>的 target。箭头 2 指向的是<code>replace</code>的 motive，里面的空白方框代表的是<code>motive</code>的参数。target 的红蓝两部分对应的分别是<code>=</code>表达式的 from 和 to。当把红色的 from 作为参数传给 motive 时，得到是我们已有的类型，也就是箭头 3 指向的红色表达式，而这个类型的证明正是我们用<code>cong</code>所得到的值<code>(cong (cdr even-n) (+ 2))</code>。这里需要说明的是因为<code>lift-right-add1</code>是作用于任意自然数<code>n</code>和<code>m</code>的定理，这里我们需要把<code>n</code>和<code>m</code>分别换成<code>(add half)</code>和<code>half</code>。</p>
+
+<p>最后当把蓝色的部分传递给 motive 后，得到的就是我们要证明的命题（箭头 4 所指），而<code>replace</code>表达式的返回值就是这个命题的证明。从逻辑上来理解<code>replace</code>可能会更容易一些，它表达的想法其实就是，如果我们有两个等价的命题，target 的 from 和 to，如果能给出 from -&gt; U（<code>(motive from)</code>）这个命题的证明（<code>replace</code>的 base），那么就可以得到 to -&gt; U（<code>(motive to)</code>）这个命题的证明。现在我们有了<code>+two-even</code>的证明的最后一块拼图了：</p>
+
+<pre><code class="language-pie">(claim +two-even
+  (Π ((n Nat))
+    (-&gt; (Even n)
+      (Even (+ 2 n)))))
+(define +two-even
+  (λ (n)
+    (λ (even-n) ; (Σ ((half Nat)) (= Nat n (+ half half)))
+      (cons (add1 (car even-n))
+        (replace (lift-right-add1
+                   (add1 (car even-n))
+                   (car even-n))
+          (λ (k)
+            (= Nat (+ 2 n) k))
+          (cong (cdr even-n) (+ 2)))))))
+</code></pre>
+
+<p>这段程序里的<code>(car even-n)</code>是<code>(Even n)</code>类型中的<code>half</code>，<code>(cdr even-n)</code>是<code>(Even n)</code>中的等式。而<code>(lift-right-add1 (add1 (car even-n)) (car even-n))</code>其实就是把中间定理<code>lift-right-add1</code>里的<code>n</code>和<code>m</code>分别换成<code>(add1 (car even-n))</code>和<code>(car even-n)</code>。</p>
+
+<p>费尽辛苦终于得到了命题<code>+two-even</code>的证明，不过这份“辛苦”也许并不是很必要😅。 像前面提到的，这个证明的困难根源于<code>+</code>函数的第二个参数如果是<code>(add1 ...)</code>的形式，这个<code>add1</code>是没法拿到<code>+</code>外面的。那么如果我们换一种方式定义<code>Even</code>，使得<code>+</code>不再出现，是不是<code>+two-even</code>也会变得更加容易证明呢？比如我们可以定义一个函数<code>double</code>：</p>
+
+<pre><code class="language-pie">(claim double
+  (-&gt; Nat Nat))
+(define double
+  (λ (n)
+    (rec-Nat n
+      0
+      (λ (n-1 double-n-1)
+        (+ 2 double-n-1)))))
+</code></pre>
+
+<p>这个定义递归地遍历参数<code>n</code>中的每个<code>add1</code>，然后将其替换成两个<code>add1</code>，所以最终结果就是一个二倍于参数<code>n</code>的自然数。接下来用<code>double</code>来定义一个新的<code>Even-with-double</code>：</p>
+
+<pre><code class="language-pie">(claim Even-with-double
+  (-&gt; Nat U))
+(define Even-with-double
+  (λ (n)
+    (Σ ((half Nat))
+      (= Nat n (double half)))))
+</code></pre>
+
+<p><code>Even-with-double</code>表达的想法和<code>Even</code>是一致的，区别只在于前者用的<code>double</code>实现，而后者用的是<code>+</code>。现在对基于<code>Even-with-double</code>的命题<code>+two-even</code>的证明就变得简单了多：</p>
+
+<pre><code class="language-pie">(claim +two-even-with-double
+  (Π ((n Nat))
+    (-&gt; (Even-with-double n)
+      (Even-with-double (+ 2 n)))))
+(define +two-even-with-double
+  (λ (n)
+    (λ (even-n)
+      (cons (add1 (car even-n))
+        (cong (cdr even-n) (+ 2))))))
+</code></pre>
+
+<p>可以看到这次不再需要用到<code>replace</code>，因为根据定义，<code>(double (add1 half))</code>可以直接变为<code>(add1 (add1 (double half)))</code>，这样表达式<code>(cong (cdr even-n) (+ 2))</code>的类型也就和期望的返回值类型一致了。所以可以看出来，不同的命题表达形式会影响到证明的难易程度。一般来说，选择能让参数“更快”得缩减到最简形式的函数来定义命题的话，会使证明更简单。</p>
+
+<h2 id="结尾">结尾</h2>
+
+<p>到这里本文对 Pie 语言中的定理证明的介绍已经完结，这篇文章也接近尾声了。其实最开始只是想写一篇《The Little Typer》的读后感，结果慢慢地发展（啰嗦）到了这么长。如果读过本文升起了一丝对依赖类型或定理证明的兴趣，强烈推荐继续读一下《The Little Typer》这本书，它远比本文有趣的多，而且还有很多有意思的概念这里限于篇幅也没办法一一介绍。如果想了解依赖类型的一些更“实际”的应用场景，可以看一下本文开头所提的 Idris 语言，以及该语言作者的书《Type-Driven Development with Idris》。另外，如果想从更理论的方向掌握定理证明的话，这本在线的教科书<a href="https://softwarefoundations.cis.upenn.edu/current/index.html">《Software Foundations》</a>，以及配套的编程语言 <a href="https://coq.inria.fr/">Coq</a> 会是个不错的选择。</p>
 <div class="footnotes">
 
 <hr />
@@ -1152,6 +1507,8 @@ forAll { (n: Int, d: Int) =&gt;
  <a class="footnote-return" href="#fnref:7"><sup>[return]</sup></a></li>
 <li id="fn:8"><a href="https://book.douban.com/subject/26975991/">《计算进化史》</a>这本书里有比较深入的关于这方面的讨论。
  <a class="footnote-return" href="#fnref:8"><sup>[return]</sup></a></li>
+<li id="fn:9">如果已经导入了脚注 5 中的文件的话，可以在 DrRacket 里按 Ctrl-] 来输入字母 Σ。
+ <a class="footnote-return" href="#fnref:9"><sup>[return]</sup></a></li>
 </ol>
 </div>
 
