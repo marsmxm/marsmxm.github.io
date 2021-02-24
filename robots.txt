@@ -1,2 +1,4 @@
 User-agent: *
-Sitemap: http://mxm.ink/sitemap.xml
+Allow: /
+Sitemap: https://marsmxm.github.io/sitemap.xml
+Host: https://marsmxm.github.io
