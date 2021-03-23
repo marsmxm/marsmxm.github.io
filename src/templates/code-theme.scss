@@ -14,7 +14,7 @@
     pre[class*='language-'] {
       color: #fff;
       text-shadow: 0 1px 1px #000;
-      font-family: Menlo, Monaco, 'Courier New', monospace;
+      font-family: 'Consolas', Menlo, Monaco, 'Courier New', monospace;
       direction: ltr;
       text-align: left;
       word-spacing: normal;
@@ -235,7 +235,7 @@
 
     /* Inline code */
     :not(pre) > code[class*='language-'] {
-      color: #797979;
+      color: #37668e;
       padding: 0.2em;
       padding-top: 1px;
       padding-bottom: 1px;

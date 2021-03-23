@@ -17,12 +17,12 @@ const gatsbyConfig = {
 
     `gatsby-plugin-sharp`,
 
-    {
-      resolve: `gatsby-plugin-google-analytics`,
-      options: {
-        trackingId: googleAnalytics,
-      },
-    },
+    // {
+    //   resolve: `gatsby-plugin-google-analytics`,
+    //   options: {
+    //     trackingId: googleAnalytics,
+    //   },
+    // },
 
     {
       resolve: `gatsby-source-filesystem`,
@@ -36,7 +36,7 @@ const gatsbyConfig = {
       resolve: `gatsby-transformer-remark`,
       options: {
         tableOfContents: {
-          maxDepth: 3,
+          maxDepth: 6,
         },
         plugins: [
           {
@@ -44,6 +44,7 @@ const gatsbyConfig = {
             options: {
               maxWidth: 590,
               loading: 'lazy',
+              wrapperStyle: 'margin: 20px auto',
             },
           },
           {

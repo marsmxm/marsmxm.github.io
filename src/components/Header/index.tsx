@@ -95,7 +95,7 @@ const Header = (props: headerPropsType) => {
             <img
               src={
                 config.profileImageFileName
-                  ? require(`../../images/${config.profileImageFileName}`)
+                  ? require(`../../images/${config.profileImageFileName}`).default
                   : 'https://source.unsplash.com/random/100x100'
               }
               alt="title profile picture"
