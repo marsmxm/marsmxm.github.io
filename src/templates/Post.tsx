@@ -8,18 +8,20 @@ import { graphql, Link } from 'gatsby';
 import moment from 'moment';
 import { FontAwesomeIcon as Fa } from '@fortawesome/react-fontawesome';
 import { faListUl, faLayerGroup, faAngleLeft } from '@fortawesome/free-solid-svg-icons';
-// import AdSense from 'react-adsense';
+import AdSense from 'react-adsense';
 import {
+  FacebookShareButton,
+  LinkedinShareButton,
   TwitterShareButton,
   RedditShareButton,
   PocketShareButton,
   EmailShareButton,
-  WeiboShareButton,
+  FacebookIcon,
   TwitterIcon,
+  LinkedinIcon,
   RedditIcon,
   PocketIcon,
   EmailIcon,
-  WeiboIcon
 } from 'react-share';
 import { useColorMode } from 'theme-ui';
 import { throttle } from 'lodash';
@@ -288,15 +290,20 @@ const Post = (props: postProps) => {
                     <EmailIcon size={24} round={true} />
                   </EmailShareButton>
                 </li>
-                <li className="social-share-item weibo">
-                  <WeiboShareButton url={config.siteUrl + slug}>
-                    <WeiboIcon size={24} round={true} />
-                  </WeiboShareButton>
+                <li className="social-share-item facebook">
+                  <FacebookShareButton url={config.siteUrl + slug}>
+                    <FacebookIcon size={24} round={true} />
+                  </FacebookShareButton>
                 </li>
                 <li className="social-share-item twitter">
                   <TwitterShareButton url={config.siteUrl + slug}>
                     <TwitterIcon size={24} round={true} />
                   </TwitterShareButton>
+                </li>
+                <li className="social-share-item linkedin">
+                  <LinkedinShareButton url={config.siteUrl + slug}>
+                    <LinkedinIcon size={24} round={true} />
+                  </LinkedinShareButton>
                 </li>
                 <li className="social-share-item reddit">
                   <RedditShareButton url={config.siteUrl + slug}>
@@ -312,7 +319,7 @@ const Post = (props: postProps) => {
             </div>
           ) : null}
 
-          {/* {isDevelopment ? (
+          {isDevelopment ? (
             <>
               <aside className="ad ad-dev">
                 <span>Ads</span>
@@ -339,7 +346,7 @@ const Post = (props: postProps) => {
 
               {!isSSR ? <Suspense fallback={<></>}>{commentEl}</Suspense> : null}
             </>
-          )} */}
+          )}
         </div>
 
         {!isTableOfContents ? null : <Toc isOutside={true} toc={tableOfContents} />}

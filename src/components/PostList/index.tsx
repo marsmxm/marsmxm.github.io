@@ -76,12 +76,12 @@ const PostList = (props: PostListProps) => {
                 <span className="date">{date}</span>
                 {update ? <span className="update">&nbsp;{`(Updated: ${update})`}</span> : null}
               </div>
-              {/* {tags.length && tags[0] !== 'undefined' ? <span className="info-dot">·</span> : null} */}
-              {/* <ul className="tag-list">{mapTag}</ul> */}
+              {tags.length && tags[0] !== 'undefined' ? <span className="info-dot">·</span> : null}
+              <ul className="tag-list">{mapTag}</ul>
             </div>
-            {/* <Link to={slug}>
+            <Link to={slug}>
               <span className="excerpt">{excerpt}</span>
-            </Link> */}
+            </Link>
           </article>
         </li>
       );

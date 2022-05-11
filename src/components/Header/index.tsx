@@ -78,7 +78,7 @@ const Header = (props: headerPropsType) => {
       setYPos(prevYPos => {
         const currentYPos = window.pageYOffset;
 
-        // if (currentYPos > 0) setIsHide(prevYPos < currentYPos);
+        if (currentYPos > 0) setIsHide(prevYPos < currentYPos);
 
         return currentYPos;
       });
@@ -95,7 +95,7 @@ const Header = (props: headerPropsType) => {
             <img
               src={
                 config.profileImageFileName
-                  ? require(`../../images/${config.profileImageFileName}`).default
+                  ? require(`../../images/${config.profileImageFileName}`)
                   : 'https://source.unsplash.com/random/100x100'
               }
               alt="title profile picture"

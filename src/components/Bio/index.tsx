@@ -1,14 +1,13 @@
 import * as React from 'react';
 import { FontAwesomeIcon as Fa } from '@fortawesome/react-fontawesome';
-import { faUserCircle, faAt, faMapMarkerAlt, faLink, faAddressCard, faRss, faBookOpen } from '@fortawesome/free-solid-svg-icons';
-import { faFacebook, faInstagram, faLinkedin, faGithub, faGetPocket } from '@fortawesome/free-brands-svg-icons';
+import { faUserCircle, faAt, faMapMarkerAlt, faLink, faAddressCard, faRss } from '@fortawesome/free-solid-svg-icons';
+import { faFacebook, faInstagram, faLinkedin, faGithub } from '@fortawesome/free-brands-svg-icons';
+
 import './bio.scss';
 import config from '../../../_config';
 
 const Bio = () => {
-  const { 
-    comment, name, company, location, email, website, linkedin, facebook, instagram, github, douban, pocket 
-  } = config;
+  const { comment, name, company, location, email, website, linkedin, facebook, instagram, github } = config;
 
   return (
     <div className="bio">
@@ -86,16 +85,6 @@ const Bio = () => {
         {!github ? null : (
           <a href={github} target="_blank" rel="noopener noreferrer">
             <Fa icon={faGithub} className="github" />
-          </a>
-        )}
-        {!douban ? null : (
-          <a href={douban} target="_blank" rel="noopener noreferrer">
-            <Fa icon={faBookOpen} className="github" />
-          </a>
-        )}
-        {!pocket ? null : (
-          <a href={pocket} target="_blank" rel="noopener noreferrer">
-            <Fa icon={faGetPocket} className="pocket" />
           </a>
         )}
       </div>
