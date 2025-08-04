@@ -3,7 +3,13 @@
 <style|generic>
 
 <\body>
-  asdfasdf
+  <\show-preamble>
+    abc
+  </show-preamble>
+
+  <\ignore>
+    asdfasdf
+  </ignore>
 </body>
 
 <\initial>
