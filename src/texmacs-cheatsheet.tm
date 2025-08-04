@@ -1,15 +1,17 @@
 <TeXmacs|2.1.4>
 
-<style|generic>
+<style|notes>
 
 <\body>
-  <\show-preamble>
-    abc
-  </show-preamble>
+  <\hide-preamble>
+    \;
 
-  <\ignore>
-    asdfasdf
-  </ignore>
+    <assign|notes-header-name|Notes on Programming and Others>
+  </hide-preamble>
+
+  <notes-header>
+
+  \;
 </body>
 
 <\initial>
