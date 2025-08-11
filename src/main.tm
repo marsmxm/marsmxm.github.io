@@ -17,12 +17,16 @@
     </cell>>>>
   </wide-tabular>
 
-  <chapter*|Notes on Programming and others>
+  <chapter*|Notes on Programming and Others>
 
   This is a new attemp to write online articles using
   <hlink|<TeXmacs>|http://www.texmacs.org/>.\ 
 
-  <section*|TeXmacs>
+  <section*|Programming>
+
+  \;
+
+  <section*|Others>
 
   <hlink-tm|TeXmacs Cheatsheet|./texmacs-cheatsheet>
 
@@ -40,7 +44,7 @@
 
   <with|font-base-size|10|<with|font-series|medium|<with|font-shape|right|<with|font|Linux
   Libertine|<\padded-right-aligned>
-    \<copyright\> 2024 Mu Xian Ming.<with|font|Linux
+    \<copyright\> 2025 Mu Xian Ming.<with|font|Linux
     Libertine|<with|font-base-size|7|>> All Rights Reserved.
   </padded-right-aligned>>>>>
 </body>
@@ -79,6 +83,10 @@
   <\collection>
     <associate|auto-1|<tuple|?|?>>
     <associate|auto-2|<tuple|?|?>>
+    <associate|auto-3|<tuple|?|?>>
+    <associate|auto-4|<tuple|1.1|?>>
+    <associate|auto-6|<tuple|1.4|?>>
+    <associate|auto-7|<tuple|1.4|?>>
   </collection>
 </references>
 
