@@ -19,10 +19,12 @@
 
   <chapter*|Notes on Programming and Others>
 
-  This is a new attemp to write online articles using
-  <hlink|<TeXmacs>|http://www.texmacs.org/>.\ 
+  Writing in TeXmacs becomes a pleasure to me recently, which makes me think
+  it might be a good time to start blogging again. \ 
 
   <section*|Programming>
+
+  <hlink-tm|Understanding Attention Mechanisms|./attention>
 
   \;
 
@@ -44,8 +46,8 @@
 
   <with|font-base-size|10|<with|font-series|medium|<with|font-shape|right|<with|font|Linux
   Libertine|<\padded-right-aligned>
-    \<copyright\> 2025 Mu Xian Ming.<with|font|Linux
-    Libertine|<with|font-base-size|7|>> All Rights Reserved.
+    \<copyright\> 2025 Mu Xian Ming<with|font|Linux
+    Libertine|<with|font-base-size|7|>>
   </padded-right-aligned>>>>>
 </body>
 
@@ -84,9 +86,6 @@
     <associate|auto-1|<tuple|?|?>>
     <associate|auto-2|<tuple|?|?>>
     <associate|auto-3|<tuple|?|?>>
-    <associate|auto-4|<tuple|1.1|?>>
-    <associate|auto-6|<tuple|1.4|?>>
-    <associate|auto-7|<tuple|1.4|?>>
   </collection>
 </references>
 
@@ -94,11 +93,14 @@
   <\collection>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Notes
-      on Programming and others> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      on Programming and Others> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <pageref|auto-1><vspace|0.5fn>
 
-      TeXmacs <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      Programming <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-2>
+
+      Others <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-3>
     </associate>
   </collection>
 </auxiliary>
