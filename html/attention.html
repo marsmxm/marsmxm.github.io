@@ -70,8 +70,11 @@
     <p>
       To better understand this architecture, we will build an
       encoder&ndash;decoder network to solve a relatively simple task:
-      converting human-readable date strings into the ISO date format. Here
-      are some examples:
+      converting human-readable date strings into the ISO date format. The
+      complete code for this part can be found <a href="https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/seq2seq.py">here</a>. 
+    </p>
+    <p>
+      So here are some examples of our translation task:
     </p>
     <center>
       <img src="attention-3.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.259504132231405em; margin-right: -0.0112837465564724em; margin-top: -0.0112837465564737em; vertical-align: -1.46263360881543em; height: 3.1622258953168em"></img>
@@ -95,7 +98,32 @@
 
     return human_readable, machine_readable, dt</tt></class></pre>
     </div>
-    <h2 id="auto-3">transformer<span style="margin-left: 1em"></span></h2>
+    <p>
+      
+    </p>
+    <p>
+      These are some samples from our dataset:
+    </p>
+    <div class="tmweb-code">
+      <p>
+        [('saturday june 29 1996', '1996-06-29'),  
+      </p>
+      <p>
+        ('15 march 1978', '1978-03-15'),  
+      </p>
+      <p>
+        ('thursday december 28 2023', '2023-12-28'),  
+      </p>
+      <p>
+        ('wednesday december 31 1980', '1980-12-31'),  
+      </p>
+      <p>
+        ('apr 5 1995', '1995-04-05')]
+      </p>
+    </div>
+    <p>
+      
+    </p>
     <p>
       
     </p>

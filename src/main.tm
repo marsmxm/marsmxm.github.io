@@ -19,8 +19,8 @@
 
   <chapter*|Notes on Programming and Others>
 
-  Writing in TeXmacs becomes a pleasure to me lately, which makes me feel
-  like starting blogging again. \ 
+  Writing in TeXmacs becomes a pleasure to me lately, which makes me want to
+  start blogging again. \ 
 
   <section*|Programming>
 
@@ -44,11 +44,16 @@
 
   <hrule>
 
-  <with|font-base-size|10|<with|font-series|medium|<with|font-shape|right|<with|font|Linux
-  Libertine|<\padded-right-aligned>
-    \<copyright\> 2025 Mu Xian Ming<with|font|Linux
-    Libertine|<with|font-base-size|7|>>
-  </padded-right-aligned>>>>>
+  <with|font-base-size|10|<\with|font-series|medium>
+    \;
+  </with>>
+
+  <tabular|<tformat|<table|<row|<cell|Email:
+  marsmxm@gmail.com>|<cell|>|<cell|\<copyright\>2025 Mu Xian
+  Ming>>|<row|<cell|>|<cell|>|<cell|>>|<row|<cell|Github:
+  https://github.com/marsmxm>|<cell|>|<cell|>>>>>
+
+  \;
 </body>
 
 <\initial>
@@ -86,6 +91,7 @@
     <associate|auto-1|<tuple|?|?>>
     <associate|auto-2|<tuple|?|?>>
     <associate|auto-3|<tuple|?|?>>
+    <associate|auto-4|<tuple|1|?>>
   </collection>
 </references>
 

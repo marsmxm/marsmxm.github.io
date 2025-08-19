@@ -53,7 +53,10 @@
 
   To better understand this architecture, we will build an encoder\Udecoder
   network to solve a relatively simple task: converting human-readable date
-  strings into the ISO date format. Here are some examples:
+  strings into the ISO date format. The complete code for this part can be
+  found <hlink|here|https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/seq2seq.py>.\ 
+
+  So here are some examples of our translation task:
 
   <\eqnarray*>
     <tformat|<table|<row|<cell|17 December, 2003
@@ -93,7 +96,23 @@
     \ \ \ \ return human_readable, machine_readable, dt
   </python-code>
 
-  <section*|transformer>
+  \;
+
+  These are some samples from our dataset:
+
+  <\render-code>
+    [('saturday june 29 1996', '1996-06-29'), \ 
+
+    ('15 march 1978', '1978-03-15'), \ 
+
+    ('thursday december 28 2023', '2023-12-28'), \ 
+
+    ('wednesday december 31 1980', '1980-12-31'), \ 
+
+    ('apr 5 1995', '1995-04-05')]
+  </render-code>
+
+  \;
 
   \;
 
@@ -110,9 +129,6 @@
   <\collection>
     <associate|auto-1|<tuple|?|1>>
     <associate|auto-2|<tuple|?|1>>
-    <associate|auto-3|<tuple|?|1>>
-    <associate|auto-4|<tuple|2|1>>
-    <associate|auto-5|<tuple|2|1>>
   </collection>
 </references>
 
@@ -125,17 +141,6 @@
 
       Encoder-Decoder Neural Network <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-2>
-
-      <with|par-left|<quote|1tab>|1.<space|2spc>architect
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-3>>
-
-      <with|par-left|<quote|1tab>|2.<space|2spc>code
-      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-4>>
-
-      transformer <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-5>
     </associate>
   </collection>
 </auxiliary>
