@@ -19,8 +19,8 @@
 
   <chapter*|Notes on Programming and Others>
 
-  Writing in TeXmacs becomes a pleasure to me recently, which makes me think
-  it might be a good time to start blogging again. \ 
+  Writing in TeXmacs becomes a pleasure to me lately, which makes me feel
+  like starting blogging again. \ 
 
   <section*|Programming>
 
