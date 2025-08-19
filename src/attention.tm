@@ -9,6 +9,8 @@
     <assign|notes-header-name|Notes on Programming and Others>
 
     <assign|notes-header-image|<image|../penguin.png|20pt|||>>
+
+    <assign|html-title|mxm notes>
   </hide-preamble>
 
   <notes-header><chapter*|Understanding Attention Mechanisms>
@@ -101,15 +103,17 @@
   These are some samples from our dataset:
 
   <\render-code>
-    [('saturday june 29 1996', '1996-06-29'), \ 
+    <with|font|Linux Libertine|<\with|font-base-size|9>
+      [('saturday june 29 1996', '1996-06-29'), \ 
 
-    ('15 march 1978', '1978-03-15'), \ 
+      ('15 march 1978', '1978-03-15'), \ 
 
-    ('thursday december 28 2023', '2023-12-28'), \ 
+      ('thursday december 28 2023', '2023-12-28'), \ 
 
-    ('wednesday december 31 1980', '1980-12-31'), \ 
+      ('wednesday december 31 1980', '1980-12-31'), \ 
 
-    ('apr 5 1995', '1995-04-05')]
+      ('apr 5 1995', '1995-04-05')]
+    </with>>
   </render-code>
 
   \;
