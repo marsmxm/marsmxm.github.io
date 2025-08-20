@@ -28,12 +28,6 @@
 
   \;
 
-  <section*|Others>
-
-  <hlink-tm|TeXmacs Cheatsheet|./texmacs-cheatsheet>
-
-  \;
-
   \;
 
   \;
