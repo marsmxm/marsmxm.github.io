@@ -49,9 +49,8 @@
   </with>>
 
   <tabular|<tformat|<table|<row|<cell|Email:
-  marsmxm@gmail.com>|<cell|>|<cell|\<copyright\>2025 Mu Xian
-  Ming>>|<row|<cell|>|<cell|>|<cell|>>|<row|<cell|Github:
-  https://github.com/marsmxm>|<cell|>|<cell|>>>>>
+  marsmxm@gmail.com>|<cell|>>|<row|<cell|>|<cell|>>|<row|<cell|Github:
+  https://github.com/marsmxm>|<cell|>>>>>
 
   \;
 </body>
@@ -91,7 +90,6 @@
     <associate|auto-1|<tuple|?|?>>
     <associate|auto-2|<tuple|?|?>>
     <associate|auto-3|<tuple|?|?>>
-    <associate|auto-4|<tuple|1|?>>
   </collection>
 </references>
 

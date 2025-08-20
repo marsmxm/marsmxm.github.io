@@ -29,6 +29,9 @@
       <p>
         
       </p>
+      <p>
+        
+      </p>
     </div>
     <div class="notes-header">
       <p>
@@ -77,20 +80,47 @@
       second LSTM to produce the corresponding output sequence.
     </p>
     <p>
-      To better understand this architecture, we will build an
+      To better understand this neural network architecture, we will build an
       encoder&ndash;decoder network to solve a relatively simple task:
-      converting human-readable date strings into the ISO date format. The
-      complete code for this part can be found <a href="https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/seq2seq.py">here</a>. 
-    </p>
-    <p>
-      So here are some examples of our translation task:
+      converting human-readable date strings into the ISO date format. And
+      here are some task samples:
     </p>
     <center>
       <img src="attention-3.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.259504132231405em; margin-right: -0.0112837465564724em; margin-top: -0.0112837465564737em; vertical-align: -1.46263360881543em; height: 3.1622258953168em"></img>
     </center>
     <p>
-      First we need to prepare the training dataset. We use <a href="https://faker.readthedocs.io/en/master/">faker</a>
-      to generate random dates, and format them in random formats:
+      The figure below describes our intented architecture:
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-4.png" width="100%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 1. </b><a id="auto-3"></a>A encoder-decoder network
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      The left-side LSTM is the encoder. To better capture information from
+      the input sequences, we use a bidirectional RNN for this component. The
+      encoder's hidden and cell states form the vector representation of input
+      sequence, and they are then passed to the decoder as its initial state.
+      The decoder returns all cells' output sequences instead of states from
+      the last cell. It then passes its output to a dense layer which uses
+      softmax as the activation funciton, to get probabilities of each output
+      character. The complete implementation can be found <a href="https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/seq2seq.py">here</a>.
+      We will now build this network step by step.
+    </p>
+    <p>
+      First we need to prepare the training dataset. The <a href="https://faker.readthedocs.io/en/master/">faker</a> is
+      used here to generate some random dates, which are then formatted in
+      random formats:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
@@ -111,25 +141,99 @@
       
     </p>
     <p>
-      These are some samples from our dataset:
+      The size of our training dataset is 100,000:
     </p>
     <div class="tmweb-code">
-      <p>
-        [('saturday june 29 1996', '1996-06-29'),  
-      </p>
-      <p>
-        ('15 march 1978', '1978-03-15'),  
-      </p>
-      <p>
-        ('thursday december 28 2023', '2023-12-28'),  
-      </p>
-      <p>
-        ('wednesday december 31 1980', '1980-12-31'),  
-      </p>
-      <p>
-        ('apr 5 1995', '1995-04-05')]
-      </p>
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>m = 100000
+dataset = load_dataset(m)
+dataset[:5]</tt></class></pre>
     </div>
+    <p>
+      =&gt;
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>[('saturday june 29 1996', '1996-06-29'),
+ ('15 march 1978', '1978-03-15'),
+ ('thursday december 28 2023', '2023-12-28'),
+ ('wednesday december 31 1980', '1980-12-31'),
+ ('apr 5 1995', '1995-04-05')]</tt></class></pre>
+    </div>
+    <p>
+      
+    </p>
+    <p>
+      The next step is to vectorize all the texts in the dataset. Since we are
+      translating date strings, we will use character-level vectorization
+      rather than word-level vectorization (as commonly used in NLP):
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>import tensorflow as tf
+
+vocab_size = 50
+Tx = 30
+Ty = 12
+sos = '@'
+eos = '$'
+
+def custom_standardization(input_string):
+    # Lowercase and remove punctuation except '-'
+    lowercase = tf.strings.lower(input_string)
+    # Remove all punctuation except '-'
+    return tf.strings.regex_replace(lowercase, r&quot;[^\w\s-@$]&quot;, &quot;&quot;)
+
+dates_human = [d[0] for d in dataset]
+dates_machine = [d[1] for d in dataset]
+
+vec_layer_human = tf.keras.layers.TextVectorization(
+    vocab_size, output_sequence_length=Tx, split=&quot;character&quot;, name=&quot;vec_h&quot;,
+    standardize=custom_standardization)
+vec_layer_machine = tf.keras.layers.TextVectorization(
+    vocab_size, output_sequence_length=Ty, split=&quot;character&quot;, name=&quot;vec_m&quot;,
+    standardize=custom_standardization)
+    
+vec_layer_human.adapt(dates_human)
+vec_layer_machine.adapt([f&quot;{sos}{s}{eos}&quot; for s in dates_machine])
+
+print(vec_layer_human.get_vocabulary()[:15])
+print(vec_layer_machine.get_vocabulary())</tt></class></pre>
+    </div>
+    <p>
+      =&gt;
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>['', '[UNK]', ' ', '1', '2', 'a', '0', '9', 'e', 'r', 'y', 'u', 'd', 's', 'n']
+['', '[UNK]', '-', '0', '1', '2', '@', '$', '9', '7', '8', '3', '4', '5', '6']</tt></class></pre>
+    </div>
+    <p>
+      The empty string (&ldquo;&rdquo;) and<tt class="verbatim"><class style="font-family: Times New Roman"><tt>[UNK]</tt></class></tt>are
+      tensorflow's built-in representations for padding and unknown
+      characters, repectively. We use a custom <tt class="verbatim">strandardization</tt>
+      function here because we need two special characters, <tt class="verbatim">@</tt>
+      and <tt class="verbatim">$</tt>, to denote the start and end of the sequences, and
+      in the default settings, these special characters are removed by
+      tensorflow's <tt class="verbatim">TextVectorization</tt>. 
+    </p>
+    <p>
+      Next we split the whole dataset into training and validation sets:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>train_size = 80000
+
+X_train = tf.constant(dates_human[:train_size])
+X_valid = tf.constant(dates_human[train_size:])
+X_train_dec = tf.constant([f&quot;{sos}{s}&quot; for s in dates_machine[:train_size]])
+X_valid_dec = tf.constant([f&quot;{sos}{s}&quot; for s in dates_machine[train_size:]])
+Y_train = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[:train_size]])
+Y_valid = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[train_size:]])</tt></class></pre>
+    </div>
+    <p>
+      
+    </p>
     <p>
       
     </p>
