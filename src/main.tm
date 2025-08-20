@@ -7,6 +7,8 @@
     \;
 
     <assign|hlink-tm|<macro|body|target|<hlink|<arg|body>|<merge|<arg|target>|.tm>>>>
+
+    <assign|html-title|mxm notes>
   </hide-preamble>
 
   <hrule>
@@ -83,7 +85,6 @@
   <\collection>
     <associate|auto-1|<tuple|?|?>>
     <associate|auto-2|<tuple|?|?>>
-    <associate|auto-3|<tuple|?|?>>
   </collection>
 </references>
 
@@ -96,9 +97,6 @@
 
       Programming <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-2>
-
-      Others <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
-      <no-break><pageref|auto-3>
     </associate>
   </collection>
 </auxiliary>
