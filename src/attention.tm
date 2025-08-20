@@ -11,6 +11,14 @@
     <assign|notes-header-image|<image|../penguin.png|20pt|||>>
 
     <assign|html-title|mxm notes>
+
+    <assign|html-head-favicon|../penguin.png>
+
+    <assign|javascript-code|<\macro|body>
+      <\pseudo-code>
+        <javascript-lang|<arg|body>>
+      </pseudo-code>
+    </macro>>
   </hide-preamble>
 
   <notes-header><chapter*|Understanding Attention Mechanisms>
