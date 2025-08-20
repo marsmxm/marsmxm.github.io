@@ -24,6 +24,8 @@
       <surround|<compound|next-figure>||<render-big-figure|figure|<compound|figure-text>
       <compound|the-figure>|<arg|body>|<surround|<set-binding|<compound|the-figure>>||<arg|caption>>>>
     </macro>>
+
+    <assign|tmhtml-really-large|<macro|body|<with|font-size|1.8|<arg|body>>>>
   </hide-preamble>
 
   <notes-header><chapter*|Understanding Attention Mechanisms>
