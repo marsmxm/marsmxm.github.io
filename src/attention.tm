@@ -76,7 +76,7 @@
   <\eqnarray*>
     <tformat|<table|<row|<cell|17 December, 2003
     >|<cell|\<Rightarrow\>>|<cell|2003-12-17>>|<row|<cell|Thursday, October
-    31, 2019 >|<cell|\<Rightarrow\>>|<cell|2019-10-31>>|<row|<cell|05.05.12
+    31, 2019 >|<cell|\<Rightarrow\>>|<cell|2019-10-31>>|<row|<cell|3/14/12>|<cell|\<Rightarrow\>>|<cell|2012-03-14>>|<row|<cell|05.05.12
     >|<cell|\<Rightarrow\>>|<cell|2012-05-05>>>>
   </eqnarray*>
 
@@ -90,11 +90,16 @@
   input sequences, we use a bidirectional RNN for this component. The
   encoder's hidden and cell states form the vector representation of input
   sequence, and they are then passed to the decoder as its initial state. The
-  decoder returns all cells' output sequences instead of states from the last
-  cell. It then passes its output to a dense layer which uses softmax as the
-  activation funciton, to get probabilities of each output character. The
-  complete implementation can be found <hlink|here|https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/seq2seq.py>.
-  We will now build this network step by step.
+  ISO-formatted dates are also used as inputs to the decoder during training,
+  but shifted back by one step. In other words, during training the decoder
+  is given as input the character that it should have output at the previous
+  step, regardless of what it actually output. This is called teacher
+  forcing\Va technique that improves the model's performance. The decoder
+  returns all cells' output sequences instead of states from the last cell.
+  It then passes its output to a dense layer which uses softmax as the
+  activation funciton, to get probabilities of each output character. We will
+  now build this network step by step (the complete implementation can be
+  found <hlink|here|https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/seq2seq.py>).
 
   First we need to prepare the training dataset. The
   <hlink|faker|https://faker.readthedocs.io/en/master/> is used here to
@@ -231,44 +236,362 @@
     '6']
   </python-code>
 
-  The empty string (\P\Q) and<python|[UNK]>are tensorflow's built-in
+  The empty string (\P\Q) and <python|[UNK]> are tensorflow's built-in
   representations for padding and unknown characters, repectively. We use a
   custom <verbatim|strandardization> function here because we need two
   special characters, <verbatim|@> and <verbatim|$>, to denote the start and
   end of the sequences, and in the default settings, these special characters
   are removed by tensorflow's <verbatim|TextVectorization>.\ 
 
-  Next we split the whole dataset into training and validation sets:
+  Next we split the whole dataset into training, validation and test sets:
 
   <\python-code>
-    train_size = 80000
+    train_size = 60000
+
+    valid_size = 20000
 
     \;
 
     X_train = tf.constant(dates_human[:train_size])
 
-    X_valid = tf.constant(dates_human[train_size:])
+    X_valid = tf.constant(dates_human[train_size:train_size+valid_size])
+
+    X_test = tf.constant(dates_human[train_size+valid_size:])
+
+    \;
 
     X_train_dec = tf.constant([f"{sos}{s}" for s in
     dates_machine[:train_size]])
 
-    X_valid_dec = tf.constant([f"{sos}{s}" for s in
-    dates_machine[train_size:]])
+    X_valid_dec = tf.constant(
+
+    \ \ \ \ [f"{sos}{s}" for s in dates_machine[train_size:train_size+valid_size]])
+
+    X_test_dec = tf.constant([f"{sos}{s}" for s in
+    dates_machine[train_size+valid_size:]])
+
+    \;
 
     Y_train = vec_layer_machine([f"{s}{eos}" for s in
     dates_machine[:train_size]])
 
-    Y_valid = vec_layer_machine([f"{s}{eos}" for s in
-    dates_machine[train_size:]])
+    Y_valid = vec_layer_machine(
+
+    \ \ \ \ [f"{s}{eos}" for s in dates_machine[train_size:train_size+valid_size]])
+
+    Y_test = vec_layer_machine([f"{s}{eos}" for s in
+    dates_machine[train_size+valid_size:]])
   </python-code>
 
   \;
 
-  \;
+  And we can construct our model now:
+
+  <\python-code>
+    encoder_inputs = tf.keras.layers.Input(name="encoder_inputs", shape=[],
+    dtype=tf.string)
+
+    decoder_inputs = tf.keras.layers.Input(name="decoder_inputs",shape=[],
+    dtype=tf.string)
+
+    \;
+
+    embed_size = 128
+
+    encoder_embedding_layer = tf.keras.layers.Embedding(vocab_size,
+    embed_size, name="enc_emb", mask_zero=True)
+
+    decoder_embedding_layer = tf.keras.layers.Embedding(vocab_size,
+    embed_size, name="dec_emb", mask_zero=True)
+
+    \;
+
+    encoder_input_ids = vec_layer_human(encoder_inputs)
+
+    decoder_input_ids = vec_layer_machine(decoder_inputs)
+
+    encoder_embeddings = encoder_embedding_layer(encoder_input_ids)
+
+    decoder_embeddings = decoder_embedding_layer(decoder_input_ids)
+
+    \;
+
+    encoder = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(256,
+    return_state=True), name="encoder")
+
+    encoder_outputs, *encoder_states = encoder(encoder_embeddings)
+
+    encoder_states = [tf.concat(encoder_states[::2], axis=-1), \ # hidden
+    states (0 & 2)
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ tf.concat(encoder_states[1::2],
+    axis=-1)] # cell states (1 & 3)
+
+    \;
+
+    decoder = tf.keras.layers.LSTM(512, name="decoder",
+    return_sequences=True)
+
+    decoder_outputs = decoder(decoder_embeddings,
+    initial_state=encoder_states)
+
+    \;
+
+    output_layer = tf.keras.layers.Dense(vocab_size, name="dense",
+    activation="softmax")
+
+    Y_proba = output_layer(decoder_outputs)
+
+    \;
+
+    model = tf.keras.Model(inputs=[encoder_inputs, decoder_inputs],
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ outputs=[Y_proba])
+
+    model.compile(loss="sparse_categorical_crossentropy", optimizer="nadam",
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ metrics=["accuracy"])
+  </python-code>
 
   \;
 
+  One thing worth mentioning is how we compose the <verbatim|encoder_states>.
+  Since we use a bidirectional LSTM as the encoder, we get four states from
+  it in total. The first two are hidden and cell states of the forward LSTM,
+  and the last two are the corresponding states from the backward one. The
+  hidden states are concatenated together, and the cell states are
+  concatenated likewise, before being passed to the decoder. We can have a
+  look at the model summary now:
+
+  <\python-code>
+    model.summary(line_length=120, expand_nested=True)
+  </python-code>
+
+  =\<gtr\>
+
+  <\python-code>
+    <\with|font-base-size|9>
+      ________________________________________________________________________________________________________________________
+
+      \ Layer (type) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Output Shape
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ Param # \ \ \ \ Connected
+      to \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      ========================================================================================================================
+
+      \ encoder_inputs (InputLayer) \ \ \ \ \ \ \ [(None,)]
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0
+      \ \ \ \ \ \ \ \ \ \ [] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ vec_h (TextVectorization) \ \ \ \ \ \ \ \ \ (None, 30)
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0
+      \ \ \ \ \ \ \ \ \ \ ['encoder_inputs[0][0]'] \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ decoder_inputs (InputLayer) \ \ \ \ \ \ \ [(None,)]
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0
+      \ \ \ \ \ \ \ \ \ \ [] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ enc_emb (Embedding) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None, 30, 128)
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 6400
+      \ \ \ \ \ \ \ ['vec_h[0][0]'] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ vec_m (TextVectorization) \ \ \ \ \ \ \ \ \ (None, 12)
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0
+      \ \ \ \ \ \ \ \ \ \ ['decoder_inputs[0][0]'] \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ encoder (Bidirectional) \ \ \ \ \ \ \ \ \ \ \ [(None, 512),
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 788480
+      \ \ \ \ \ ['enc_emb[0][0]'] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None,
+      256), \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None,
+      256), \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None,
+      256), \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None,
+      256)] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ dec_emb (Embedding) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None, 12, 128)
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 6400
+      \ \ \ \ \ \ \ ['vec_m[0][0]'] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ tf.concat (TFOpLambda) \ \ \ \ \ \ \ \ \ \ \ \ (None, 512)
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0
+      \ \ \ \ \ \ \ \ \ \ ['encoder[0][1]',
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 'encoder[0][3]']
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ tf.concat_1 (TFOpLambda) \ \ \ \ \ \ \ \ \ \ (None, 512)
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 0
+      \ \ \ \ \ \ \ \ \ \ ['encoder[0][2]',
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 'encoder[0][4]']
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ decoder (LSTM) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None, 12,
+      512) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 1312768
+      \ \ \ \ ['dec_emb[0][0]', \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 'tf.concat[0][0]',
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 'tf.concat_1[0][0]']
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ dense (Dense) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ (None, 12,
+      50) \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 25650
+      \ \ \ \ \ \ ['decoder[0][0]'] \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+      ========================================================================================================================
+
+      Total params: 2139698 (8.16 MB)
+
+      Trainable params: 2139698 (8.16 MB)
+    </with>
+
+    <with|font-base-size|9|Non-trainable params: 0 (0.00 Byte)>
+  </python-code>
+
   \;
+
+  It indeed has the same topology as we showed earlier in figure 1. The
+  training process taks around 2 to 3 minutes on my RTX 3060 card, and the
+  evalution gets a promising result:
+
+  <\python-code>
+    model.fit((X_train, X_train_dec), Y_train, epochs=10,
+
+    \ \ \ \ \ \ \ \ \ \ validation_data=((X_valid, X_valid_dec), Y_valid))
+
+    \;
+
+    print("Evaluate on test data")
+
+    results = model.evaluate((X_test, X_test_dec), Y_test)
+
+    print("test loss, test acc:", results)
+  </python-code>
+
+  =\<gtr\>
+
+  <\python-code>
+    test loss, test acc: [0.0018235821044072509, 0.9993454813957214]
+  </python-code>
+
+  We can use our model to convert date formats finally, but it's not as
+  simple as calling <python|model.predict()>:
+
+  <\python-code>
+    import numpy as np
+
+    \;
+
+    def translate(hunman_date):
+
+    \ \ \ \ translation = ""
+
+    \ \ \ \ for t in range(Ty):
+
+    \ \ \ \ \ \ \ \ X = np.array([hunman_date]) \ # encoder input\ 
+
+    \ \ \ \ \ \ \ \ X_dec = np.array([sos + translation]) \ # decoder input
+
+    \ \ \ \ \ \ \ \ y_proba = model.predict((X, X_dec), verbose=0)[0, t] \ #
+    last token's probas
+
+    \ \ \ \ \ \ \ \ char_id = np.argmax(y_proba)
+
+    \ \ \ \ \ \ \ \ predicted_char = vec_layer_machine.get_vocabulary()[char_id]
+
+    \ \ \ \ \ \ \ \ if predicted_char == eos:
+
+    \ \ \ \ \ \ \ \ \ \ \ \ break
+
+    \ \ \ \ \ \ \ \ translation += predicted_char
+
+    \ \ \ \ return translation.strip()
+  </python-code>
+
+  \;
+
+  We call the model in a loop because the decoder expects as input the
+  character that was predicted at the previous time step. Let's see how our
+  model performs:
+
+  <\python-code>
+    for i in range(5):
+
+    \ \ \ \ human_date= format_date(fake.date_object(),format=random.choice(FORMATS),locale='en_US')
+
+    \ \ \ \ print("human: " + human_date)
+
+    \ \ \ \ print("machine: " + translate(human_date) + "\\n")
+  </python-code>
+
+  =\<gtr\>
+
+  <\python-code>
+    human: Friday, December 20, 2019
+
+    machine: 2019-12-20
+
+    \;
+
+    human: 14.02.73
+
+    machine: 1973-02-14
+
+    \;
+
+    human: Jan 10, 2025
+
+    machine: 2025-01-10
+
+    \;
+
+    human: Friday, February 22, 1985
+
+    machine: 1985-02-22
+
+    \;
+
+    human: Sunday, September 12, 1971
+
+    machine: 1971-09-12
+  </python-code>
+
+  It did really well.
+
+  <section*|Attention Mechanisms>
 </body>
 
 <\initial>
@@ -281,12 +604,18 @@
   <\collection>
     <associate|auto-1|<tuple|?|1>>
     <associate|auto-2|<tuple|?|1>>
-    <associate|auto-3|<tuple|1|?>>
+    <associate|auto-3|<tuple|1|2>>
+    <associate|auto-4|<tuple|1|?>>
   </collection>
 </references>
 
 <\auxiliary>
   <\collection>
+    <\associate|figure>
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|1>|>
+        A encoder-decoder network
+      </surround>|<pageref|auto-3>>
+    </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Understanding
       Attention Mechanisms> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
