@@ -1,6 +1,6 @@
 <TeXmacs|2.1.4>
 
-<style|<tuple|notes|std-shadow>>
+<style|<tuple|notes|std-shadow|compact-list>>
 
 <\body>
   <\hide-preamble>
@@ -35,7 +35,17 @@
   Transformer architecture. It serves as a record of my learning process and
   a reference for the future use.
 
-  <section*|Encoder-Decoder Neural Network>
+  <strong|Sections:>
+
+  <\enumerate-Roman>
+    <item><hlink|Encoder-Decoder Neural Network|#section1>
+
+    <item><hlink|Attention Machanisms|#section2>
+
+    <item>Section 3
+  </enumerate-Roman>
+
+  <section*|Encoder-Decoder Neural Network><label|section1>
 
   Machine translation can be viewed as constructing conditional language
   models that generate the most probable output in a target language for a
@@ -591,7 +601,7 @@
 
   It did really well.
 
-  <section*|Attention Mechanisms>
+  <section*|Attention Mechanisms><label|section2>
 </body>
 
 <\initial>
@@ -603,9 +613,11 @@
 <\references>
   <\collection>
     <associate|auto-1|<tuple|?|1>>
-    <associate|auto-2|<tuple|?|1>>
+    <associate|auto-2|<tuple|III|1>>
     <associate|auto-3|<tuple|1|2>>
-    <associate|auto-4|<tuple|1|?>>
+    <associate|auto-4|<tuple|1|6>>
+    <associate|section1|<tuple|III|1>>
+    <associate|section2|<tuple|1|6>>
   </collection>
 </references>
 
@@ -623,6 +635,9 @@
 
       Encoder-Decoder Neural Network <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-2>
+
+      Attention Mechanisms <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-4>
     </associate>
   </collection>
 </auxiliary>
