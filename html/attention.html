@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:x="https://www.texmacs.org/2002/extensions" xmlns:m="http://www.w3.org/1998/Math/MathML">
   <head>
-    <title>mxm notes</title>
+    <title>TeXmacs notes</title>
     <meta charset="utf-8" content="TeXmacs 2.1.4" name="generator"></meta>
     <link href="../resources/notes-base.css" type="text/css" rel="stylesheet"></link>
     <link href="../resources/blog-icon.png" rel="icon"></link>
@@ -52,7 +52,27 @@
       Transformer architecture. It serves as a record of my learning process
       and a reference for the future use.
     </p>
-    <h2 id="auto-2">Encoder-Decoder Neural Network<span style="margin-left: 1em"></span></h2>
+    <p>
+      <strong>Sections:</strong>
+    </p>
+    <ol>
+      <li>
+        <p>
+          <a href="#section1">Encoder-Decoder Neural Network</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          <a href="#section2">Attention Machanisms</a>
+        </p>
+      </li>
+      <li>
+        <p>
+          Section 3
+        </p>
+      </li>
+    </ol>
+    <h2 id="auto-2"><a id="section1"></a>Encoder-Decoder Neural Network<span style="margin-left: 1em"></span></h2>
     <p>
       Machine translation can be viewed as constructing conditional language
       models that generate the most probable output in a target language for a
@@ -146,9 +166,6 @@
     return human_readable, machine_readable, dt</tt></class></pre>
     </div>
     <p>
-      
-    </p>
-    <p>
       The size of our training dataset is 100,000:
     </p>
     <div class="tmweb-code">
@@ -168,9 +185,6 @@ dataset[:5]</tt></class></pre>
  ('wednesday december 31 1980', '1980-12-31'),
  ('apr 5 1995', '1995-04-05')]</tt></class></pre>
     </div>
-    <p>
-      
-    </p>
     <p>
       The next step is to vectorize all the texts in the dataset. Since we are
       translating date strings, we will use character-level vectorization
@@ -248,9 +262,6 @@ Y_valid = vec_layer_machine(
 Y_test = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[train_size+valid_size:]])</tt></class></pre>
     </div>
     <p>
-      
-    </p>
-    <p>
       And we can construct our model now:
     </p>
     <div class="tmweb-code">
@@ -258,22 +269,20 @@ Y_test = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[train_s
 <class style="font-family: Times New Roman"><tt>encoder_inputs = tf.keras.layers.Input(name=&quot;encoder_inputs&quot;, shape=[], dtype=tf.string)
 decoder_inputs = tf.keras.layers.Input(name=&quot;decoder_inputs&quot;,shape=[], dtype=tf.string)
 
-embed_size = 128
-encoder_embedding_layer = tf.keras.layers.Embedding(vocab_size, embed_size, name=&quot;enc_emb&quot;, mask_zero=True)
-decoder_embedding_layer = tf.keras.layers.Embedding(vocab_size, embed_size, name=&quot;dec_emb&quot;, mask_zero=True)
-
-encoder_input_ids = vec_layer_human(encoder_inputs)
-decoder_input_ids = vec_layer_machine(decoder_inputs)
-encoder_embeddings = encoder_embedding_layer(encoder_input_ids)
-decoder_embeddings = decoder_embedding_layer(decoder_input_ids)
+encoder_input_ids = tf.cast(
+    tf.expand_dims(vec_layer_human(encoder_inputs), axis=-1), 
+    dtype=tf.float32)
+decoder_input_ids = tf.cast(
+    tf.expand_dims(vec_layer_machine(decoder_inputs), axis=-1), 
+    dtype=tf.float32)
 
 encoder = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(256, return_state=True), name=&quot;encoder&quot;)
-encoder_outputs, *encoder_states = encoder(encoder_embeddings)
+encoder_outputs, *encoder_states = encoder(encoder_input_ids)
 encoder_states = [tf.concat(encoder_states[::2], axis=-1),  # hidden states (0 &amp; 2)
                   tf.concat(encoder_states[1::2], axis=-1)] # cell states (1 &amp; 3)
 
 decoder = tf.keras.layers.LSTM(512, name=&quot;decoder&quot;, return_sequences=True)
-decoder_outputs = decoder(decoder_embeddings, initial_state=encoder_states)
+decoder_outputs = decoder(decoder_input_ids, initial_state=encoder_states)
 
 output_layer = tf.keras.layers.Dense(vocab_size, name=&quot;dense&quot;, activation=&quot;softmax&quot;)
 Y_proba = output_layer(decoder_outputs)
@@ -284,16 +293,17 @@ model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;
               metrics=[&quot;accuracy&quot;])</tt></class></pre>
     </div>
     <p>
-      
-    </p>
-    <p>
-      One thing worth mentioning is how we compose the <tt class="verbatim">encoder_states</tt>.
-      Since we use a bidirectional LSTM as the encoder, we get four states
-      from it in total. The first two are hidden and cell states of the
-      forward LSTM, and the last two are the corresponding states from the
-      backward one. The hidden states are concatenated together, and the cell
-      states are concatenated likewise, before being passed to the decoder. We
-      can have a look at the model summary now:
+      We expand the dimensions of <tt class="verbatim">encoder_input_ids</tt> and <tt
+      class="verbatim">decoder_input_ids</tt> because LSTM layers expect a input shape
+      of <tt class="verbatim">(batch, timesteps, feature)</tt>, but the outputs of our
+      vectorization layers only have two dimensions. Another thing worth
+      mentioning is how we compose the <tt class="verbatim">encoder_states</tt>. Since
+      we use a bidirectional LSTM as the encoder, we get four states from it
+      in total. The first two are hidden and cell states of the forward LSTM,
+      and the last two are the corresponding states from the backward one. The
+      hidden states are concatenated together, and the cell states are
+      concatenated likewise, before being passed to the decoder. We can have a
+      look at the model summary now:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
@@ -304,7 +314,8 @@ model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>________________________________________________________________________________________________________________________
+<class style="font-family: Times New Roman"><tt>Model: &quot;model&quot;
+________________________________________________________________________________________________________________________
  Layer (type)                       Output Shape                        Param #     Connected to                        
 ========================================================================================================================
  encoder_inputs (InputLayer)        [(None,)]                           0           []                                  
@@ -313,17 +324,21 @@ model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;
                                                                                                                         
  decoder_inputs (InputLayer)        [(None,)]                           0           []                                  
                                                                                                                         
- enc_emb (Embedding)                (None, 30, 128)                     6400        ['vec_h[0][0]']                     
+ tf.expand_dims_2 (TFOpLambda)      (None, 30, 1)                       0           ['vec_h[1][0]']                     
                                                                                                                         
  vec_m (TextVectorization)          (None, 12)                          0           ['decoder_inputs[0][0]']            
                                                                                                                         
- encoder (Bidirectional)            [(None, 512),                       788480      ['enc_emb[0][0]']                   
+ tf.cast (TFOpLambda)               (None, 30, 1)                       0           ['tf.expand_dims_2[0][0]']          
+                                                                                                                        
+ tf.expand_dims_3 (TFOpLambda)      (None, 12, 1)                       0           ['vec_m[1][0]']                     
+                                                                                                                        
+ encoder (Bidirectional)            [(None, 512),                       528384      ['tf.cast[0][0]']                   
                                      (None, 256),                                                                       
                                      (None, 256),                                                                       
                                      (None, 256),                                                                       
                                      (None, 256)]                                                                       
                                                                                                                         
- dec_emb (Embedding)                (None, 12, 128)                     6400        ['vec_m[0][0]']                     
+ tf.cast_1 (TFOpLambda)             (None, 12, 1)                       0           ['tf.expand_dims_3[0][0]']          
                                                                                                                         
  tf.concat (TFOpLambda)             (None, 512)                         0           ['encoder[0][1]',                   
                                                                                      'encoder[0][3]']                   
@@ -331,23 +346,21 @@ model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;
  tf.concat_1 (TFOpLambda)           (None, 512)                         0           ['encoder[0][2]',                   
                                                                                      'encoder[0][4]']                   
                                                                                                                         
- decoder (LSTM)                     (None, 12, 512)                     1312768     ['dec_emb[0][0]',                   
+ decoder (LSTM)                     (None, 12, 512)                     1052672     ['tf.cast_1[0][0]',                 
                                                                                      'tf.concat[0][0]',                 
-                                                                                     'tf.concat_1[0][0]']               
+                                                                                     'tf.concat_1[0][0]']        
+       
                                                                                                                         
  dense (Dense)                      (None, 12, 50)                      25650       ['decoder[0][0]']                   
                                                                                                                         
 ========================================================================================================================
-Total params: 2139698 (8.16 MB)
-Trainable params: 2139698 (8.16 MB)
+Total params: 1606706 (6.13 MB)
+Trainable params: 1606706 (6.13 MB)
 Non-trainable params: 0 (0.00 Byte)</tt></class></pre>
     </div>
     <p>
-      
-    </p>
-    <p>
       It indeed has the same topology as we showed earlier in figure 1. The
-      training process taks around 2 to 3 minutes on my RTX 3060 card, and the
+      training process taks around 2 minutes on my RTX 3060 card, and the
       evalution gets a promising result:
     </p>
     <div class="tmweb-code">
@@ -425,6 +438,6 @@ machine: 1971-09-12</tt></class></pre>
     <p>
       It did really well.
     </p>
-    <h2 id="auto-4">Attention Mechanisms<span style="margin-left: 1em"></span></h2>
+    <h2 id="auto-4"><a id="section2"></a>Attention Mechanisms<span style="margin-left: 1em"></span></h2>
   </body>
 </html>
