@@ -669,9 +669,15 @@
     \<alpha\><rsub|tt<rprime|'>>=<frac|exp<around*|(|e<rsub|tt<rprime|'>>|)>|<big|sum><rsup|T<rsub|x>><rsub|k=1>exp<around*|(|e<rsub|tk>|)>>
   </equation*>
 
+  where
+
+  <\equation*>
+    e<rsub|tt<rprime|'>>= a<around*|(|s<rsub|t-1>,h<rsub|t<rprime|'>>|)>
+  </equation*>
+
   The parameter e is called energy and is obtained by training a small
-  alignment model that scores how well the input at position t' aligns with
-  the output at position t.
+  alignment model that scores how well the input at position
+  <math|t<rprime|'>> aligns with the output at position <math|t-1>.
 
   The probability <math|\<alpha\><rsub|tt<rprime|'>>> , or its associated
   energy <math|e<rsub|tt<rprime|'>>>, reflects the importance of encoder's
@@ -695,7 +701,88 @@
 
   <subsection*|One Step Attention>
 
-  \;
+  The key part of this new model architecture is the attention computation,
+  so let's implement it first:
+
+  <\python-code>
+    from tensorflow.keras.layers import RepeatVector, Concatenate, Dense,
+    Dot, Softmax
+
+    \;
+
+    repeator = RepeatVector(Tx)
+
+    concatenator = Concatenate(axis=-1)
+
+    densor1 = Dense(10, activation = "tanh")
+
+    densor2 = Dense(1, activation = "relu")
+
+    activator = Softmax(axis=1, name="attention_weights")
+
+    dotor = Dot(axes = 1)
+
+    \;
+
+    def one_step_attention(h, s_prev):
+
+    \ \ \ \ """
+
+    \ \ \ \ Arguments:
+
+    \ \ \ \ h -- hidden state output of the Bi-LSTM, numpy-array of shape (m,
+    Tx, n_h)
+
+    \ \ \ \ s_prev -- previous hidden state of the (decoder) LSTM,
+    numpy-array of shape (m, n_s)
+
+    \ \ \ \ 
+
+    \ \ \ \ Returns:
+
+    \ \ \ \ context -- context vector, input of the next (decoder) LSTM cell
+
+    \ \ \ \ """
+
+    \ \ \ \ 
+
+    \ \ \ \ s_prev = repeator(s_prev) \ \ \ \ \ \ \ \ \ \ # (m, Tx, n_s)
+    \ \ \ \ \ \ \ \ \ \ \ \ \ 
+
+    \ \ \ \ concat = concatenator([h, s_prev]) \ # (m, Tx, n_h + n_s)
+
+    \ \ \ \ energies = densor2(densor1(concat)) # (m, Tx, 1)
+
+    \ \ \ \ alphas = activator(energies) \ \ \ \ \ \ \ # (m, Tx, 1)
+
+    \ \ \ \ context = dotor([alphas, h]) \ \ \ \ \ \ \ # (m, 1, n_h)
+
+    \ \ \ \ 
+
+    \ \ \ \ return context
+  </python-code>
+
+  This function computes the attention context at decoder time step t. It
+  takes two inputs: the complete sequence of encoder hidden states
+  <verbatim|h> and the decoder's previous hidden state <verbatim|s_prev>.
+
+  The decoder state <math|s<rsub|t-1>> is repeated Tx times to match the
+  encoder sequence length, enabling computation of alignment scores between
+  <math|s<rsub|t-1>> and each encoder hidden state
+  <math|h<rsub|t<rprime|'>>>. We construct the alignment model as a
+  three-layer neural network: two dense layers followed by a softmax
+  activation layer.
+
+  The resulting attention weights (alphas) represent the probability
+  distribution indicating how relevant each input word at position t' is for
+  generating the current output word at position t. In essence, these weights
+  quantify how much attention the decoder should pay to each encoder position
+  when producing the current output token.
+
+  Finally, the attention weights are applied via dot product with the encoder
+  hidden states to produce a context vector\Va weighted combination of all
+  encoder states that provides tailored information for generating each
+  specific output word.
 </body>
 
 <\initial>
@@ -711,8 +798,8 @@
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|1|6>>
     <associate|auto-5|<tuple|1|7>>
-    <associate|auto-6|<tuple|2|?>>
-    <associate|auto-7|<tuple|2|?>>
+    <associate|auto-6|<tuple|2|7>>
+    <associate|auto-7|<tuple|2|8>>
     <associate|section1|<tuple|III|1>>
     <associate|section2|<tuple|1|6>>
   </collection>
@@ -724,6 +811,11 @@
       <tuple|normal|<\surround|<hidden-binding|<tuple>|1>|>
         A encoder-decoder network
       </surround>|<pageref|auto-3>>
+
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|2>|>
+        The model is generating the word <with|mode|<quote|math>|y<rsub|t>>
+        given a source sentence (<with|mode|<quote|math>|x<rsub|1>,x<rsub|2>,\<ldots\>.,x<rsub|T>>).
+      </surround>|<pageref|auto-6>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Understanding
@@ -739,6 +831,10 @@
       <with|par-left|<quote|1tab>|General Description
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-5>>
+
+      <with|par-left|<quote|1tab>|One Step Attention
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-7>>
     </associate>
   </collection>
 </auxiliary>

@@ -12,31 +12,31 @@
   <body>
     <div class="toggle" style="display: none">
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
       <p>
-
+        
       </p>
     </div>
     <div class="notes-header">
@@ -162,7 +162,7 @@
         human_readable = human_readable.lower()
         human_readable = human_readable.replace(',','')
         machine_readable = dt.isoformat()
-
+        
     except AttributeError as e:
         return None, None, None
 
@@ -218,7 +218,7 @@ vec_layer_human = tf.keras.layers.TextVectorization(
 vec_layer_machine = tf.keras.layers.TextVectorization(
     vocab_size, output_sequence_length=Ty, split=&quot;character&quot;, name=&quot;vec_m&quot;,
     standardize=custom_standardization)
-
+    
 vec_layer_human.adapt(dates_human)
 vec_layer_machine.adapt([f&quot;{sos}{s}{eos}&quot; for s in dates_machine])
 
@@ -240,7 +240,7 @@ print(vec_layer_machine.get_vocabulary())</tt></class></pre>
       function here because we need two special characters, <tt class="verbatim">@</tt>
       and <tt class="verbatim">$</tt>, to denote the start and end of the sequences, and
       in the default settings, these special characters are removed by
-      tensorflow's <tt class="verbatim">TextVectorization</tt>.
+      tensorflow's <tt class="verbatim">TextVectorization</tt>. 
     </p>
     <p>
       Next we split the whole dataset into training, validation and test sets:
@@ -273,10 +273,10 @@ Y_test = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[train_s
 decoder_inputs = tf.keras.layers.Input(name=&quot;decoder_inputs&quot;,shape=[], dtype=tf.string)
 
 encoder_input_ids = tf.cast(
-    tf.expand_dims(vec_layer_human(encoder_inputs), axis=-1),
+    tf.expand_dims(vec_layer_human(encoder_inputs), axis=-1), 
     dtype=tf.float32)
 decoder_input_ids = tf.cast(
-    tf.expand_dims(vec_layer_machine(decoder_inputs), axis=-1),
+    tf.expand_dims(vec_layer_machine(decoder_inputs), axis=-1), 
     dtype=tf.float32)
 
 encoder = tf.keras.layers.Bidirectional(tf.keras.layers.LSTM(256, return_state=True), name=&quot;encoder&quot;)
@@ -319,43 +319,43 @@ model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;
       <pre class="verbatim" xml:space="preserve">
 <class style="font-family: Times New Roman"><tt>Model: &quot;model&quot;
 ________________________________________________________________________________________________________________________
- Layer (type)                       Output Shape                        Param #     Connected to
+ Layer (type)                       Output Shape                        Param #     Connected to                        
 ========================================================================================================================
- encoder_inputs (InputLayer)        [(None,)]                           0           []
-
- vec_h (TextVectorization)          (None, 30)                          0           ['encoder_inputs[0][0]']
-
- decoder_inputs (InputLayer)        [(None,)]                           0           []
-
- tf.expand_dims_2 (TFOpLambda)      (None, 30, 1)                       0           ['vec_h[1][0]']
-
- vec_m (TextVectorization)          (None, 12)                          0           ['decoder_inputs[0][0]']
-
- tf.cast (TFOpLambda)               (None, 30, 1)                       0           ['tf.expand_dims_2[0][0]']
-
- tf.expand_dims_3 (TFOpLambda)      (None, 12, 1)                       0           ['vec_m[1][0]']
-
- encoder (Bidirectional)            [(None, 512),                       528384      ['tf.cast[0][0]']
-                                     (None, 256),
-                                     (None, 256),
-                                     (None, 256),
-                                     (None, 256)]
-
- tf.cast_1 (TFOpLambda)             (None, 12, 1)                       0           ['tf.expand_dims_3[0][0]']
-
- tf.concat (TFOpLambda)             (None, 512)                         0           ['encoder[0][1]',
-                                                                                     'encoder[0][3]']
-
- tf.concat_1 (TFOpLambda)           (None, 512)                         0           ['encoder[0][2]',
-                                                                                     'encoder[0][4]']
-
- decoder (LSTM)                     (None, 12, 512)                     1052672     ['tf.cast_1[0][0]',
-                                                                                     'tf.concat[0][0]',
-                                                                                     'tf.concat_1[0][0]']
-
-
- dense (Dense)                      (None, 12, 50)                      25650       ['decoder[0][0]']
-
+ encoder_inputs (InputLayer)        [(None,)]                           0           []                                  
+                                                                                                                        
+ vec_h (TextVectorization)          (None, 30)                          0           ['encoder_inputs[0][0]']            
+                                                                                                                        
+ decoder_inputs (InputLayer)        [(None,)]                           0           []                                  
+                                                                                                                        
+ tf.expand_dims_2 (TFOpLambda)      (None, 30, 1)                       0           ['vec_h[1][0]']                     
+                                                                                                                        
+ vec_m (TextVectorization)          (None, 12)                          0           ['decoder_inputs[0][0]']            
+                                                                                                                        
+ tf.cast (TFOpLambda)               (None, 30, 1)                       0           ['tf.expand_dims_2[0][0]']          
+                                                                                                                        
+ tf.expand_dims_3 (TFOpLambda)      (None, 12, 1)                       0           ['vec_m[1][0]']                     
+                                                                                                                        
+ encoder (Bidirectional)            [(None, 512),                       528384      ['tf.cast[0][0]']                   
+                                     (None, 256),                                                                       
+                                     (None, 256),                                                                       
+                                     (None, 256),                                                                       
+                                     (None, 256)]                                                                       
+                                                                                                                        
+ tf.cast_1 (TFOpLambda)             (None, 12, 1)                       0           ['tf.expand_dims_3[0][0]']          
+                                                                                                                        
+ tf.concat (TFOpLambda)             (None, 512)                         0           ['encoder[0][1]',                   
+                                                                                     'encoder[0][3]']                   
+                                                                                                                        
+ tf.concat_1 (TFOpLambda)           (None, 512)                         0           ['encoder[0][2]',                   
+                                                                                     'encoder[0][4]']                   
+                                                                                                                        
+ decoder (LSTM)                     (None, 12, 512)                     1052672     ['tf.cast_1[0][0]',                 
+                                                                                     'tf.concat[0][0]',                 
+                                                                                     'tf.concat_1[0][0]']        
+       
+                                                                                                                        
+ dense (Dense)                      (None, 12, 50)                      25650       ['decoder[0][0]']                   
+                                                                                                                        
 ========================================================================================================================
 Total params: 1606706 (6.13 MB)
 Trainable params: 1606706 (6.13 MB)
@@ -393,7 +393,7 @@ print(&quot;test loss, test acc:&quot;, results)</tt></class></pre>
 def translate(hunman_date):
     translation = &quot;&quot;
     for t in range(Ty):
-        X = np.array([hunman_date])  # encoder input
+        X = np.array([hunman_date])  # encoder input 
         X_dec = np.array([sos + translation])  # decoder input
         y_proba = model.predict((X, X_dec), verbose=0)[0, t]  # last token's probas
         char_id = np.argmax(y_proba)
@@ -436,7 +436,7 @@ human: Sunday, September 12, 1971
 machine: 1971-09-12</tt></class></pre>
     </div>
     <p>
-
+      
     </p>
     <h2 id="auto-4"><a id="section2"></a>Attention Mechanisms<span style="margin-left: 1em"></span></h2>
     <p>
@@ -500,17 +500,24 @@ machine: 1971-09-12</tt></class></pre>
       <img src="attention-12.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0139063360881544em; vertical-align: -1.11898622589532em; height: 2.4748870523416em"></img>
     </center>
     <p>
+      where
+    </p>
+    <center>
+      <img src="attention-13.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0423581267217631em; margin-right: -0.0112837465564741em; margin-top: -0.0112837465564738em; vertical-align: -0.239823691460055em; height: 0.930909090909091em"></img>
+    </center>
+    <p>
       The parameter e is called energy and is obtained by training a small
-      alignment model that scores how well the input at position t' aligns
-      with the output at position t.
+      alignment model that scores how well the input at position <img src="attention-14.png"
+      style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.0112617079889807em; height: 0.810534435261708em"></img> aligns with the output at position <span class="no-breaks"><img src="attention-15.png"
+      style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347106em; vertical-align: -0.0112617079889807em; height: 0.660099173553719em"></img>.</span>
     </p>
     <p>
       The probability <img src="attention-11.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564737em; margin-top: -0.0169256198347107em; vertical-align: -0.16169696969697em; height: 0.629994490358127em"></img> , or its associated energy <span
-      class="no-breaks"><img src="attention-13.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img>,</span> reflects the importance of
-      encoder's hidden state <img src="attention-14.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564737em; margin-top: -0.0112837465564738em; vertical-align: -0.16169696969697em; height: 0.883878787878788em"></img> with respect to the
+      class="no-breaks"><img src="attention-16.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img>,</span> reflects the importance of
+      encoder's hidden state <img src="attention-17.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564737em; margin-top: -0.0112837465564738em; vertical-align: -0.16169696969697em; height: 0.883878787878788em"></img> with respect to the
       decoder's previous hidden state <img src="attention-8.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> in determining
       the next state <img src="attention-6.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> and generating <span class="no-breaks"><img
-      src="attention-15.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0225454545454545em; margin-right: -0.0564187327823691em; margin-top: -0.00526721763085397em; vertical-align: -0.248220385674931em; height: 0.682292011019284em"></img>.</span> Thus, information can be distributed
+      src="attention-18.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0225454545454545em; margin-right: -0.0564187327823691em; margin-top: -0.00526721763085397em; vertical-align: -0.248220385674931em; height: 0.682292011019284em"></img>.</span> Thus, information can be distributed
       throughout the sequence of encoder hidden states and selectively
       retrieved by the decoder. This is a brief graphical illustration from
       the paper:
@@ -518,15 +525,15 @@ machine: 1971-09-12</tt></class></pre>
     <div style="margin-top: 1em; margin-bottom: 1em">
       <table style="width: 100%">
         <tbody><tr>
-          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-16.png" height="286.7911968" width="223.5284328"></img></td>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-19.png" height="286.7911968" width="223.5284328"></img></td>
         </tr><tr>
           <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
         </tr><tr>
           <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
             <font style="font-size: 90.0%"><p>
               <b>Figure 2. </b><a id="auto-6"></a>The model is generating the word
-              <img src="attention-15.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0225454545454545em; margin-right: -0.0564187327823691em; margin-top: -0.00526721763085397em; vertical-align: -0.248220385674931em; height: 0.682292011019284em"></img> given a source sentence (<span class="no-breaks"><img
-              src="attention-17.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.101553719008264em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img>).</span>
+              <img src="attention-18.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0225454545454545em; margin-right: -0.0564187327823691em; margin-top: -0.00526721763085397em; vertical-align: -0.248220385674931em; height: 0.682292011019284em"></img> given a source sentence (<span class="no-breaks"><img
+              src="attention-20.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.101553719008264em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img>).</span>
             </p></font>
           </div></td>
         </tr></tbody>
@@ -540,7 +547,63 @@ machine: 1971-09-12</tt></class></pre>
     </p>
     <h3 id="auto-7">One Step Attention<span style="margin-left: 1em"></span></h3>
     <p>
+      The key part of this new model architecture is the attention
+      computation, so let's implement it first:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>from tensorflow.keras.layers import RepeatVector, Concatenate, Dense, Dot, Softmax
 
+repeator = RepeatVector(Tx)
+concatenator = Concatenate(axis=-1)
+densor1 = Dense(10, activation = &quot;tanh&quot;)
+densor2 = Dense(1, activation = &quot;relu&quot;)
+activator = Softmax(axis=1, name=&quot;attention_weights&quot;)
+dotor = Dot(axes = 1)
+
+def one_step_attention(h, s_prev):
+    &quot;&quot;&quot;
+    Arguments:
+    h -- hidden state output of the Bi-LSTM, numpy-array of shape (m, Tx, n_h)
+    s_prev -- previous hidden state of the (decoder) LSTM, numpy-array of shape (m, n_s)
+    
+    Returns:
+    context -- context vector, input of the next (decoder) LSTM cell
+    &quot;&quot;&quot;
+    
+    s_prev = repeator(s_prev)           # (m, Tx, n_s)              
+    concat = concatenator([h, s_prev])  # (m, Tx, n_h + n_s)
+    energies = densor2(densor1(concat)) # (m, Tx, 1)
+    alphas = activator(energies)        # (m, Tx, 1)
+    context = dotor([alphas, h])        # (m, 1, n_h)
+    
+    return context</tt></class></pre>
+    </div>
+    <p>
+      This function computes the attention context at decoder time step t. It
+      takes two inputs: the complete sequence of encoder hidden states <tt
+      class="verbatim">h</tt> and the decoder's previous hidden state <tt class="verbatim">s_prev</tt>.
+    </p>
+    <p>
+      The decoder state <img src="attention-8.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> is repeated Tx times to match
+      the encoder sequence length, enabling computation of alignment scores
+      between <img src="attention-8.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> and each encoder hidden state <span
+      class="no-breaks"><img src="attention-17.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564737em; margin-top: -0.0112837465564738em; vertical-align: -0.16169696969697em; height: 0.883878787878788em"></img>.</span> We construct the alignment model
+      as a three-layer neural network: two dense layers followed by a softmax
+      activation layer.
+    </p>
+    <p>
+      The resulting attention weights (alphas) represent the probability
+      distribution indicating how relevant each input word at position t' is
+      for generating the current output word at position t. In essence, these
+      weights quantify how much attention the decoder should pay to each
+      encoder position when producing the current output token.
+    </p>
+    <p>
+      Finally, the attention weights are applied via dot product with the
+      encoder hidden states to produce a context vector&mdash;a weighted
+      combination of all encoder states that provides tailored information for
+      generating each specific output word.
     </p>
   </body>
 </html>
