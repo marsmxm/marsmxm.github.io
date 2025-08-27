@@ -605,5 +605,181 @@ def one_step_attention(h, s_prev):
       combination of all encoder states that provides tailored information for
       generating each specific output word.
     </p>
+    <h3 id="auto-8">Build the Model<span style="margin-left: 1em"></span></h3>
+    <p>
+      This is how our model looks like now:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>from tensorflow.keras.layers import Input, Bidirectional, LSTM, Dense
+
+n_h = 64
+n_s = 128
+
+def build_model():
+    encoder_inputs = Input(name=&quot;encoder_inputs&quot;, shape=[], dtype=tf.string)
+    encoder_input_ids = tf.cast(
+        tf.expand_dims(vec_layer_human(encoder_inputs), axis=-1), 
+        dtype=tf.float32)
+
+    encoder = Bidirectional(LSTM(n_h, return_sequences=True), name=&quot;encoder&quot;)
+    encoder_outputs = encoder(encoder_input_ids)
+
+    s0 = Input(shape=(n_s,), name='s0')
+    c0 = Input(shape=(n_s,), name='c0')
+    s = s0
+    c = c0
+
+    decoder_LSTM_cell = LSTM(n_s, name=&quot;decoder&quot;, return_state = True)
+    output_layer = Dense(vocab_size, name=&quot;output&quot;, activation=&quot;softmax&quot;)
+    outputs = []
+
+    for t in range(Ty):
+        context = one_step_attention(encoder_outputs, s)
+        _, s, c = decoder_LSTM_cell(inputs=context, initial_state=[s, c])
+        out = output_layer(s)
+        outputs.append(out)
+
+    # Stack outputs to create a single tensor of shape (batch_size, Ty, vocab_size)
+    outputs = tf.stack(outputs, axis=1)
+
+    model = tf.keras.Model(inputs=[encoder_inputs, s0, c0], outputs=outputs)
+    model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;nadam&quot;,
+                metrics=[&quot;accuracy&quot;])
+
+    model.summary(line_length=120, expand_nested=True)
+    return model</tt></class></pre>
+    </div>
+    <p>
+      This model differs from the previous architecture in two key aspects:
+    </p>
+    <ul>
+      <li>
+        <p>
+          Instead of returning only the final hidden state, the encoder now
+          outputs the complete sequence of hidden states from all time steps.
+          These outputs are essential parts for computing attention weights
+          later.
+        </p>
+      </li>
+      <li>
+        <p>
+          The decoder now implements a manual recurrent structure rather than
+          using a standard LSTM layer. At each time step, the decoder cell
+          receives two inputs: the attention-weighted context vector (computed
+          by the <tt class="verbatim">one_step_attention</tt> function) and the
+          hidden/cell states from the previous time step. The cell then passes
+          its updated hidden and cell states to the next time step. The
+          outputs from all decoder time steps are collected and stacked to
+          form the final model output.
+        </p>
+      </li>
+    </ul>
+    <p>
+      The training and prediction procedures remain unchanged from the
+      previous implementation. However, we add a new visualization function to
+      analyze the learned attention patterns for test samples.:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>import matplotlib.pyplot as plt
+
+def plot_attention_map(modelx, text):
+    layer = modelx.get_layer('attention_weights')
+    f = tf.keras.Model(modelx.inputs, [layer.get_output_at(t) for t in range(Ty)])
+
+    s = np.zeros((1, n_s))
+    c = np.zeros((1, n_s))
+    X = np.array([text])
+    attention_weights = f.predict([X, s, c])
+
+    attention_map = np.zeros((Ty, Tx))
+    for t in range(Ty):
+        for t_prime in range(Tx):
+            attention_map[t][t_prime] = attention_weights[t][0, t_prime, 0]
+
+    # Normalize attention map
+    row_max = attention_map.max(axis=1)
+    attention_map = attention_map / row_max[:, None]
+
+    prediction = modelx.predict([X, s, c], verbose=0)
+    predicted_text = []
+    for i in range(len(prediction[0])):
+        char_id = np.argmax(prediction[0, i]) 
+        predicted_char = vec_layer_machine.get_vocabulary()[char_id]
+
+        predicted_text.append(predicted_char)
+        
+    text_ = list(text)
+    
+    input_length = len(text)
+    output_length = Ty
+    
+    # Plot the attention_map
+    plt.clf()
+    f = plt.figure(figsize=(8, 8.5))
+    ax = f.add_subplot(1, 1, 1)
+
+    # add image
+    i = ax.imshow(attention_map, interpolation='nearest', cmap='Blues')
+
+    # add colorbar
+    cbaxes = f.add_axes([0.2, 0, 0.6, 0.03])
+    cbar = f.colorbar(i, cax=cbaxes, orientation='horizontal')
+    cbar.ax.set_xlabel('Alpha value (Probability output of the &quot;softmax&quot;)', labelpad=2)
+
+    # add labels
+    ax.set_yticks(range(output_length))
+    ax.set_yticklabels(predicted_text[:output_length])
+
+    ax.set_xticks(range(input_length))
+    ax.set_xticklabels(text_[:input_length], rotation=45)
+
+    ax.set_xlabel('Input Sequence')
+    ax.set_ylabel('Output Sequence')
+
+    # add grid and legend
+    ax.grid()
+    
+    return attention_map</tt></class></pre>
+    </div>
+    <p>
+      We extract the <tt class="verbatim">attention_weights</tt> layer from the trained
+      model and use it to obtain the attention weights during prediction.
+      These weights are then visualized as heatmaps, where each cell
+      represents the attention score between a specific input position and
+      output position. This visualization reveals which parts of the input
+      sequence the model focuses on when generating each word in the output,
+      providing interpretability into the model's decision-making process.
+      Let's try it now:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>plot_attention_map(model, &quot;Monday, February 23, 1998&quot;)</tt></class></pre>
+    </div>
+    <p>
+      =&gt;
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-21.jpg" width="80%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 3. </b><a id="auto-9"></a>Heatmap of Attention Weights 
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      The complete code of this section can be found <a href="https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/attention.py">here</a>.
+    </p>
+    <p>
+      
+    </p>
   </body>
 </html>
