@@ -89,21 +89,21 @@
       Here, x and y denote the input and output sequence respectively, while
       superscripts in angle brackets (<span class="no-breaks"><img src="attention-2.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: 0em; vertical-align: -0.330953168044077em; height: 0.996716253443526em"></img>)</span>
       indicate the position of each word within the sequence. Traditionally, a
-      method called statistical machine translation (SMT) was the dominant
-      approach (as used in early versions of Google Translate). NMT models are
-      trained on large amount of <a href="">parallel corpora</a>, and analyzes
-      these corpora to identify statistical relationships between words,
-      phrases, and sentence structures in different languages.
+      method called <strong>statistical machine translation</strong> (SMT) was
+      the dominant approach (as used in early versions of Google Translate).
+      NMT models are trained on large amount of <a href="">parallel corpora</a>,
+      and analyzes these corpora to identify statistical relationships between
+      words, phrases, and sentence structures in different languages.
     </p>
     <p>
-      During the 2010s, another method called neural machine translation (NMT)
-      rapidly gained popularity following the successful application of RNN
-      models to translation tasks. A <a href="https://arxiv.org/abs/1409.3215">2014 paper</a> demonstrated how
-      <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">long-short-term memory (LSTM)</a> cells could be employed to
-      address sequence-to-sequence problems. The idea is to use an encoder
-      LSTM to read the input sequence, generating a fixed-dimensional vector
-      representation, which was then decoded by a second LSTM to produce the
-      corresponding output sequence.
+      During the 2010s, another method called <strong>neural machine
+      translation</strong> (NMT) rapidly gained popularity following the
+      successful application of RNN models to translation tasks. A <a href="https://arxiv.org/abs/1409.3215">2014
+      paper</a> demonstrated how <a href="https://en.wikipedia.org/wiki/Long_short-term_memory">long-short-term memory (LSTM)</a>
+      cells could be employed to address sequence-to-sequence problems. The
+      idea is to use an encoder LSTM to read the input sequence, generating a
+      fixed-dimensional vector representation, which was then decoded by a
+      second LSTM to produce the corresponding output sequence.
     </p>
     <p>
       To better understand this neural network architecture, we will build an
@@ -243,7 +243,8 @@ print(vec_layer_machine.get_vocabulary())</tt></class></pre>
       tensorflow's <tt class="verbatim">TextVectorization</tt>. 
     </p>
     <p>
-      Next we split the whole dataset into training, validation and test sets:
+      <a id="section1-model"></a>Next we split the whole dataset into training, validation and
+      test sets:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
@@ -459,7 +460,7 @@ machine: 1971-09-12</tt></class></pre>
       December 20, 2019&quot;</tt>, if the decoder is currently generating the
       month part of <tt class="verbatim">&quot;2019-12-20&quot;</tt>, it only needs to
       focus on <tt class="verbatim">December</tt> from the input, so the model assigns
-      higher weights to the vector representation of <tt class="verbatim">December</tt>.
+      higher weights to the vector representation of  <tt class="verbatim">December</tt>.
       This is what the attention mechanism means in the context of this new
       approach. Now let's delve into details of each part, and go through key
       mathematical expressions from the paper.
@@ -506,10 +507,10 @@ machine: 1971-09-12</tt></class></pre>
       <img src="attention-13.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0423581267217631em; margin-right: -0.0112837465564741em; margin-top: -0.0112837465564738em; vertical-align: -0.239823691460055em; height: 0.930909090909091em"></img>
     </center>
     <p>
-      The parameter e is called energy and is obtained by training a small
-      alignment model that scores how well the input at position <img src="attention-14.png"
-      style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.0112617079889807em; height: 0.810534435261708em"></img> aligns with the output at position <span class="no-breaks"><img src="attention-15.png"
-      style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347106em; vertical-align: -0.0112617079889807em; height: 0.660099173553719em"></img>.</span>
+      The parameter e is called <strong>energy</strong> and is obtained by
+      training a small alignment model that scores how well the input at
+      position <img src="attention-14.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.0112617079889807em; height: 0.810534435261708em"></img> aligns with the output at position
+      <span class="no-breaks"><img src="attention-15.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347106em; vertical-align: -0.0112617079889807em; height: 0.660099173553719em"></img>.</span>
     </p>
     <p>
       The probability <img src="attention-11.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564737em; margin-top: -0.0169256198347107em; vertical-align: -0.16169696969697em; height: 0.629994490358127em"></img> , or its associated energy <span
@@ -605,7 +606,7 @@ def one_step_attention(h, s_prev):
       combination of all encoder states that provides tailored information for
       generating each specific output word.
     </p>
-    <h3 id="auto-8">Build the Model<span style="margin-left: 1em"></span></h3>
+    <h3 id="auto-8">Model Building<span style="margin-left: 1em"></span></h3>
     <p>
       This is how our model looks like now:
     </p>
@@ -746,7 +747,7 @@ def plot_attention_map(modelx, text):
     <p>
       We extract the <tt class="verbatim">attention_weights</tt> layer from the trained
       model and use it to obtain the attention weights during prediction.
-      These weights are then visualized as heatmaps, where each cell
+      These weights are then visualized as heat maps, where each cell
       represents the attention score between a specific input position and
       output position. This visualization reveals which parts of the input
       sequence the model focuses on when generating each word in the output,
@@ -769,7 +770,7 @@ def plot_attention_map(modelx, text):
         </tr><tr>
           <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
             <font style="font-size: 90.0%"><p>
-              <b>Figure 3. </b><a id="auto-9"></a>Heatmap of Attention Weights 
+              <b>Figure 3. </b><a id="auto-9"></a>Heat map of Attention Weights 
             </p></font>
           </div></td>
         </tr></tbody>
@@ -778,8 +779,102 @@ def plot_attention_map(modelx, text):
     <p>
       The complete code of this section can be found <a href="https://github.com/marsmxm/marsmxm.github.io/blob/main/resources/articles/attention/attention.py">here</a>.
     </p>
+    <h3 id="auto-10">Other Attention Implementations<span style="margin-left: 1em"></span></h3>
     <p>
-      
+      The attention mechanism we've implemented is sometimes called
+      <strong>additive attention</strong> (due to the concatenation of the
+      encoder output with the decoder's previous hidden state) or
+      <strong>Bahdanau-style attention</strong> (named after the 2014 paper's
+      first author). Another common attention mechanism, known as
+      <strong>dot-product attention</strong> or <strong>Luong-style
+      attention</strong>, was proposed shortly after, in <a href="https://arxiv.org/abs/1508.04025">a 2015
+      paper</a>.
+    </p>
+    <p>
+      Compared to Bahdanau-style attention, the key difference is that, 
+      instead of using the decoder's hidden state from the previous time step
+      (t-1), Luong attention uses the decoder's current hidden state <img src="attention-22.png"
+      style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.0112837465564738em; vertical-align: -0.16169696969697em; height: 0.883878787878788em"></img> at step t to: (a) compute the attention weights alongside
+      the encoder's hidden states, and (b) be combined with the resulting
+      context vector to produce an attentional hidden state <span class="no-breaks"><img
+      src="attention-23.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564738em; margin-top: -0.00564187327823695em; vertical-align: -0.16169696969697em; height: 1.12647933884298em"></img>.</span> The attentional hidden state is then fed to
+      an activation layer for the final prediciton.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-24.png" width="60%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 4. </b><a id="auto-11"></a>The global attention model of
+              Luong-style attention
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      The <img src="attention-25.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823691em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> in the figure denotes the attention weights
+      (<img src="attention-26.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823691em; margin-top: -0.0169256198347107em; vertical-align: -0.16169696969697em; height: 0.629994490358127em"></img> in our previous example). These weights are
+      computed by applying a probability distribution to the attention scores
+      (or energies in our example), following the same process described
+      earlier:
+    </p>
+    <center>
+      <img src="attention-27.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0225674931129478em; vertical-align: -1.76308539944904em; height: 4.02265564738292em"></img>
+    </center>
+    <p>
+      But how these scores are computed is different. There are three
+      alternative ways proposed in the paper:
+    </p>
+    <center>
+      <img src="attention-28.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0474710743801652em; margin-right: -0.0112837465564724em; margin-top: -0.0312066115702478em; vertical-align: -1.36841873278237em; height: 3.05908539944904em"></img>
+    </center>
+    <p>
+      The <tt class="verbatim">dot</tt> and <tt class="verbatim">general</tt> equations are two
+      dot-product variants, and the third one is the same calculation used for
+      Bahdanau-style attention. When the authors compared both dot-product
+      approaches against the concatenative attention mechanism, they found
+      that the dot-product variants achieved better performance. For this
+      reason, dot-product attention is more popular nowadays. 
+    </p>
+    <p>
+      Keras provides a <tt class="verbatim">Attention</tt> layer for dot-product
+      attention, we can add it to the  <a href="#section1-model">basic encoder-decoder
+      network</a> with some other slight modifications to implement the
+      Luong-style attention. 
+    </p>
+    <p>
+      We first need to also set <tt class="verbatim">return_sequences=True</tt> for the
+      encoder:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>encoder = tf.keras.layers.Bidirectional(
+    tf.keras.layers.LSTM(256, return_sequences=True, return_state=True), name=&quot;encoder&quot;)</tt></class></pre>
+    </div>
+    <p>
+      And then, we create the attention layer and pass it the decoder's states
+      and the encoder's outputs. Lastly, we pass the attention layer's outputs
+      directly to a activation layer, to get the final prediction:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+<class style="font-family: Times New Roman"><tt>attention_layer = tf.keras.layers.Attention()
+attention_outputs = attention_layer([decoder_outputs, encoder_outputs])
+
+output_layer = tf.keras.layers.Dense(vocab_size, name=&quot;dense&quot;, activation=&quot;softmax&quot;)
+Y_proba = output_layer(attention_outputs)</tt></class></pre>
+    </div>
+    <p>
+      We can map our code to the components in Figure 4. The <tt class="verbatim">decoder_outputs</tt>
+      and <tt class="verbatim">encoder_outputs</tt> correspond to <img src="attention-29.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564738em; margin-top: -0.0225674931129477em; vertical-align: -0.16169696969697em; height: 1.04185123966942em"></img>
+      and <img src="attention-22.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.0112837465564738em; vertical-align: -0.16169696969697em; height: 0.883878787878788em"></img> respectively, <tt class="verbatim">tf.keras.layers.Attention()</tt>
+      implements the Attention layer, and <tt class="verbatim">attention_outputs</tt>
+      represents <img src="attention-30.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.00564187327823695em; vertical-align: -0.16169696969697em; height: 1.12647933884298em"></img> from the figure. 
     </p>
   </body>
 </html>
