@@ -155,7 +155,7 @@
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>def load_date():
+def load_date():
     dt = fake.date_object()
     try:
         human_readable = format_date(dt, format=random.choice(FORMATS),  locale='en_US')
@@ -166,16 +166,16 @@
     except AttributeError as e:
         return None, None, None
 
-    return human_readable, machine_readable, dt</tt></class></pre>
+    return human_readable, machine_readable, dt</pre>
     </div>
     <p>
       The size of our training dataset is 100,000:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>m = 100000
+m = 100000
 dataset = load_dataset(m)
-dataset[:5]</tt></class></pre>
+dataset[:5]</pre>
     </div>
     <p>
       =&gt;
@@ -195,7 +195,7 @@ dataset[:5]</tt></class></pre>
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>import tensorflow as tf
+import tensorflow as tf
 
 vocab_size = 50
 Tx = 30
@@ -223,15 +223,15 @@ vec_layer_human.adapt(dates_human)
 vec_layer_machine.adapt([f&quot;{sos}{s}{eos}&quot; for s in dates_machine])
 
 print(vec_layer_human.get_vocabulary()[:15])
-print(vec_layer_machine.get_vocabulary())</tt></class></pre>
+print(vec_layer_machine.get_vocabulary())</pre>
     </div>
     <p>
       =&gt;
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>['', '[UNK]', ' ', '1', '2', 'a', '0', '9', 'e', 'r', 'y', 'u', 'd', 's', 'n']
-['', '[UNK]', '-', '0', '1', '2', '@', '$', '9', '7', '8', '3', '4', '5', '6']</tt></class></pre>
+['', '[UNK]', ' ', '1', '2', 'a', '0', '9', 'e', 'r', 'y', 'u', 'd', 's', 'n']
+['', '[UNK]', '-', '0', '1', '2', '@', '$', '9', '7', '8', '3', '4', '5', '6']</pre>
     </div>
     <p>
       The empty string (&ldquo;&rdquo;) and <tt class="verbatim"><class style="font-family: Times New Roman"><tt>[UNK]</tt></class></tt>
@@ -248,7 +248,7 @@ print(vec_layer_machine.get_vocabulary())</tt></class></pre>
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>train_size = 60000
+train_size = 60000
 valid_size = 20000
 
 X_train = tf.constant(dates_human[:train_size])
@@ -263,14 +263,14 @@ X_test_dec = tf.constant([f&quot;{sos}{s}&quot; for s in dates_machine[train_siz
 Y_train = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[:train_size]])
 Y_valid = vec_layer_machine(
     [f&quot;{s}{eos}&quot; for s in dates_machine[train_size:train_size+valid_size]])
-Y_test = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[train_size+valid_size:]])</tt></class></pre>
+Y_test = vec_layer_machine([f&quot;{s}{eos}&quot; for s in dates_machine[train_size+valid_size:]])</pre>
     </div>
     <p>
       And we can construct our model now:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>encoder_inputs = tf.keras.layers.Input(name=&quot;encoder_inputs&quot;, shape=[], dtype=tf.string)
+encoder_inputs = tf.keras.layers.Input(name=&quot;encoder_inputs&quot;, shape=[], dtype=tf.string)
 decoder_inputs = tf.keras.layers.Input(name=&quot;decoder_inputs&quot;,shape=[], dtype=tf.string)
 
 encoder_input_ids = tf.cast(
@@ -294,7 +294,7 @@ Y_proba = output_layer(decoder_outputs)
 model = tf.keras.Model(inputs=[encoder_inputs, decoder_inputs],
                        outputs=[Y_proba])
 model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;nadam&quot;,
-              metrics=[&quot;accuracy&quot;])</tt></class></pre>
+              metrics=[&quot;accuracy&quot;])</pre>
     </div>
     <p>
       We expand the dimensions of <tt class="verbatim">encoder_input_ids</tt> and <tt
@@ -311,14 +311,14 @@ model.compile(loss=&quot;sparse_categorical_crossentropy&quot;, optimizer=&quot;
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>model.summary(line_length=120, expand_nested=True)</tt></class></pre>
+model.summary(line_length=120, expand_nested=True)</pre>
     </div>
     <p>
       =&gt;
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>Model: &quot;model&quot;
+Model: &quot;model&quot;
 ________________________________________________________________________________________________________________________
  Layer (type)                       Output Shape                        Param #     Connected to                        
 ========================================================================================================================
@@ -360,7 +360,7 @@ ________________________________________________________________________________
 ========================================================================================================================
 Total params: 1606706 (6.13 MB)
 Trainable params: 1606706 (6.13 MB)
-Non-trainable params: 0 (0.00 Byte)</tt></class></pre>
+Non-trainable params: 0 (0.00 Byte)</pre>
     </div>
     <p>
       It indeed has the same topology as we showed earlier in figure 1. The
@@ -369,19 +369,19 @@ Non-trainable params: 0 (0.00 Byte)</tt></class></pre>
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>model.fit((X_train, X_train_dec), Y_train, epochs=10,
+model.fit((X_train, X_train_dec), Y_train, epochs=10,
           validation_data=((X_valid, X_valid_dec), Y_valid))
 
 print(&quot;Evaluate on test data&quot;)
 results = model.evaluate((X_test, X_test_dec), Y_test)
-print(&quot;test loss, test acc:&quot;, results)</tt></class></pre>
+print(&quot;test loss, test acc:&quot;, results)</pre>
     </div>
     <p>
       =&gt;
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>test loss, test acc: [0.0018235821044072509, 0.9993454813957214]</tt></class></pre>
+test loss, test acc: [0.0018235821044072509, 0.9993454813957214]</pre>
     </div>
     <p>
       We can use our model to convert date formats finally, but it's not as
@@ -389,7 +389,7 @@ print(&quot;test loss, test acc:&quot;, results)</tt></class></pre>
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>import numpy as np
+import numpy as np
 
 def translate(hunman_date):
     translation = &quot;&quot;
@@ -402,7 +402,7 @@ def translate(hunman_date):
         if predicted_char == eos:
             break
         translation += predicted_char
-    return translation.strip()</tt></class></pre>
+    return translation.strip()</pre>
     </div>
     <p>
       We call the model in a loop because the decoder expects as input the
@@ -411,17 +411,17 @@ def translate(hunman_date):
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>for i in range(5):
+for i in range(5):
     human_date= format_date(fake.date_object(),format=random.choice(FORMATS),locale='en_US')
     print(&quot;human: &quot; + human_date)
-    print(&quot;machine: &quot; + translate(human_date) + &quot;\n&quot;)</tt></class></pre>
+    print(&quot;machine: &quot; + translate(human_date) + &quot;\n&quot;)</pre>
     </div>
     <p>
       =&gt;
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>human: Friday, December 20, 2019
+human: Friday, December 20, 2019
 machine: 2019-12-20
 
 human: 14.02.73
@@ -434,7 +434,7 @@ human: Friday, February 22, 1985
 machine: 1985-02-22
 
 human: Sunday, September 12, 1971
-machine: 1971-09-12</tt></class></pre>
+machine: 1971-09-12</pre>
     </div>
     <p>
       
@@ -553,7 +553,7 @@ machine: 1971-09-12</tt></class></pre>
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>from tensorflow.keras.layers import RepeatVector, Concatenate, Dense, Dot, Softmax
+from tensorflow.keras.layers import RepeatVector, Concatenate, Dense, Dot, Softmax
 
 repeator = RepeatVector(Tx)
 concatenator = Concatenate(axis=-1)
@@ -578,7 +578,7 @@ def one_step_attention(h, s_prev):
     alphas = activator(energies)        # (m, Tx, 1)
     context = dotor([alphas, h])        # (m, 1, n_h)
     
-    return context</tt></class></pre>
+    return context</pre>
     </div>
     <p>
       This function computes the attention context at decoder time step t. It
@@ -612,7 +612,7 @@ def one_step_attention(h, s_prev):
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>from tensorflow.keras.layers import Input, Bidirectional, LSTM, Dense
+from tensorflow.keras.layers import Input, Bidirectional, LSTM, Dense
 
 n_h = 64
 n_s = 128
@@ -649,7 +649,7 @@ def build_model():
                 metrics=[&quot;accuracy&quot;])
 
     model.summary(line_length=120, expand_nested=True)
-    return model</tt></class></pre>
+    return model</pre>
     </div>
     <p>
       This model differs from the previous architecture in two key aspects:
@@ -683,7 +683,7 @@ def build_model():
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 
 def plot_attention_map(modelx, text):
     layer = modelx.get_layer('attention_weights')
@@ -742,7 +742,7 @@ def plot_attention_map(modelx, text):
     # add grid and legend
     ax.grid()
     
-    return attention_map</tt></class></pre>
+    return attention_map</pre>
     </div>
     <p>
       We extract the <tt class="verbatim">attention_weights</tt> layer from the trained
@@ -798,7 +798,8 @@ def plot_attention_map(modelx, text):
       the encoder's hidden states, and (b) be combined with the resulting
       context vector to produce an attentional hidden state <span class="no-breaks"><img
       src="attention-23.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564738em; margin-top: -0.00564187327823695em; vertical-align: -0.16169696969697em; height: 1.12647933884298em"></img>.</span> The attentional hidden state is then fed to
-      an activation layer for the final prediciton.
+      an activation layer for the final prediction. There can be illustrated
+      in a figure from their paper:
     </p>
     <div style="margin-top: 1em; margin-bottom: 1em">
       <table style="width: 100%">
@@ -837,12 +838,12 @@ def plot_attention_map(modelx, text):
       The <tt class="verbatim">dot</tt> and <tt class="verbatim">general</tt> equations are two
       dot-product variants, and the third one is the same calculation used for
       Bahdanau-style attention. When the authors compared both dot-product
-      approaches against the concatenative attention mechanism, they found
-      that the dot-product variants achieved better performance. For this
-      reason, dot-product attention is more popular nowadays. 
+      approaches against the concatenate attention mechanism, they found that
+      the dot-product variants achieved better performance. For this reason,
+      dot-product attention is more popular nowadays. 
     </p>
     <p>
-      Keras provides a <tt class="verbatim">Attention</tt> layer for dot-product
+      Keras provides an <tt class="verbatim">Attention</tt> layer for dot-product
       attention, we can add it to the  <a href="#section1-model">basic encoder-decoder
       network</a> with some other slight modifications to implement the
       Luong-style attention. 
@@ -853,28 +854,85 @@ def plot_attention_map(modelx, text):
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>encoder = tf.keras.layers.Bidirectional(
-    tf.keras.layers.LSTM(256, return_sequences=True, return_state=True), name=&quot;encoder&quot;)</tt></class></pre>
+encoder = tf.keras.layers.Bidirectional(
+    tf.keras.layers.LSTM(256, return_sequences=True, return_state=True), name=&quot;encoder&quot;)</pre>
     </div>
     <p>
       And then, we create the attention layer and pass it the decoder's states
       and the encoder's outputs. Lastly, we pass the attention layer's outputs
-      directly to a activation layer, to get the final prediction:
+      directly to an activation layer, to get the final prediction:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
-<class style="font-family: Times New Roman"><tt>attention_layer = tf.keras.layers.Attention()
+attention_layer = tf.keras.layers.Attention()
 attention_outputs = attention_layer([decoder_outputs, encoder_outputs])
 
 output_layer = tf.keras.layers.Dense(vocab_size, name=&quot;dense&quot;, activation=&quot;softmax&quot;)
-Y_proba = output_layer(attention_outputs)</tt></class></pre>
+Y_proba = output_layer(attention_outputs)</pre>
     </div>
     <p>
       We can map our code to the components in Figure 4. The <tt class="verbatim">decoder_outputs</tt>
       and <tt class="verbatim">encoder_outputs</tt> correspond to <img src="attention-29.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564738em; margin-top: -0.0225674931129477em; vertical-align: -0.16169696969697em; height: 1.04185123966942em"></img>
       and <img src="attention-22.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.0112837465564738em; vertical-align: -0.16169696969697em; height: 0.883878787878788em"></img> respectively, <tt class="verbatim">tf.keras.layers.Attention()</tt>
       implements the Attention layer, and <tt class="verbatim">attention_outputs</tt>
-      represents <img src="attention-30.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.00564187327823695em; vertical-align: -0.16169696969697em; height: 1.12647933884298em"></img> from the figure. 
+      represents <img src="attention-30.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.00564187327823695em; vertical-align: -0.16169696969697em; height: 1.12647933884298em"></img> from the figure.
+    </p>
+    <h3 id="auto-12">Attention Mechanism as a Learnable Information-Retrieval
+    System<span style="margin-left: 1em"></span></h3>
+    <p>
+      An interesting interpretation of the attention mechanism is to think if
+      it as a learnable database system. For example, let's say the encoder
+      has processed the date string &ldquo;Monday, February 23, 1998&rdquo;,
+      and manages to understand that the sematics of this input is:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+{
+  &quot;weekday&quot;: &quot;Monday&quot;,
+  &quot;month&quot;:   &quot;February&quot;,
+  &quot;day&quot;:     &quot;23&quot;,
+  &quot;year&quot;:    &quot;1998&quot;
+}</pre>
+    </div>
+    <p>
+      So it encodes this information in its vector output. Now suppose the
+      decoder has already generated the year of &ldquo;1998-02-23&rdquo; and
+      determines that the month comes next. So it needs to retrieve the month
+      value from the encoder's output&mdash;just like a database query or a
+      dictionary lookup: <tt class="verbatim">encoded_vector[&quot;month&quot;]</tt>. In
+      our earlier examples, the decoder's hidden states (either <img src="attention-8.png"
+      style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> or <span class="no-breaks"><img src="attention-6.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img>)</span> serve as
+      <em>queries</em> to retrieve relevant information from the encoder's
+      outputs. And the attention layer can be considered as a trained database
+      that learns to return the right &ldquo;values&rdquo; for a given query,
+      based on the training examples. The &ldquo;lookup&rdquo; process works
+      by first computing similarity scores between the decoder's and encoder's
+      hidden states, and then using those scores to weight and extract the
+      most relevant parts of the encoder's outputs. That's why, in the Keras
+      Attention layer documentation, the call arguments are named
+      <code>query</code>, <code>value</code> and <tt class="verbatim">key</tt> (<tt
+      class="verbatim">key</tt> is usually the same with <tt class="verbatim">value</tt>).
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-31.png" width="100%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 5. </b><a id="auto-13"></a>Call inputs of <tt class="verbatim">keras.layers.Attention</tt>
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      A special use case of the attention mechanism is when the same tensor is
+      used as both the query and the value&mdash;this is called
+      <em>self-attention</em>. Self-attention is one of the core ideas behind
+      our next topic: the Transformer architecture.
     </p>
   </body>
 </html>

@@ -9,6 +9,8 @@
     <assign|hlink-tm|<macro|body|target|<hlink|<arg|body>|<merge|<arg|target>|.tm>>>>
 
     <assign|html-title|mxm notes>
+
+    <assign|html-head-favicon|../resources/blog-icon.png>
   </hide-preamble>
 
   <hrule>
