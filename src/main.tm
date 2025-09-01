@@ -8,13 +8,15 @@
 
     <assign|hlink-tm|<macro|body|target|<hlink|<arg|body>|<merge|<arg|target>|.tm>>>>
 
-    <assign|html-title|mxm notes>
+    <assign|html-title|Feel the Water>
 
     <assign|html-head-favicon|../resources/blog-icon.png>
 
     <assign|notes-header-name|Feel the Water>
 
     <assign|tmhtml-notes-entry-abstract|<macro|abs|<compound|html-div-class|tmweb-entry-abstract|<arg|abs>>>>
+
+    <assign|wide-std-underlined-titled|<macro|body|title|<wide-bothlined-titled*|0pt|<value|underlined-width>|0pt|<value|underlined-sep>|<arg|body>|<arg|title>>>>
   </hide-preamble>
 
   <hrule>
@@ -32,9 +34,9 @@
   urging students to stay conscious and alive in the routines of everyday
   life. For me, the act of writing about the things I'm interested in, not
   just code but the ideas, patterns, and questions that shape how I see the
-  world. This blog is my attempt to step out of the \Pdefault setting,\Q to
-  be aware of the environment I'm swimming in, and to keep track of the
-  thoughts that move me forward.\ 
+  world, serves as a way to pay closer attention. This blog is my attempt to
+  step out of the \Pdefault setting,\Q to be aware of the environment I'm
+  swimming in, and to keep track of the thoughts that move me forward.\ 
 
   <section*|Programming>
 
