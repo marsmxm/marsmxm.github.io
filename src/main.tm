@@ -33,10 +33,10 @@
   commencement speech|https://web.ics.purdue.edu/~drkelly/DFWKenyonAddress2005.pdf>,
   urging students to stay conscious and alive in the routines of everyday
   life. For me, the act of writing about the things I'm interested in\Vnot
-  just code but the ideas, patterns, and questions that shape how I see the
-  world\Vserves as a way to pay closer attention. This blog is my attempt to
-  step out of the \Pdefault setting,\Q to be aware of the environment I'm
-  swimming in, and to keep track of the thoughts that move me forward.\ 
+  just code but the ideas and patterns that shape how I see the world\Vserves
+  as a way to pay closer attention. This blog is my attempt to step out of
+  the \Pdefault setting,\Q to be aware of the environment I'm swimming in,
+  and to keep track of the thoughts that move me forward.\ 
 
   <section*|Programming>
 
