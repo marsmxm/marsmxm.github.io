@@ -6,7 +6,7 @@
   <\hide-preamble>
     \;
 
-    <assign|notes-header-name|Notes on Programming and Others>
+    <assign|notes-header-name|Feel the Water>
 
     <assign|notes-header-image|<image|../penguin.png|20pt|||>>
 
@@ -1130,7 +1130,7 @@
   <subsection*|Attention Mechanism as a Learnable Information-Retrieval
   System>
 
-  An interesting interpretation of the attention mechanism is to think if it
+  An interesting interpretation of the attention mechanism is to think of it
   as a learnable database system. For example, let's say the encoder has
   processed the date string \PMonday, February 23, 1998\Q, and manages to
   understand that the sematics of this input is:
@@ -1150,14 +1150,14 @@
   </verbatim-code>
 
   So it encodes this information in its vector output. Now suppose the
-  decoder has already generated the year of \P1998-<with|font|Linux
+  decoder has already generated the year part of \P1998-<with|font|Linux
   Libertine|02>-23\Q and determines that the month comes next. So it needs to
   retrieve the month value from the encoder's output\Vjust like a database
   query or a dictionary lookup: <verbatim|encoded_vector["month"]>. In our
   earlier examples, the decoder's hidden states (either <math|s<rsub|t-1>> or
   <math|s<rsub|t>>) serve as <em|queries> to retrieve relevant information
   from the encoder's outputs. And the attention layer can be considered as a
-  trained database that learns to return the right \Pvalues\Q for a given
+  trained database that learns to return the right <em|values> for a given
   query, based on the training examples. The \Plookup\Q process works by
   first computing similarity scores between the decoder's and encoder's
   hidden states, and then using those scores to weight and extract the most
@@ -1188,8 +1188,8 @@
     <associate|auto-1|<tuple|?|1>>
     <associate|auto-10|<tuple|3|11>>
     <associate|auto-11|<tuple|4|12>>
-    <associate|auto-12|<tuple|4|?>>
-    <associate|auto-13|<tuple|5|?>>
+    <associate|auto-12|<tuple|4|13>>
+    <associate|auto-13|<tuple|5|13>>
     <associate|auto-2|<tuple|III|1>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|1|6>>
@@ -1223,6 +1223,10 @@
       <tuple|normal|<\surround|<hidden-binding|<tuple>|4>|>
         The global attention model of Luong-style attention
       </surround>|<pageref|auto-11>>
+
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|5>|>
+        Call inputs of <with|language|<quote|verbatim>|<with|font|<quote|roman>|font-family|<quote|tt>|magnification|<quote|1.06>|keras.layers.Attention>>
+      </surround>|<pageref|auto-13>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Understanding
@@ -1250,6 +1254,10 @@
       <with|par-left|<quote|1tab>|Other Attention Implementations
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-10>>
+
+      <with|par-left|<quote|1tab>|Attention Mechanism as a Learnable
+      Information-Retrieval System <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-12>>
     </associate>
   </collection>
 </auxiliary>

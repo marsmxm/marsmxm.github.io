@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:x="https://www.texmacs.org/2002/extensions" xmlns:m="http://www.w3.org/1998/Math/MathML">
   <head>
-    <title>mxm notes - attention</title>
+    <title>Feel the Water - Attention</title>
     <meta charset="utf-8" content="TeXmacs 2.1.4" name="generator"></meta>
     <link href="../resources/notes-base.css" type="text/css" rel="stylesheet"></link>
     <link href="../resources/blog-icon.png" rel="icon"></link>
@@ -42,7 +42,7 @@
     <div class="notes-header">
       <p>
         <img class="image" src="../penguin.png" width="28.116784"></img><span style="margin-left: 2pt"></span><a href="./main.html">[main]</a><em
-        class="notes-header-name">Notes on Programming and Others</em>
+        class="notes-header-name">Feel the Water</em>
       </p>
     </div>
     <p>
@@ -880,7 +880,7 @@ Y_proba = output_layer(attention_outputs)</pre>
     <h3 id="auto-12">Attention Mechanism as a Learnable Information-Retrieval
     System<span style="margin-left: 1em"></span></h3>
     <p>
-      An interesting interpretation of the attention mechanism is to think if
+      An interesting interpretation of the attention mechanism is to think of
       it as a learnable database system. For example, let's say the encoder
       has processed the date string &ldquo;Monday, February 23, 1998&rdquo;,
       and manages to understand that the sematics of this input is:
@@ -896,17 +896,17 @@ Y_proba = output_layer(attention_outputs)</pre>
     </div>
     <p>
       So it encodes this information in its vector output. Now suppose the
-      decoder has already generated the year of &ldquo;1998-02-23&rdquo; and
-      determines that the month comes next. So it needs to retrieve the month
-      value from the encoder's output&mdash;just like a database query or a
-      dictionary lookup: <tt class="verbatim">encoded_vector[&quot;month&quot;]</tt>. In
-      our earlier examples, the decoder's hidden states (either <img src="attention-8.png"
+      decoder has already generated the year part of &ldquo;1998-02-23&rdquo;
+      and determines that the month comes next. So it needs to retrieve the
+      month value from the encoder's output&mdash;just like a database query
+      or a dictionary lookup: <tt class="verbatim">encoded_vector[&quot;month&quot;]</tt>.
+      In our earlier examples, the decoder's hidden states (either <img src="attention-8.png"
       style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564739em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img> or <span class="no-breaks"><img src="attention-6.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0564187327823692em; margin-top: -0.00526721763085397em; vertical-align: -0.16169696969697em; height: 0.607052341597796em"></img>)</span> serve as
       <em>queries</em> to retrieve relevant information from the encoder's
       outputs. And the attention layer can be considered as a trained database
-      that learns to return the right &ldquo;values&rdquo; for a given query,
-      based on the training examples. The &ldquo;lookup&rdquo; process works
-      by first computing similarity scores between the decoder's and encoder's
+      that learns to return the right <em>values</em> for a given query, based
+      on the training examples. The &ldquo;lookup&rdquo; process works by
+      first computing similarity scores between the decoder's and encoder's
       hidden states, and then using those scores to weight and extract the
       most relevant parts of the encoder's outputs. That's why, in the Keras
       Attention layer documentation, the call arguments are named

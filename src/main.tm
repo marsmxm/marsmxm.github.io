@@ -11,6 +11,10 @@
     <assign|html-title|mxm notes>
 
     <assign|html-head-favicon|../resources/blog-icon.png>
+
+    <assign|notes-header-name|Feel the Water>
+
+    <assign|tmhtml-notes-entry-abstract|<macro|abs|<compound|html-div-class|tmweb-entry-abstract|<arg|abs>>>>
   </hide-preamble>
 
   <hrule>
@@ -21,10 +25,16 @@
     </cell>>>>
   </wide-tabular>
 
-  <chapter*|Notes on Programming and Others>
+  <chapter*|Feel The Water>
 
-  Writing in TeXmacs becomes a pleasure to me lately, which makes me want to
-  start blogging again. \ 
+  \PThis is water\Q, David Foster Wallace repeated in <hlink|his famous
+  commencement speech|https://web.ics.purdue.edu/~drkelly/DFWKenyonAddress2005.pdf>,
+  urging students to stay conscious and alive in the routines of everyday
+  life. For me, the act of writing about the things I'm interested in, not
+  just code but the ideas, patterns, and questions that shape how I see the
+  world. This blog is my attempt to step out of the \Pdefault setting,\Q to
+  be aware of the environment I'm swimming in, and to keep track of the
+  thoughts that move me forward.\ 
 
   <section*|Programming>
 
@@ -46,9 +56,10 @@
     \;
   </with>>
 
-  <tabular|<tformat|<table|<row|<cell|Email:
-  marsmxm@gmail.com>|<cell|>>|<row|<cell|>|<cell|>>|<row|<cell|Github:
-  https://github.com/marsmxm>|<cell|>>>>>
+  <tabular|<tformat|<cwith|1|-1|1|3|font|Linux
+  Libertine>|<cwith|1|1|1|1|font-base-size|10>|<table|<row|<cell|<strong|Email:>
+  >|<cell|>|<cell|<with|font-base-size|10|marsmxm@gmail.com>>|<cell|>|<cell|>|<cell|>>|<row|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>>|<row|<cell|<strong|<with|font-base-size|10|Github:>
+  >>|<cell|>|<cell|<with|font-base-size|10|https://github.com/marsmxm>>|<cell|>|<cell|>|<cell|>>>>>
 
   \;
 </body>
@@ -93,8 +104,8 @@
 <\auxiliary>
   <\collection>
     <\associate|toc>
-      <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Notes
-      on Programming and Others> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Feel
+      The Water> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <pageref|auto-1><vspace|0.5fn>
 
       Programming <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
