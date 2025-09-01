@@ -44,7 +44,7 @@
 
     <item><hlink|Attention Mechanisms|#section2>
 
-    <item>Transformers
+    <item><hlink|Transformers|#section3>
   </enumerate-Roman>
 
   <section*|Encoder-Decoder Neural Network><label|section1>
@@ -146,6 +146,28 @@
   The size of our training dataset is 100,000:
 
   <\verbatim-code>
+    def load_dataset(m):
+
+    \ \ \ \ dataset = []
+
+    \;
+
+    \ \ \ \ for i in tqdm(range(m)):
+
+    \ \ \ \ \ \ \ \ h, m, _ = load_date()
+
+    \ \ \ \ \ \ \ \ if h is not None:
+
+    \ \ \ \ \ \ \ \ \ \ \ \ dataset.append((h, m))
+
+    \ 
+
+    \ \ \ \ return dataset
+
+    \;
+
+    \;
+
     m = 100000
 
     dataset = load_dataset(m)
@@ -1175,6 +1197,10 @@
   used as both the query and the value\Vthis is called <em|self-attention>.
   Self-attention is one of the core ideas behind our next topic: the
   Transformer architecture.
+
+  <section*|Transformers><label|section3>
+
+  \;
 </body>
 
 <\initial>
@@ -1190,6 +1216,7 @@
     <associate|auto-11|<tuple|4|12>>
     <associate|auto-12|<tuple|4|13>>
     <associate|auto-13|<tuple|5|13>>
+    <associate|auto-14|<tuple|5|?>>
     <associate|auto-2|<tuple|III|1>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|1|6>>
@@ -1198,9 +1225,11 @@
     <associate|auto-7|<tuple|2|8>>
     <associate|auto-8|<tuple|2|8>>
     <associate|auto-9|<tuple|3|11>>
+    <associate|section-3|<tuple|5|?>>
     <associate|section1|<tuple|III|1>>
     <associate|section1-model|<tuple|1|4>>
     <associate|section2|<tuple|1|6>>
+    <associate|section3|<tuple|5|?>>
   </collection>
 </references>
 

@@ -32,9 +32,9 @@
   \PThis is water\Q, David Foster Wallace repeated in <hlink|his famous
   commencement speech|https://web.ics.purdue.edu/~drkelly/DFWKenyonAddress2005.pdf>,
   urging students to stay conscious and alive in the routines of everyday
-  life. For me, the act of writing about the things I'm interested in, not
+  life. For me, the act of writing about the things I'm interested in\Vnot
   just code but the ideas, patterns, and questions that shape how I see the
-  world, serves as a way to pay closer attention. This blog is my attempt to
+  world\Vserves as a way to pay closer attention. This blog is my attempt to
   step out of the \Pdefault setting,\Q to be aware of the environment I'm
   swimming in, and to keep track of the thoughts that move me forward.\ 
 
