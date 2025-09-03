@@ -2,7 +2,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:x="https://www.texmacs.org/2002/extensions" xmlns:m="http://www.w3.org/1998/Math/MathML">
   <head>
-    <title>Feel the Water - Attention</title>
+    <title>Understanding Attention Mechanisms</title>
     <meta charset="utf-8" content="TeXmacs 2.1.4" name="generator"></meta>
     <link href="../resources/notes-base.css" type="text/css" rel="stylesheet"></link>
     <link href="../resources/blog-icon.png" rel="icon"></link>
@@ -71,7 +71,7 @@
       </li>
       <li>
         <p>
-          Transformers
+          <a href="#section3">Transformers</a>
         </p>
       </li>
     </ol>
@@ -173,6 +173,17 @@ def load_date():
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
+def load_dataset(m):
+    dataset = []
+
+    for i in tqdm(range(m)):
+        h, m, _ = load_date()
+        if h is not None:
+            dataset.append((h, m))
+ 
+    return dataset
+
+
 m = 100000
 dataset = load_dataset(m)
 dataset[:5]</pre>
@@ -883,7 +894,7 @@ Y_proba = output_layer(attention_outputs)</pre>
       An interesting interpretation of the attention mechanism is to think of
       it as a learnable database system. For example, let's say the encoder
       has processed the date string &ldquo;Monday, February 23, 1998&rdquo;,
-      and manages to understand that the sematics of this input is:
+      and manages to understand that the semantics of this input is:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
@@ -933,6 +944,316 @@ Y_proba = output_layer(attention_outputs)</pre>
       used as both the query and the value&mdash;this is called
       <em>self-attention</em>. Self-attention is one of the core ideas behind
       our next topic: the Transformer architecture.
+    </p>
+    <h2 id="auto-14"><a id="section3"></a>Transformers<span style="margin-left: 1em"></span></h2>
+    <p>
+      The model architectures we've discussed so far are all built on
+      recurrent neural network, specifically LSTM cells. The term
+      <em>recurrent</em> refers to the fact that the same neural cell is
+      applied repeatedly across the sequence: at each step it takes in the
+      hidden state from the previous step, updates it with the current input,
+      and produces a new hidden state for the next step. This process
+      continues until the entire sequence has been processed. It's very much
+      like calling a recursive function, with each call frame depending on the
+      return value from the inner frame, until the argument eventually reduces
+      to its base case. This inherently sequential nature of RNN prevents
+      parallelization within a single training example, resulting in a time
+      complexity of <img src="attention-32.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0423581267217631em; margin-right: -0.0112837465564737em; margin-top: -0.0139063360881543em; vertical-align: -0.239845730027548em; height: 0.930909090909091em"></img> with respect to the sequence
+      length T. As T grows, training time increases linearly, while memory
+      constraints also further restrict the batching degree across training
+      examples.
+    </p>
+    <p>
+      To overcome these limitations, a team of Google researchers introduced
+      the <em>Transformer</em> architecture in their 2017 paper
+      <em>&ldquo;Attention Is All You Need&rdquo;</em>, which removes
+      recurrence entirely and instead relies exclusively on attention
+      mechanisms to capture global dependencies between inputs and outputs.
+      This design increases the potential for parallelization, allowing the
+      training process to scale more efficiently. It also enables the model to
+      capture long-range dependencies more effectively than recurrent
+      architectures. The transformer architecture is presented below in the
+      figure from their paper.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-33.png" width="60%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 6. </b><a id="auto-15"></a>The Transformer architecture
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <h3 id="auto-16">Encoder and Decoder Stacks<span style="margin-left: 1em"></span></h3>
+    <p>
+      This architecture is composed of an encoder (on the left) and a decoder
+      (on the right) as well. The encoder consists of <em>N</em> identical
+      layers (with <em>N = 6</em> in the original paper), which we will refer
+      to as encoder layers. Each encoder layer is further divided into two
+      sub-layers: the first is a multi-head self-attention mechanism (more
+      details later), and the second is a fully connected feed-forward
+      network. Each sub-layer is wrapped with a residual connection from its
+      input and followed by layer normalization. These two parts are combined
+      as &ldquo;Add &amp; Norm&rdquo; in the figure because they can be
+      mathematically expressed as:
+    </p>
+    <center>
+      <img src="attention-34.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0141487603305785em; margin-right: -0.0112837465564741em; margin-top: -0.0112837465564738em; vertical-align: -0.239823691460055em; height: 0.959118457300275em"></img>
+    </center>
+    <p>
+      These &ldquo;Add &amp; Norm&rdquo; operations help stabilize training by
+      preventing vanishing gradients and maintaining optimization efficiency
+      throughout the network.
+    </p>
+    <p>
+      The structure of the decoder is almost the same, with two key
+      differences:
+    </p>
+    <ul>
+      <li>
+        <p>
+          A <strong>look-ahead mask</strong> is applied to the decoder's
+          self-attention layer. Since the entire target sequence (the label
+          outputs) is fed into the decoder at once during training, future
+          positions beyond the current step would otherwise be visible. To
+          prevent the model from &ldquo;cheating&rdquo; by accessing those
+          future tokens, the mask blocks attention to positions after the
+          current step.
+        </p>
+      </li>
+      <li>
+        <p>
+          The decoder includes an additional third sub-layer between the
+          self-attention and feed-forward components. This intermediate layer
+          performs <strong>multi-head cross-attention</strong> over the
+          encoder stack's output, enabling the decoder to attend to relevant
+          parts of the input sequence during generation.
+        </p>
+      </li>
+    </ul>
+    <h3 id="auto-17">Positional Encoding<span style="margin-left: 1em"></span></h3>
+    <p>
+      Positional encoding layers sit between the embedding layers and the
+      encoder/decoder stacks, injecting positional information into the
+      embedding vectors. Unlike RNNs, which inherently capture word order
+      through sequential processing, the Transformer processes the entire
+      input sequence in parallel, making explicit positional encoding
+      essential for the model to understand sequence order. The positional
+      encodings have the same dimension as the embeddings, so the two can be
+      added together. The paper defines these encodings using the following
+      formulas:
+    </p>
+    <center>
+      <img src="attention-35.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889805em; margin-right: -0.0112837465564724em; margin-top: -0.0373553719008268em; vertical-align: -2.58133333333333em; height: 5.67396143250689em"></img>
+    </center>
+    <ul>
+      <li>
+        <p>
+          <img src="attention-36.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0225454545454545em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.248220385674931em; height: 0.705234159779614em"></img> is the position of the word.
+        </p>
+      </li>
+      <li>
+        <p>
+          <img src="attention-37.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0564187327823692em; margin-top: -0.0112837465564738em; vertical-align: -0.0112617079889807em; height: 0.744727272727273em"></img> is the dimension of the word embedding.
+        </p>
+      </li>
+      <li>
+        <p>
+          <img src="attention-38.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564737em; margin-top: -0.0112837465564738em; vertical-align: -0.0676804407713499em; height: 0.789862258953168em"></img> where <img src="attention-39.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0282093663911845em; margin-top: -0.0112837465564738em; vertical-align: -0.0112617079889807em; height: 0.744727272727273em"></img> is the index
+          of the word embedding.
+        </p>
+      </li>
+    </ul>
+    <p>
+      The position values of even and odd indices are computed by sine and
+      cosine functions respectively. The table below gives a more intuitive
+      explanation:
+    </p>
+    <table style="width: 100%">
+      <tbody><tr>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          k = 0
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          k = 1
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <span style="margin-left: 0.16665em"></span>.<span style="margin-left: 0.16665em"></span>.<span style="margin-left: 0.16665em"></span>.<span
+          style="margin-left: 0.16665em"></span>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          k = d - 2
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
+          k = d - 1
+        </p></td>
+      </tr><tr>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
+          encoding(0)
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-40.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-41.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-42.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
+          <img src="attention-43.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
+        </p></td>
+      </tr><tr>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
+          encoding(1)
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-44.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-45.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-46.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
+          <img src="attention-47.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
+        </p></td>
+      </tr><tr>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
+          <span style="margin-left: 0.16665em"></span>.<span style="margin-left: 0.16665em"></span>.<span style="margin-left: 0.16665em"></span>.<span
+          style="margin-left: 0.16665em"></span>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
+          
+        </p></td>
+      </tr><tr>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
+          encoding(pos)
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-48.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.11883195592286em; height: 2.40004407713499em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-49.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.11883195592286em; height: 2.40004407713499em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-50.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.51797245179063em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
+          <img src="attention-51.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.51797245179063em"></img>
+        </p></td>
+      </tr></tbody>
+    </table>
+    <p>
+      
+    </p>
+    <p>
+      When implementing the positional encoding later, we'll observe some
+      interesting properties that help explain why it is defined in this
+      particular way.
+    </p>
+    <h3 id="auto-18">Attention<span style="margin-left: 1em"></span></h3>
+    <p>
+      The authors refer to their attention mechanism as <strong>Scaled
+      Dot-Product Attention</strong>. It's quite similar to the dot-product
+      attention we discussed in the previous section, with one key difference:
+      the dot-product results are scaled down before being passed to the
+      softmax function:
+    </p>
+    <center>
+      <img src="attention-52.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0805289256198347em; margin-right: -0.141046831955922em; margin-top: -0.0373553719008264em; vertical-align: -1.12114600550964em; height: 2.65833608815427em"></img>
+    </center>
+    <ul>
+      <li>
+        <p>
+          Q, K and V are matrices representing queries, keys and values.
+        </p>
+      </li>
+      <li>
+        <p>
+          In self-attentions, Q, K, and V are all the same output of the
+          previous encoder (or decoder) layer.
+        </p>
+      </li>
+      <li>
+        <p>
+          In cross-attentions, Q comes from the previous decoder layer, K and
+          V come from the output of the encoder.
+        </p>
+      </li>
+      <li>
+        <p>
+          The the dot-product result is scaled by <span class="no-breaks"><img src="attention-53.png"
+          style="margin-left: -0.0112837465564738em; margin-bottom: 0.0693994490358126em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.79235261707989em; height: 1.76852892561983em"></img>.</span> Without this scaling, large dot-product values
+          push the softmax function into saturation regions where gradients
+          become extremely small, hindering the learning progress.
+        </p>
+      </li>
+    </ul>
+    <p>
+      The term <strong>multi-head</strong> refers to computing not just one,
+      but <img src="attention-54.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0225674931129477em; margin-top: -0.0112837465564738em; vertical-align: -0.0112617079889807em; height: 0.744727272727273em"></img> parallel attentions (or head). Instead of
+      applying attention directly to the full-dimensional queries, keys, and
+      values, each head uses its own learned linear projections of Q, K, and
+      V. The outputs from all heads are then concatenated and passed through a
+      final linear layer to produce the result, as illustrated in the figure
+      below.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-55.png" width="50%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 7. </b><a id="auto-19"></a>Multi-Head Attention
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      We can think of multi-head attentions as applying the attention
+      mechanisms serveral times to detect different features. We will next
+      implement all the key components, and connect them together to form the
+      whole Transformer network.
+    </p>
+    <h3 id="auto-20">Transformer Implementation<span style="margin-left: 1em"></span></h3>
+    <p>
+      
     </p>
   </body>
 </html>
