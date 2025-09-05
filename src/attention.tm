@@ -1499,11 +1499,11 @@
   the number of positions and the size of the embedding dimension. It uses
   <code*|np.newaxis> to reshape <code*|pos> and <code*|k> into column and row
   vectors before passing them to <code*|get_angles>. The function then
-  applies sine to even-indexed columns and cosine to odd-indexed columns.
-  Finally, it expands the matrix dimensions at axis 0 to match the expected
-  shape of <verbatim|(1, pos, d)>. This allows the positional encodings to be
-  broadcast across all training examples later. Now we can visulize our
-  positional encodings:
+  applies <em|sine> to even-indexed columns and <em|cosine> to odd-indexed
+  columns. Finally, it expands the matrix dimensions at axis 0 to match the
+  expected shape of <verbatim|(1, pos, d)>. This allows the positional
+  encodings to be broadcast across all training examples later. Now we can
+  visulize our positional encodings:
 
   <\verbatim-code>
     pos_encoding = positional_encoding(50, 512)
@@ -1536,7 +1536,43 @@
     Visualization of Positional Encodings
   </big-figure>
 
-  \;
+  Each row represents the positional encoding for the word at that specific
+  position. From the visualization we can see that every row has a distinct
+  color pattern, indicating that no two rows share identical encoding values.
+  This property enables the positional encoding to preserve information about
+  the absolute position of each word within the sequence.\ 
+
+  Another interesting property is that the norm of the difference between two
+  positional vectors separated by <verbatim|k> positions remains constant. In
+  other words, if we keep <verbatim|k> fixed and change <verbatim|pos>, the
+  difference stays approximately the same. This shows that the encoding
+  depends only on relative distances, which helps the model capture the
+  relative positions of words.
+
+  <\verbatim-code>
+    pos1 = 42
+
+    pos2 = 77
+
+    k = 2
+
+    \;
+
+    print(tf.norm(pos_encoding[0,pos1,:] - pos_encoding[0,pos1 + k,:]))
+
+    print(tf.norm(pos_encoding[0,pos2,:] - pos_encoding[0,pos2 + k,:]))
+  </verbatim-code>
+
+  =\<gtr\>
+
+  <\verbatim-code>
+    tf.Tensor(3.2668781, shape=(), dtype=float32)\ 
+
+    tf.Tensor(3.2668781, shape=(), dtype=float32)
+  </verbatim-code>
+
+  We next implement two types of useful masks when building the Transformer
+  archetecture.\ 
 </body>
 
 <\initial>
@@ -1559,8 +1595,8 @@
     <associate|auto-18|<tuple|<with|mode|<quote|math>|\<bullet\>>|16>>
     <associate|auto-19|<tuple|7|16>>
     <associate|auto-2|<tuple|III|1>>
-    <associate|auto-20|<tuple|7|?>>
-    <associate|auto-21|<tuple|8|?>>
+    <associate|auto-20|<tuple|7|17>>
+    <associate|auto-21|<tuple|8|18>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|1|6>>
     <associate|auto-5|<tuple|1|7>>
@@ -1600,12 +1636,16 @@
       </surround>|<pageref|auto-13>>
 
       <tuple|normal|<\surround|<hidden-binding|<tuple>|6>|>
-        The Transformer architecture
+        The Transformer Architecture
       </surround>|<pageref|auto-15>>
 
       <tuple|normal|<\surround|<hidden-binding|<tuple>|7>|>
         Multi-Head Attention
       </surround>|<pageref|auto-19>>
+
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|8>|>
+        Visualization of Positional Encodings
+      </surround>|<pageref|auto-21>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Understanding
@@ -1652,6 +1692,10 @@
       <with|par-left|<quote|1tab>|Attention
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-18>>
+
+      <with|par-left|<quote|1tab>|Transformer Implementation
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-20>>
     </associate>
   </collection>
 </auxiliary>

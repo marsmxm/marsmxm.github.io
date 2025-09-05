@@ -965,7 +965,7 @@ Y_proba = output_layer(attention_outputs)</pre>
     </p>
     <p>
       To overcome these limitations, a team of Google researchers introduced
-      the <em>Transformer</em> architecture in their 2017 paper
+      the <strong>Transformer</strong> architecture in their 2017 paper
       <em>&ldquo;Attention Is All You Need&rdquo;</em>, which removes
       recurrence entirely and instead relies exclusively on attention
       mechanisms to capture global dependencies between inputs and outputs.
@@ -984,7 +984,7 @@ Y_proba = output_layer(attention_outputs)</pre>
         </tr><tr>
           <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
             <font style="font-size: 90.0%"><p>
-              <b>Figure 6. </b><a id="auto-15"></a>The Transformer architecture
+              <b>Figure 6. </b><a id="auto-15"></a>The Transformer Architecture
             </p></font>
           </div></td>
         </tr></tbody>
@@ -1071,9 +1071,85 @@ Y_proba = output_layer(attention_outputs)</pre>
       </li>
     </ul>
     <p>
-      The position values of even and odd indices are computed by sine and
-      cosine functions respectively. The table below gives a more intuitive
-      explanation:
+      The positional values of even and odd indices are computed by sine and
+      cosine functions respectively, but the angle for each <tt class="verbatim">i</tt>
+      is identical. When implementing the positional encoding later, we'll
+      observe some interesting properties that help explain why it is defined
+      in this particular way.
+    </p>
+    <h3 id="auto-18">Attention<span style="margin-left: 1em"></span></h3>
+    <p>
+      The authors refer to their attention mechanism as <strong>Scaled
+      Dot-Product Attention</strong>. It's quite similar to the dot-product
+      attention we discussed in the previous section, with one key difference:
+      the dot-product results are scaled down before being passed to the
+      softmax function:
+    </p>
+    <center>
+      <img src="attention-40.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0805289256198347em; margin-right: -0.141046831955922em; margin-top: -0.0373553719008264em; vertical-align: -1.12114600550964em; height: 2.65833608815427em"></img>
+    </center>
+    <ul>
+      <li>
+        <p>
+          Q, K and V are matrices representing queries, keys and values.
+        </p>
+      </li>
+      <li>
+        <p>
+          In self-attentions, Q, K, and V are all the same output of the
+          previous encoder (or decoder) layer.
+        </p>
+      </li>
+      <li>
+        <p>
+          In cross-attentions, Q comes from the previous decoder layer, K and
+          V come from the output of the encoder.
+        </p>
+      </li>
+      <li>
+        <p>
+          The the dot-product result is scaled by <span class="no-breaks"><img src="attention-41.png"
+          style="margin-left: -0.0112837465564738em; margin-bottom: 0.0693994490358126em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.79235261707989em; height: 1.76852892561983em"></img>.</span> Without this scaling, large dot-product values
+          push the softmax function into saturation regions where gradients
+          become extremely small, hindering the learning progress.
+        </p>
+      </li>
+    </ul>
+    <p>
+      The term <strong>multi-head</strong> refers to computing not just one,
+      but <img src="attention-42.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0225674931129477em; margin-top: -0.0112837465564738em; vertical-align: -0.0112617079889807em; height: 0.744727272727273em"></img> parallel attentions (or head). Instead of
+      applying attention directly to the full-dimensional queries, keys, and
+      values, each head uses its own learned linear projections of Q, K, and
+      V. The outputs from all heads are then concatenated and passed through a
+      final linear layer to produce the result, as illustrated in the figure
+      below.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-43.png" width="50%"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 7. </b><a id="auto-19"></a>Multi-Head Attention
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      We can think of multi-head attentions as applying the attention
+      mechanisms several times to detect different features. We will next
+      implement all the key components, and connect them together to form the
+      whole Transformer network.
+    </p>
+    <h3 id="auto-20">Transformer Implementation<span style="margin-left: 1em"></span></h3>
+    <p>
+      Let's first work on the positional encodings. The table below shows
+      intuitively the resulting encoding matrix we want for each input
+      sequence:
     </p>
     <table style="width: 100%">
       <tbody><tr>
@@ -1101,25 +1177,6 @@ Y_proba = output_layer(attention_outputs)</pre>
           encoding(0)
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          <img src="attention-40.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
-        </p></td>
-        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          <img src="attention-41.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
-        </p></td>
-        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          
-        </p></td>
-        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          <img src="attention-42.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
-        </p></td>
-        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
-          <img src="attention-43.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
-        </p></td>
-      </tr><tr>
-        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
-          encoding(1)
-        </p></td>
-        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
           <img src="attention-44.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
@@ -1133,6 +1190,25 @@ Y_proba = output_layer(attention_outputs)</pre>
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
           <img src="attention-47.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
+        </p></td>
+      </tr><tr>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
+          encoding(1)
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-48.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-49.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008266em; vertical-align: -1.11883195592286em; height: 2.55182369146006em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
+          <img src="attention-50.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
+        </p></td>
+        <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
+          <img src="attention-51.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.574391184573em"></img>
         </p></td>
       </tr><tr>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-left: 0em; text-align: center"><p>
@@ -1159,101 +1235,155 @@ Y_proba = output_layer(attention_outputs)</pre>
           encoding(pos)
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          <img src="attention-48.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.11883195592286em; height: 2.40004407713499em"></img>
+          <img src="attention-52.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.11883195592286em; height: 2.40004407713499em"></img>
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          <img src="attention-49.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.11883195592286em; height: 2.40004407713499em"></img>
+          <img src="attention-53.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.11883195592286em; height: 2.40004407713499em"></img>
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
           
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; text-align: center"><p>
-          <img src="attention-50.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.51797245179063em"></img>
+          <img src="attention-54.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564732em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.51797245179063em"></img>
         </p></td>
         <td style="width: 16.6666666666667%; border-top: 1px solid; border-bottom: 1px solid; border-left: 1px solid; border-right: 1px solid; padding-right: 0em; text-align: center"><p>
-          <img src="attention-51.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.51797245179063em"></img>
+          <img src="attention-55.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0112617079889807em; margin-right: -0.0112837465564741em; margin-top: -0.0373553719008264em; vertical-align: -1.16396694214876em; height: 2.51797245179063em"></img>
         </p></td>
       </tr></tbody>
     </table>
     <p>
-      
+      The functions below calculate the positional encoding matrix:
     </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+def get_angles(pos, k, d):
+  &quot;&quot;&quot;
+  Arguments:
+  pos -- column vector [[0], [1], &hellip;,[N-1]]
+  k   -- row vector [[0, 1, 2, &hellip;, d-1]]
+  d   -- int, size of the embedding dimension
+
+  Returns:
+  angles -- (pos, d) matrix
+  &quot;&quot;&quot;
+
+  i = k // 2
+  angles = pos / (10000 ** (2 * i / d))
+
+  return angles
+
+
+def positional_encoding(positions, d):
+  &quot;&quot;&quot;
+  Arguments:
+  positions -- int, number of positions to be encoded 
+  d         -- int, size of embedding dimension
+
+  Returns:
+  pos_encoding -- (1, pos, d) A matrix with the positional encodings
+  &quot;&quot;&quot;
+
+  angles = get_angles(np.arange(positions)[:, np.newaxis],
+                      np.arange(d)[np.newaxis, :],
+                      d)
+
+  # apply sin to even indices: 2i
+  angles[:, 0::2] = np.sin(angles[:, 0::2])
+  # apply cos to odd indices: 2i+1
+  angles[:, 1::2] = np.cos(angles[:, 1::2])
+
+  pos_encoding = angles[np.newaxis, &hellip;]
+
+  return tf.cast(pos_encoding, dtype=tf.float32)</pre>
+    </div>
     <p>
-      When implementing the positional encoding later, we'll observe some
-      interesting properties that help explain why it is defined in this
-      particular way.
+      The helper function <tt class="verbatim">get_angles</tt> assumes that <tt class="verbatim">pos</tt>
+      is a column vector and <tt class="verbatim">k</tt> is a row vector. When the
+      division operator is applied, broadcasting first expands <tt class="verbatim">k</tt>
+      across each row of <tt class="verbatim">pos</tt>. Then, each scalar element of <tt
+      class="verbatim">pos</tt> is broadcast across the replicated rows of <tt class="verbatim">k</tt>,
+      producing the matrix structure shown above. The
+      <code>positional_function</code> accepts two integer inputs: the number
+      of positions and the size of the embedding dimension. It uses
+      <code>np.newaxis</code> to reshape <code>pos</code> and <code>k</code>
+      into column and row vectors before passing them to
+      <code>get_angles</code>. The function then applies <em>sine</em> to
+      even-indexed columns and <em>cosine</em> to odd-indexed columns.
+      Finally, it expands the matrix dimensions at axis 0 to match the
+      expected shape of <tt class="verbatim">(1, pos, d)</tt>. This allows the
+      positional encodings to be broadcast across all training examples later.
+      Now we can visulize our positional encodings:
     </p>
-    <h3 id="auto-18">Attention<span style="margin-left: 1em"></span></h3>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+pos_encoding = positional_encoding(50, 512)
+
+print (pos_encoding.shape)
+
+plt.pcolormesh(pos_encoding[0], cmap='RdBu')
+plt.xlabel('d')
+plt.xlim((0, 512))
+plt.ylabel('Position')
+plt.colorbar()
+plt.show()</pre>
+    </div>
     <p>
-      The authors refer to their attention mechanism as <strong>Scaled
-      Dot-Product Attention</strong>. It's quite similar to the dot-product
-      attention we discussed in the previous section, with one key difference:
-      the dot-product results are scaled down before being passed to the
-      softmax function:
+      =&gt;
     </p>
-    <center>
-      <img src="attention-52.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0805289256198347em; margin-right: -0.141046831955922em; margin-top: -0.0373553719008264em; vertical-align: -1.12114600550964em; height: 2.65833608815427em"></img>
-    </center>
-    <ul>
-      <li>
-        <p>
-          Q, K and V are matrices representing queries, keys and values.
-        </p>
-      </li>
-      <li>
-        <p>
-          In self-attentions, Q, K, and V are all the same output of the
-          previous encoder (or decoder) layer.
-        </p>
-      </li>
-      <li>
-        <p>
-          In cross-attentions, Q comes from the previous decoder layer, K and
-          V come from the output of the encoder.
-        </p>
-      </li>
-      <li>
-        <p>
-          The the dot-product result is scaled by <span class="no-breaks"><img src="attention-53.png"
-          style="margin-left: -0.0112837465564738em; margin-bottom: 0.0693994490358126em; margin-right: -0.0112837465564739em; margin-top: -0.0169256198347107em; vertical-align: -0.79235261707989em; height: 1.76852892561983em"></img>.</span> Without this scaling, large dot-product values
-          push the softmax function into saturation regions where gradients
-          become extremely small, hindering the learning progress.
-        </p>
-      </li>
-    </ul>
-    <p>
-      The term <strong>multi-head</strong> refers to computing not just one,
-      but <img src="attention-54.png" style="margin-left: -0.0112837465564738em; margin-bottom: -2.20385674931135e-5em; margin-right: -0.0225674931129477em; margin-top: -0.0112837465564738em; vertical-align: -0.0112617079889807em; height: 0.744727272727273em"></img> parallel attentions (or head). Instead of
-      applying attention directly to the full-dimensional queries, keys, and
-      values, each head uses its own learned linear projections of Q, K, and
-      V. The outputs from all heads are then concatenated and passed through a
-      final linear layer to produce the result, as illustrated in the figure
-      below.
-    </p>
+    <pre class="verbatim" xml:space="preserve">
+(1,50,512)</pre>
     <div style="margin-top: 1em; margin-bottom: 1em">
       <table style="width: 100%">
         <tbody><tr>
-          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-55.png" width="50%"></img></td>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-56.png" width="70%"></img></td>
         </tr><tr>
           <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
         </tr><tr>
           <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
             <font style="font-size: 90.0%"><p>
-              <b>Figure 7. </b><a id="auto-19"></a>Multi-Head Attention
+              <b>Figure 8. </b><a id="auto-21"></a>Visualization of Positional
+              Encodings
             </p></font>
           </div></td>
         </tr></tbody>
       </table>
     </div>
     <p>
-      We can think of multi-head attentions as applying the attention
-      mechanisms serveral times to detect different features. We will next
-      implement all the key components, and connect them together to form the
-      whole Transformer network.
+      Each row represents the positional encoding for the word at that
+      specific position. From the visualization we can see that every row has
+      a distinct color pattern, indicating that no two rows share identical
+      encoding values. This property enables the positional encoding to
+      preserve information about the absolute position of each word within the
+      sequence. 
     </p>
-    <h3 id="auto-20">Transformer Implementation<span style="margin-left: 1em"></span></h3>
     <p>
-      
+      Another interesting property is that the norm of the difference between
+      two positional vectors separated by <tt class="verbatim">k</tt> positions remains
+      constant. In other words, if we keep <tt class="verbatim">k</tt> fixed and change
+      <tt class="verbatim">pos</tt>, the difference stays approximately the same. This
+      shows that the encoding depends only on relative distances, which helps
+      the model capture the relative positions of words.
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+pos1 = 42
+pos2 = 77
+k = 2
+
+print(tf.norm(pos_encoding[0,pos1,:] - pos_encoding[0,pos1 + k,:]))
+print(tf.norm(pos_encoding[0,pos2,:] - pos_encoding[0,pos2 + k,:]))</pre>
+    </div>
+    <p>
+      =&gt;
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+tf.Tensor(3.2668781, shape=(), dtype=float32) 
+tf.Tensor(3.2668781, shape=(), dtype=float32)</pre>
+    </div>
+    <p>
+      We next implement two types of useful masks when building the
+      Transformer archetecture. 
     </p>
   </body>
 </html>
