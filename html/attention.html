@@ -1321,7 +1321,7 @@ def positional_encoding(positions, d):
       Finally, it expands the matrix dimensions at axis 0 to match the
       expected shape of <tt class="verbatim">(1, pos, d)</tt>. This allows the
       positional encodings to be broadcast across all training examples later.
-      Now we can visulize our positional encodings:
+      Now we can visualize our positional encodings:
     </p>
     <div class="tmweb-code">
       <pre class="verbatim" xml:space="preserve">
@@ -1401,24 +1401,8 @@ tf.Tensor(3.2668781, shape=(), dtype=float32)</pre>
       <h5>Padding Mask<span style="margin-left: 1em"></span></h5>
     </p>
     <p>
-      Oftentimes, raw text input sequences are processed by a tokenizer
-      <div class="footnote">
-        <font style="font-size: 80.0%"><div align="justify">
-          <div style="margin-left: 0px">
-            <div style="margin-right: 0px">
-              <class style="font-style: normal"><p>
-                1. We won't implement a tokenizer here; we'll use the one
-                provided with the model, when applied pre-trained models to
-                sample tasks later.
-              </p></class>
-            </div>
-          </div>
-        </div></font>
-      </div>
-      <span style="margin-left: 0em"></span>
-      <a id="footnr-1"></a>
-      <sup><class style="font-style: normal"><a href="#footnote-1">1</a></class></sup>
-      , before being fed to the model. To ensure an uniform length, the
+      Oftentimes, raw text input sequences are processed by a tokenizer,
+      before being fed to the model. To ensure an uniform length, the
       tokenizer truncates or pads input sequences&mdash;those longer than the
       maximum length will be truncated, and those shorter will be padded with
       zeros. But the padding zeros would affect the softmax calculation. So
@@ -1440,8 +1424,8 @@ def create_padding_mask(input_token_ids):
     return seq[:, tf.newaxis, :]</pre>
     </div>
     <p>
-      This function assumes the input is a vectorized matrix with batch size
-      <tt class="verbatim">m</tt> and sequence length <tt class="verbatim">t</tt>. It simply
+      This function assumes the input is already a tokenized matrix with batch
+      size <tt class="verbatim">m</tt> and sequence length <tt class="verbatim">t</tt>. It simply
       assigns 1 to the indices of non-zero elements and 0 otherwise. An extra
       dimension is added so that the mask can be broadcasted correctly across
       query/key dimensions within Keras MultiHeadAttention layer. When this
@@ -1469,10 +1453,10 @@ if mask is not None:
     </p>
     <p>
       As <a href="#look-ahead-mask">mentioned earlier</a>, the look-ahead mask ensures that the
-      model predicts the next output <em>wihout looking ahead</em>. For
+      model predicts the next output <em>without looking ahead</em>. For
       instance, if the label output is <tt class="verbatim">[1, 2, 3]</tt> and the model
       is currently predicting the first value, we would mask out the second
-      and third values: <tt class="verbatim">[1, *, *]</tt>. So for a sequence lenght of
+      and third values: <tt class="verbatim">[1, *, *]</tt>. So for a sequence length of
       3, the mask we want is:
     </p>
     <center>
@@ -1511,9 +1495,7 @@ array([[1., 0., 0.],
        [1., 1., 1.]], dtype=float32)&gt;</pre>
     </div>
     <p>
-      Next, we'll implement scaled dot-product attention. We won't use the
-      code here when later building the transformer, it only serves as a
-      precise reference for understanding how the attention is computed.
+      Next, we'll implement scaled dot-product attention. 
     </p>
     <p>
       <div style="display: inline">
@@ -1522,7 +1504,53 @@ array([[1., 0., 0.],
       <h5>Scaled Dot-Product Attention<span style="margin-left: 1em"></span></h5>
     </p>
     <p>
-      
+      Recall that, the formula of scaled dot-product attention is:
+    </p>
+    <center>
+      <img src="attention-40.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0805289256198347em; margin-right: -0.141046831955922em; margin-top: -0.0373553719008264em; vertical-align: -1.12114600550964em; height: 2.65833608815427em"></img>
+    </center>
+    <p>
+      The implementation is straightforward:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+def scaled_dot_product_attention(q, k, v, mask):
+    &quot;&quot;&quot;
+    Arguments:
+        q -- query shape == (&hellip;, seq_len_q, depth)
+        k -- key shape == (&hellip;, seq_len_k, depth)
+        v -- value shape == (&hellip;, seq_len_v, depth_v)
+        mask: Float tensor with shape broadcastable 
+              to (&hellip;, seq_len_q, seq_len_k). Defaults to None.
+
+    Returns:
+        output -- attention_weights
+    &quot;&quot;&quot;
+    
+    matmul_qk = tf.linalg.matmul(q, k, transpose_b=True)  # (&hellip;, seq_len_q, seq_len_k)
+
+    dk = k.shape[1]
+    scaled_attention = matmul_qk / (dk ** 0.5)
+
+    if mask is not None:
+        scaled_attention += (1 - mask) * -1e9
+
+    attention_weights = tf.nn.softmax(scaled_attention, axis=-1)  # (&hellip;, seq_len_q, seq_len_k)
+
+    output = tf.linalg.matmul(attention_weights, v)  # (&hellip;, seq_len_q, depth_v)
+    
+    return output, attention_weights</pre>
+    </div>
+    <p>
+      The intermediate result <tt class="verbatim">matmul_qk</tt> is the matrix product
+      of Q and K. We pass <tt class="verbatim">transpose_b=True</tt> to tell <tt class="verbatim">tf.linalg.matmul</tt>
+      to transpose the second matrix before proceed with the multiplication.
+      Afterward, we apply the scaling and masking before the softmax
+      computation and final matrix multiplication. The <tt class="verbatim">scaled_dot_product_attention</tt>
+      function won't be used in the later Transformer implementation; it
+      serves only as a precise reference for how attention is calculated. For
+      building the encoder and decoder layers, we will instead rely on Keras's
+      <code>MultiHeadAttention</code> layer.
     </p>
   </body>
 </html>

@@ -17,6 +17,8 @@
     <assign|tmhtml-notes-entry-abstract|<macro|abs|<compound|html-div-class|tmweb-entry-abstract|<arg|abs>>>>
 
     <assign|wide-std-underlined-titled|<macro|body|title|<wide-bothlined-titled*|0pt|<value|underlined-width>|0pt|<value|underlined-sep>|<arg|body>|<arg|title>>>>
+
+    <assign|padded-right-aligned|<macro|body|<with|par-mode|right|<surround|<vspace*|<value|padding-above>><no-indent>|<vspace|<value|padding-below>>|<arg|body>>>>>
   </hide-preamble>
 
   <hrule>
@@ -29,20 +31,34 @@
 
   <chapter*|Feel The Water>
 
-  \PThis is water\Q, David Foster Wallace repeated in <hlink|his famous
-  commencement speech|https://web.ics.purdue.edu/~drkelly/DFWKenyonAddress2005.pdf>,
-  urging students to stay conscious and alive in the routines of everyday
-  life. For me, the act of writing about the things I'm interested in\Vnot
-  just code but the ideas and patterns that shape how I see the world\Vserves
-  as a way to pay closer attention. This blog is my attempt to step out of
-  the \Pdefault setting,\Q to be aware of the environment I'm swimming in,
-  and to keep track of the thoughts that move me forward.\ 
+  <\quotation>
+    <with|font|Linux Libertine|<\with|font-base-size|11>
+      <\em>
+        The really important kind of freedom involves attention and awareness
+        and discipline, and being able truly to care about other people and
+        to sacrifice for them over and over in myriad petty, unsexy ways
+        every day.\ 
+
+        That is real freedom. That is being educated, and understanding how
+        to think. The alternative is unconsciousness, the default setting,
+        the rat race, the constant gnawing sense of having had, and lost,
+        some infinite thing.
+      </em>
+
+      <\padded-left-aligned>
+        <with|font-base-size|11|<em|<space|17e><with|font-base-size|10|<space|17em>David
+        Foster Wallace>>>
+
+        \;
+      </padded-left-aligned>
+    </with>>
+  </quotation>
 
   <section*|Programming>
 
   <hlink-tm|Understanding Attention Mechanisms|./attention>
 
-  \;
+  <section*|Others>
 
   \;
 
@@ -61,7 +77,7 @@
   <tabular|<tformat|<cwith|1|-1|1|3|font|Linux
   Libertine>|<cwith|1|1|1|1|font-base-size|10>|<table|<row|<cell|<strong|Email:>
   >|<cell|>|<cell|<with|font-base-size|10|marsmxm@gmail.com>>|<cell|>|<cell|>|<cell|>>|<row|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>|<cell|>>|<row|<cell|<strong|<with|font-base-size|10|Github:>
-  >>|<cell|>|<cell|<with|font-base-size|10|https://github.com/marsmxm>>|<cell|>|<cell|>|<cell|>>>>>
+  >>|<cell|>|<cell|<with|font-base-size|10|github.com/marsmxm>>|<cell|>|<cell|>|<cell|>>>>>
 
   \;
 </body>
@@ -100,6 +116,7 @@
   <\collection>
     <associate|auto-1|<tuple|?|?>>
     <associate|auto-2|<tuple|?|?>>
+    <associate|auto-3|<tuple|?|?>>
   </collection>
 </references>
 

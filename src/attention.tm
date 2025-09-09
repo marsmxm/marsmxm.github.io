@@ -1510,7 +1510,7 @@
   columns. Finally, it expands the matrix dimensions at axis 0 to match the
   expected shape of <verbatim|(1, pos, d)>. This allows the positional
   encodings to be broadcast across all training examples later. Now we can
-  visulize our positional encodings:
+  visualize our positional encodings:
 
   <\verbatim-code>
     pos_encoding = positional_encoding(50, 512)
@@ -1583,16 +1583,13 @@
 
   <paragraph|Padding Mask>
 
-  Oftentimes, raw text input sequences are processed by a
-  tokenizer<\footnote>
-    We won't implement a tokenizer here; we'll use the one provided with the
-    model, when applied pre-trained models to sample tasks later.
-  </footnote>, before being fed to the model. To ensure an uniform length,
-  the tokenizer truncates or pads input sequences\Vthose longer than the
-  maximum length will be truncated, and those shorter will be padded with
-  zeros. But the padding zeros would affect the softmax calculation. So the
-  purpose of padding masks is to specify which elements should be involved
-  during the attention computation.\ 
+  Oftentimes, raw text input sequences are processed by a tokenizer, before
+  being fed to the model. To ensure an uniform length, the tokenizer
+  truncates or pads input sequences\Vthose longer than the maximum length
+  will be truncated, and those shorter will be padded with zeros. But the
+  padding zeros would affect the softmax calculation. So the purpose of
+  padding masks is to specify which elements should be involved during the
+  attention computation.\ 
 
   <\verbatim-code>
     def create_padding_mask(input_token_ids):
@@ -1618,14 +1615,15 @@
     \ \ \ \ return seq[:, tf.newaxis, :]
   </verbatim-code>
 
-  This function assumes the input is a vectorized matrix with batch size
-  <verbatim|m> and sequence length <verbatim|t>. It simply assigns 1 to the
-  indices of non-zero elements and 0 otherwise. An extra dimension is added
-  so that the mask can be broadcasted correctly across query/key dimensions
-  within Keras MultiHeadAttention layer. When this mask is applied, the Keras
-  softmax function adds a very large negative value to the masked positions,
-  effectively canceling their contribution in the softmax calculation, as
-  shown in <hlink|the source code|https://github.com/keras-team/keras/blob/08b5252b039e4824ea157ca37d61ae5138aade3b/keras/src/layers/activations/softmax.py#L54>:
+  This function assumes the input is already a tokenized matrix with batch
+  size <verbatim|m> and sequence length <verbatim|t>. It simply assigns 1 to
+  the indices of non-zero elements and 0 otherwise. An extra dimension is
+  added so that the mask can be broadcasted correctly across query/key
+  dimensions within Keras MultiHeadAttention layer. When this mask is
+  applied, the Keras softmax function adds a very large negative value to the
+  masked positions, effectively canceling their contribution in the softmax
+  calculation, as shown in <hlink|the source
+  code|https://github.com/keras-team/keras/blob/08b5252b039e4824ea157ca37d61ae5138aade3b/keras/src/layers/activations/softmax.py#L54>:
 
   <\verbatim-code>
     ...
@@ -1650,10 +1648,10 @@
   <paragraph|Look-Ahead Mask>
 
   As <hlink|mentioned earlier|#look-ahead-mask>, the look-ahead mask ensures
-  that the model predicts the next output <em|wihout looking ahead>. For
+  that the model predicts the next output <em|without looking ahead>. For
   instance, if the label output is <verbatim|[1, 2, 3]> and the model is
   currently predicting the first value, we would mask out the second and
-  third values: <verbatim|[1, *, *]>. So for a sequence lenght of 3, the mask
+  third values: <verbatim|[1, *, *]>. So for a sequence length of 3, the mask
   we want is:
 
   <\equation*>
@@ -1695,13 +1693,85 @@
     \ \ \ \ \ \ \ [1., 1., 1.]], dtype=float32)\<gtr\>
   </verbatim-code>
 
-  Next, we'll implement scaled dot-product attention. We won't use the code
-  here when later building the transformer, it only serves as a precise
-  reference for understanding how the attention is computed.
+  Next, we'll implement scaled dot-product attention.\ 
 
   <paragraph|Scaled Dot-Product Attention>
 
-  \;
+  Recall that, the formula of scaled dot-product attention is:
+
+  <\equation*>
+    Attention<around*|(|Q,K,V|)>=softmax<around*|(|<frac|Q*K<rsup|T>|<sqrt|d<rsub|k>>>|)>*V
+  </equation*>
+
+  The implementation is straightforward:
+
+  <\verbatim-code>
+    def scaled_dot_product_attention(q, k, v, mask):
+
+    \ \ \ \ """
+
+    \ \ \ \ Arguments:
+
+    \ \ \ \ \ \ \ \ q -- query shape == (..., seq_len_q, depth)
+
+    \ \ \ \ \ \ \ \ k -- key shape == (..., seq_len_k, depth)
+
+    \ \ \ \ \ \ \ \ v -- value shape == (..., seq_len_v, depth_v)
+
+    \ \ \ \ \ \ \ \ mask: Float tensor with shape broadcastable\ 
+
+    \ \ \ \ \ \ \ \ \ \ \ \ \ \ to (..., seq_len_q, seq_len_k). Defaults to
+    None.
+
+    \;
+
+    \ \ \ \ Returns:
+
+    \ \ \ \ \ \ \ \ output -- attention_weights
+
+    \ \ \ \ """
+
+    \ \ \ \ 
+
+    \ \ \ \ matmul_qk = tf.linalg.matmul(q, k, transpose_b=True) \ # (...,
+    seq_len_q, seq_len_k)
+
+    \;
+
+    \ \ \ \ dk = k.shape[1]
+
+    \ \ \ \ scaled_attention = matmul_qk / (dk ** 0.5)
+
+    \;
+
+    \ \ \ \ if mask is not None:
+
+    \ \ \ \ \ \ \ \ scaled_attention += (1 - mask) * -1e9
+
+    \;
+
+    \ \ \ \ attention_weights = tf.nn.softmax(scaled_attention, axis=-1) \ #
+    (..., seq_len_q, seq_len_k)
+
+    \;
+
+    \ \ \ \ output = tf.linalg.matmul(attention_weights, v) \ # (...,
+    seq_len_q, depth_v)
+
+    \ \ \ \ 
+
+    \ \ \ \ return output, attention_weights
+  </verbatim-code>
+
+  The intermediate result <verbatim|matmul_qk> is the matrix product of Q and
+  K. We pass <verbatim|transpose_b=True> to tell <verbatim|tf.linalg.matmul>
+  to transpose the second matrix before proceed with the multiplication.
+  Afterward, we apply the scaling and masking before the softmax computation
+  and final matrix multiplication. The <verbatim|scaled_dot_product_attention>
+  function won't be used in the later Transformer implementation; it serves
+  only as a precise reference for how attention is calculated. For building
+  the encoder and decoder layers, we will instead rely on Keras's
+  <code*|MultiHeadAttention> layer.
 </body>
 
 <\initial>
@@ -1729,7 +1799,7 @@
     <associate|auto-22|<tuple|8|18>>
     <associate|auto-23|<tuple|2|19>>
     <associate|auto-24|<tuple|3|19>>
-    <associate|auto-25|<tuple|4|?>>
+    <associate|auto-25|<tuple|4|20>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|1|6>>
     <associate|auto-5|<tuple|1|7>>
@@ -1844,6 +1914,10 @@
       <with|par-left|<quote|3tab>|Look-Ahead Mask
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-24>>
+
+      <with|par-left|<quote|3tab>|Scaled Dot-Product Attention
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-25>>
     </associate>
   </collection>
 </auxiliary>
