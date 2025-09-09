@@ -1371,7 +1371,7 @@
     </cell>|<\cell>
       <math|cos<around*|(|<frac|0|10000<rsup|<frac|0|d>>>|)>>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
       <math|sin<around*|(|<frac|0|10000<rsup|<frac|d|d>>>|)>>
     </cell>|<\cell>
@@ -1383,7 +1383,7 @@
     </cell>|<\cell>
       <math|cos<around*|(|<frac|1|10000<rsup|<frac|0|d>>>|)>>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
       <math|sin<around*|(|<frac|1|10000<rsup|<frac|d|d>>>|)>>
     </cell>|<\cell>
@@ -1391,15 +1391,15 @@
     </cell>>|<row|<\cell>
       <text-dots>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>>|<row|<\cell>
       encoding(pos)
     </cell>|<\cell>
@@ -1407,7 +1407,7 @@
     </cell>|<\cell>
       <math|cos<around*|(|<frac|pos|10000<rsup|<frac|0|d>>>|)>>
     </cell>|<\cell>
-      \;
+      <text-dots>
     </cell>|<\cell>
       <math|sin<around*|(|<frac|pos|10000<rsup|<frac|d|d>>>|)>>
     </cell>|<\cell>

@@ -29,7 +29,7 @@
     </cell>>>>
   </wide-tabular>
 
-  <chapter*|Feel The Water>
+  <chapter*|Feel the Water>
 
   <\quotation>
     <with|font|Linux Libertine|<\with|font-base-size|11>
