@@ -1258,7 +1258,8 @@
     outputs) is fed into the decoder at once during training, future
     positions beyond the current step would otherwise be visible. To prevent
     the model from \Pcheating\Q by accessing those future tokens, the mask
-    blocks attention to positions after the current step.
+    blocks attention to positions after the current
+    step.<label|look-ahead-mask>
 
     <item>The decoder includes an additional third sub-layer between the
     self-attention and feed-forward components. This intermediate layer
@@ -1296,12 +1297,13 @@
   some interesting properties that help explain why it is defined in this
   particular way.
 
-  <subsection*|Attention>
+  <subsection*|Multi-Head Attention>
 
   The authors refer to their attention mechanism as <strong|Scaled
-  Dot-Product Attention>. It's quite similar to the dot-product attention we
-  discussed in the previous section, with one key difference: the dot-product
-  results are scaled down before being passed to the softmax function:
+  Dot-Product Attention>. It's almost the same to the dot-product attention
+  we discussed in the previous section, with one key difference: the
+  dot-product results are scaled down before being passed to the softmax
+  function:
 
   <\equation*>
     Attention<around*|(|Q,K,V|)>=softmax<around*|(|<frac|Q*K<rsup|T>|<sqrt|d<rsub|k>>>|)>*V
@@ -1310,16 +1312,16 @@
   <\itemize-dot>
     <item>Q, K and V are matrices representing queries, keys and values.
 
-    <item>In self-attentions, Q, K, and V are all the same output of the
-    previous encoder (or decoder) layer.
+    <item>In self-attentions, Q, K, and V are all the same output from the
+    previous encoder/decoder layer.
 
     <item>In cross-attentions, Q comes from the previous decoder layer, K and
     V come from the output of the encoder.
 
     <item>The the dot-product result is scaled by
     <math|<frac|1|<sqrt|d<rsub|k>>>>. Without this scaling, large dot-product
-    values push the softmax function into saturation regions where gradients
-    become extremely small, hindering the learning progress.
+    values might push the softmax function into saturation regions where
+    gradients become extremely small, hindering the learning progress.
   </itemize-dot>
 
   The term <strong|multi-head> refers to computing not just one, but <math|h>
@@ -1341,8 +1343,13 @@
 
   <subsection*|Transformer Implementation>
 
-  Let's first work on the positional encodings. The table below shows
-  intuitively the resulting encoding matrix we want for each input sequence:
+  Let's first work on the common components: positional encoding and
+  attention masks.\ 
+
+  <paragraph|Positional Encoding>
+
+  The table below shows intuitively the resulting positional encoding matrix
+  we want for each input sequence:
 
   <\wide-tabular>
     <tformat|<cwith|1|1|1|1|cell-halign|c>|<cwith|1|1|2|-1|cell-halign|c>|<cwith|1|-1|1|-1|cell-tborder|1ln>|<cwith|1|-1|1|-1|cell-bborder|1ln>|<cwith|1|-1|1|-1|cell-lborder|1ln>|<cwith|1|-1|1|-1|cell-rborder|1ln>|<cwith|2|-1|1|-1|cell-halign|c>|<table|<row|<\cell>
@@ -1408,7 +1415,7 @@
     </cell>>>>
   </wide-tabular>
 
-  The functions below calculate the positional encoding matrix:
+  The functions below calculate this positional encoding matrix:
 
   <\verbatim-code>
     def get_angles(pos, k, d):
@@ -1571,8 +1578,130 @@
     tf.Tensor(3.2668781, shape=(), dtype=float32)
   </verbatim-code>
 
-  We next implement two types of useful masks when building the Transformer
-  archetecture.\ 
+  We next implement two types of useful masks to build the Transformer
+  architecture.\ 
+
+  <paragraph|Padding Mask>
+
+  Oftentimes, raw text input sequences are processed by a
+  tokenizer<\footnote>
+    We won't implement a tokenizer here; we'll use the one provided with the
+    model, when applied pre-trained models to sample tasks later.
+  </footnote>, before being fed to the model. To ensure an uniform length,
+  the tokenizer truncates or pads input sequences\Vthose longer than the
+  maximum length will be truncated, and those shorter will be padded with
+  zeros. But the padding zeros would affect the softmax calculation. So the
+  purpose of padding masks is to specify which elements should be involved
+  during the attention computation.\ 
+
+  <\verbatim-code>
+    def create_padding_mask(input_token_ids):
+
+    \ \ \ \ """
+
+    \ \ \ \ Arguments:
+
+    \ \ \ \ \ \ \ \ input_token_ids -- (m, t) matrix \ 
+
+    \ \ \ \ 
+
+    \ \ \ \ Returns:
+
+    \ \ \ \ \ \ \ \ mask -- (m, 1, t) binary tensor
+
+    \ \ \ \ """
+
+    \ \ \ \ 
+
+    \ \ \ \ seq = 1 - tf.cast(tf.math.equal(input_token_ids, 0), tf.float32)
+
+    \ \ \ \ return seq[:, tf.newaxis, :]
+  </verbatim-code>
+
+  This function assumes the input is a vectorized matrix with batch size
+  <verbatim|m> and sequence length <verbatim|t>. It simply assigns 1 to the
+  indices of non-zero elements and 0 otherwise. An extra dimension is added
+  so that the mask can be broadcasted correctly across query/key dimensions
+  within Keras MultiHeadAttention layer. When this mask is applied, the Keras
+  softmax function adds a very large negative value to the masked positions,
+  effectively canceling their contribution in the softmax calculation, as
+  shown in <hlink|the source code|https://github.com/keras-team/keras/blob/08b5252b039e4824ea157ca37d61ae5138aade3b/keras/src/layers/activations/softmax.py#L54>:
+
+  <\verbatim-code>
+    ...
+
+    \;
+
+    if mask is not None:
+
+    \ \ \ \ adder = (
+
+    \ \ \ \ \ \ \ \ 1.0 - backend.cast(mask, inputs.dtype)
+
+    \ \ \ \ ) * _large_negative_number(inputs.dtype)
+
+    \ \ \ \ inputs += adder
+
+    \;
+
+    ...
+  </verbatim-code>
+
+  <paragraph|Look-Ahead Mask>
+
+  As <hlink|mentioned earlier|#look-ahead-mask>, the look-ahead mask ensures
+  that the model predicts the next output <em|wihout looking ahead>. For
+  instance, if the label output is <verbatim|[1, 2, 3]> and the model is
+  currently predicting the first value, we would mask out the second and
+  third values: <verbatim|[1, *, *]>. So for a sequence lenght of 3, the mask
+  we want is:
+
+  <\equation*>
+    <bmatrix|<tformat|<table|<row|<cell|1>|<cell|0>|<cell|0>>|<row|<cell|1>|<cell|1>|<cell|0>>|<row|<cell|1>|<cell|1>|<cell|1>>>>>
+  </equation*>
+
+  There's a Keras function <verbatim|tf.linalg.band_part> to achieve this
+  goal. It takes a tensor as its first argument and keeps the diagonal bands
+  specified by the second and third arguments, setting all other elements to
+  zero.
+
+  <\verbatim-code>
+    def create_look_ahead_mask(sequence_length):
+
+    \ \ \ \ return tf.linalg.band_part(tf.ones((sequence_length,
+    sequence_length)), -1, 0)
+  </verbatim-code>
+
+  We first create an all-ones square matrix using <code*|tf.ones>, then pass
+  it to <code*|tf.linalg.band_part>. By setting the second argument to
+  <code*|-1>, we keep all sub-diagonals, and by setting the third argument to
+  <code*|0>, we zero out all super-diagonals.
+
+  <\verbatim-code>
+    x = tf.random.uniform((1, 3))
+
+    create_look_ahead_mask(x.shape[1])
+  </verbatim-code>
+
+  =\<gtr\>
+
+  <\verbatim-code>
+    \<less\>tf.Tensor: shape=(3, 3), dtype=float32, numpy=
+
+    array([[1., 0., 0.],
+
+    \ \ \ \ \ \ \ [1., 1., 0.],
+
+    \ \ \ \ \ \ \ [1., 1., 1.]], dtype=float32)\<gtr\>
+  </verbatim-code>
+
+  Next, we'll implement scaled dot-product attention. We won't use the code
+  here when later building the transformer, it only serves as a precise
+  reference for understanding how the attention is computed.
+
+  <paragraph|Scaled Dot-Product Attention>
+
+  \;
 </body>
 
 <\initial>
@@ -1596,7 +1725,11 @@
     <associate|auto-19|<tuple|7|16>>
     <associate|auto-2|<tuple|III|1>>
     <associate|auto-20|<tuple|7|17>>
-    <associate|auto-21|<tuple|8|18>>
+    <associate|auto-21|<tuple|1|17>>
+    <associate|auto-22|<tuple|8|18>>
+    <associate|auto-23|<tuple|2|19>>
+    <associate|auto-24|<tuple|3|19>>
+    <associate|auto-25|<tuple|4|?>>
     <associate|auto-3|<tuple|1|2>>
     <associate|auto-4|<tuple|1|6>>
     <associate|auto-5|<tuple|1|7>>
@@ -1604,6 +1737,9 @@
     <associate|auto-7|<tuple|2|8>>
     <associate|auto-8|<tuple|2|8>>
     <associate|auto-9|<tuple|3|11>>
+    <associate|footnote-1|<tuple|1|19>>
+    <associate|footnr-1|<tuple|1|19>>
+    <associate|look-ahead-mask|<tuple|<with|mode|<quote|math>|\<bullet\>>|15>>
     <associate|section1|<tuple|III|1>>
     <associate|section1-model|<tuple|1|4>>
     <associate|section2|<tuple|1|6>>
@@ -1645,7 +1781,7 @@
 
       <tuple|normal|<\surround|<hidden-binding|<tuple>|8>|>
         Visualization of Positional Encodings
-      </surround>|<pageref|auto-21>>
+      </surround>|<pageref|auto-22>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Understanding
@@ -1689,13 +1825,25 @@
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-17>>
 
-      <with|par-left|<quote|1tab>|Attention
+      <with|par-left|<quote|1tab>|Multi-Head Attention
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-18>>
 
       <with|par-left|<quote|1tab>|Transformer Implementation
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-20>>
+
+      <with|par-left|<quote|3tab>|Positional Encoding
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-21>>
+
+      <with|par-left|<quote|3tab>|Padding Mask
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-23>>
+
+      <with|par-left|<quote|3tab>|Look-Ahead Mask
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-24>>
     </associate>
   </collection>
 </auxiliary>
