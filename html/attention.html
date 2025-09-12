@@ -1018,13 +1018,13 @@ Y_proba = output_layer(attention_outputs)</pre>
     <ul>
       <li>
         <p>
-          A <strong>look-ahead mask</strong> is applied to the decoder's
-          self-attention layer. Since the entire target sequence (the label
-          outputs) is fed into the decoder at once during training, future
-          positions beyond the current step would otherwise be visible. To
-          prevent the model from &ldquo;cheating&rdquo; by accessing those
+          <a id="look-ahead-mask"></a>A <strong>look-ahead mask</strong> is applied to the
+          decoder's self-attention layer. Since the entire target sequence
+          (the label outputs) is fed into the decoder at once during training,
+          future positions beyond the current step would otherwise be visible.
+          To prevent the model from &ldquo;cheating&rdquo; by accessing those
           future tokens, the mask blocks attention to positions after the
-          current step.<a id="look-ahead-mask"></a>
+          current step.
         </p>
       </li>
       <li>
@@ -1559,6 +1559,355 @@ def scaled_dot_product_attention(q, k, v, mask):
       serves only as a precise reference for how attention is calculated. For
       building the encoder and decoder layers, we will instead rely on Keras's
       <code>MultiHeadAttention</code> layer.
+    </p>
+    <p>
+      <div style="display: inline">
+        <a id="auto-26"></a>
+      </div>
+      <h5>Encoder<span style="margin-left: 1em"></span></h5>
+    </p>
+    <p>
+      Recall that the encoder is composed of N identical sub-layers, which we
+      refer to as encoder layers. We'll begin by implementing a single encoder
+      layer.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-58.png" height="229.43295744" width="173.19938944"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 9. </b><a id="auto-27"></a>Encoder Layer
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <ul>
+      <li>
+        <p>
+          For the <tt class="verbatim">MultiHeadAttention</tt> layer, we will use the <a
+          href="https://www.tensorflow.org/api_docs/python/tf/keras/layers/MultiHeadAttention">Keras implementation</a>.
+        </p>
+      </li>
+      <li>
+        <p>
+          We will also rely on Keras's <a href="https://keras.io/api/models/sequential/">Sequential API</a> with two
+          dense layers to build the feed forward layer.
+        </p>
+      </li>
+    </ul>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+def FullyConnected(embedding_dim, hidden_dim):
+    return tf.keras.Sequential([
+        tf.keras.layers.Dense(hidden_dim, activation='relu'),  # (batch_size, seq_len, dff)
+        tf.keras.layers.Dense(embedding_dim)  # (batch_size, seq_len, embedding_dim)
+    ])</pre>
+    </div>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+class EncoderLayer(tf.keras.layers.Layer):
+    def __init__(self, embedding_dim, num_heads, fully_connected_dim,
+                 dropout_rate=0.1, layernorm_eps=1e-6):
+        super(EncoderLayer, self).__init__()
+
+        self.mha = MultiHeadAttention(num_heads=num_heads,
+                                      key_dim=embedding_dim // num_heads,
+                                      dropout=dropout_rate)
+
+        self.ffn = FullyConnected(embedding_dim=embedding_dim,
+                                  hidden_dim=fully_connected_dim)
+
+        self.layernorm1 = LayerNormalization(epsilon=layernorm_eps)
+        self.layernorm2 = LayerNormalization(epsilon=layernorm_eps)
+
+        self.dropout_ffn = Dropout(dropout_rate)
+    
+    def call(self, x, training):
+        padding_mask = create_padding_mask(x)
+
+        self_mha_output = self.mha(
+            query=x, value=x, key=x, attention_mask=padding_mask, training=training)
+
+        skip_x_attention = self.layernorm1(x + self_mha_output)  
+
+        ffn_output = self.ffn(skip_x_attention) 
+        
+        ffn_output = self.dropout_ffn(ffn_output, training=training)
+       
+        encoder_layer_out = self.layernorm2(skip_x_attention + ffn_output)  
+        
+        return encoder_layer_out</pre>
+    </div>
+    <p>
+      A padding mask is first created using <tt class="verbatim">create_padding_mask</tt>
+      function we defined earlier. It's then passed to the <tt class="verbatim">MultiHeadAttention</tt>
+      layer. We also pass a <tt class="verbatim">training</tt> argument to distinguish
+      between training and inference phases. During training, dropout layers
+      are applied to help prevent overfitting. And as suggested in the paper,
+      we use a smaller key dimension for each head, by dividing <tt class="verbatim">embedding_dim</tt>
+      by <tt class="verbatim">num_heads</tt>, so that the total computational cost is
+      similar to that of single-head attention with full dimensionality. Also
+      note that, the same input <tt class="verbatim">x</tt> is passed as all Q, V and K
+      arguments to implement a self-attention. Next is the full encoder.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-59.png" height="394.75964736" width="205.81485888"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 10. </b><a id="auto-28"></a>Full Encoder
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <p>
+      The encoder just stacks all components together:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+class Encoder(tf.keras.layers.Layer): 
+    def __init__(self, num_layers, embedding_dim, num_heads, 
+                 fully_connected_dim, input_vocab_size,
+                 maximum_position_encoding, dropout_rate=0.1, layernorm_eps=1e-6):
+        super(Encoder, self).__init__()
+
+        self.embedding_dim = embedding_dim
+        self.num_layers = num_layers
+
+        self.embedding = Embedding(input_vocab_size, self.embedding_dim)
+        self.pos_encoding = positional_encoding(maximum_position_encoding, 
+                                                self.embedding_dim)
+
+
+        self.enc_layers = [EncoderLayer(embedding_dim=self.embedding_dim,
+                                        num_heads=num_heads,
+                                        fully_connected_dim=fully_connected_dim,
+                                        dropout_rate=dropout_rate,
+                                        layernorm_eps=layernorm_eps) 
+                           for _ in range(self.num_layers)]
+
+        self.dropout = Dropout(dropout_rate)
+        
+    def call(self, x, training):
+        &quot;&quot;&quot;
+        Arguments:
+            x -- Tensor of shape (batch_size, input_seq_len)
+            training -- Boolean, set to true to activate
+                        the training mode for dropout layers
+        Returns:
+            x -- Tensor of shape (batch_size, input_seq_len, embedding_dim)
+        &quot;&quot;&quot;
+        seq_len = tf.shape(x)[1]
+        
+        x = self.embedding(x) 
+        x *= tf.cast(self.embedding_dim, dtype=tf.float32) ** 0.5
+        x += self.pos_encoding[:, :seq_len, :]
+        x = self.dropout(x, training=training)
+
+        for i in range(self.num_layers):
+            x = self.enc_layers[i](x, training)
+
+        return x</pre>
+    </div>
+    <p>
+      The entire encoder begins by passing the input through an embedding
+      layer, then scales embeddings by <span class="no-breaks"><img src="attention-60.png" style="margin-left: -0.0112837465564738em; margin-bottom: 0.0802424242424242em; margin-right: -0.0112837465564741em; margin-top: 0.0334986225895316em; vertical-align: -0.547702479338843em; height: 1.4668870523416em"></img>,</span>
+      as described in the paper. Next, positional encodings are added to
+      inject sequence order information. After a dropout layer (applied only
+      during training), the embeddings are passed through a stack of encoder
+      layers. 
+    </p>
+    <p>
+      <div style="display: inline">
+        <a id="auto-29"></a>
+      </div>
+      <h5>Decoder<span style="margin-left: 1em"></span></h5>
+    </p>
+    <p>
+      Each decoder layer contains two multi-head attention sub-layers. The
+      first resembles the encoder's self-attention but incorporates a
+      look-ahead mask. The second takes the K and V matrices from the encoder
+      and the Q matrix from the first attention block. This allows each
+      position in the decoder to attend to all positions in the input
+      sequence, very much like the encoder&ndash;decoder attention mechanism
+      used in traditional sequence-to-sequence models, as discussed in earlier
+      sections.
+    </p>
+    <div style="margin-top: 1em; margin-bottom: 1em">
+      <table style="width: 100%">
+        <tbody><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em"><img class="image" src="attention-61.png" height="430.04621128" width="192.88113824"></img></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; height: 0.5em"></td>
+        </tr><tr>
+          <td style="text-align: center; padding-left: 0em; padding-right: 0em; padding-left: 1.5em; padding-right: 1.5em"><div class="caption">
+            <font style="font-size: 90.0%"><p>
+              <b>Figure 11. </b><a id="auto-30"></a>Full Decoder
+            </p></font>
+          </div></td>
+        </tr></tbody>
+      </table>
+    </div>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+class DecoderLayer(tf.keras.layers.Layer):
+    def __init__(self, embedding_dim, num_heads, fully_connected_dim, 
+                 dropout_rate=0.1, layernorm_eps=1e-6):
+        super(DecoderLayer, self).__init__()
+
+        self.mha1 = MultiHeadAttention(num_heads=num_heads,
+                                      key_dim=embedding_dim // num_heads,
+                                      dropout=dropout_rate)
+
+        self.mha2 = MultiHeadAttention(num_heads=num_heads,
+                                      key_dim=embedding_dim // num_heads,
+                                      dropout=dropout_rate)
+
+        self.ffn = FullyConnected(embedding_dim=embedding_dim,
+                                  fully_connected_dim=fully_connected_dim)
+
+        self.layernorm1 = LayerNormalization(epsilon=layernorm_eps)
+        self.layernorm2 = LayerNormalization(epsilon=layernorm_eps)
+        self.layernorm3 = LayerNormalization(epsilon=layernorm_eps)
+
+        self.dropout_ffn = Dropout(dropout_rate)
+    
+    def call(self, x, enc_output, enc_padding_mask, training):
+        padding_mask = create_padding_mask(x)
+        look_ahead_mask = create_look_ahead_mask(x.shape[1])
+
+        mult_attn_out1, attn_weights_block1 = self.mha1(
+            query=x, key=x, value=x, 
+            attention_mask=padding_mask &amp; look_ahead_mask,
+            return_attention_scores=True)
+        
+        Q = self.layernorm1(mult_attn_out1 + x)
+
+        mult_attn_out2, attn_weights_block2 = self.mha2(
+            query=Q, key=enc_output, value=enc_output, 
+            attention_mask=enc_padding_mask, 
+            return_attention_scores=True)
+        
+        mult_attn_out2 = self.layernorm2(mult_attn_out2 + Q)
+                
+        ffn_output = self.ffn(mult_attn_out2)
+        
+        ffn_output = self.dropout_ffn(ffn_output, training=training)
+        
+        out3 = self.layernorm3(ffn_output + mult_attn_out2)
+
+        return out3, attn_weights_block1, attn_weights_block2</pre>
+    </div>
+    <p>
+      The first self-attention layer combines padding and look-ahead masks
+      together as the <tt class="verbatim">attention_mask</tt>. The second uses the
+      encoder's padding mask, because it attends over the encoder's final
+      output. The full decoder and encoder are almost identical:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+class Decoder(tf.keras.layers.Layer):
+    def __init__(self, num_layers, embedding_dim, num_heads, 
+                 fully_connected_dim, target_vocab_size,
+                 maximum_position_encoding, dropout_rate=0.1, layernorm_eps=1e-6):
+        super(Decoder, self).__init__()
+
+        self.embedding_dim = embedding_dim
+        self.num_layers = num_layers
+
+        self.embedding = Embedding(target_vocab_size, self.embedding_dim)
+        self.pos_encoding = positional_encoding(maximum_position_encoding, self.embedding_dim)
+
+        self.dec_layers = [DecoderLayer(embedding_dim=self.embedding_dim,
+                                        num_heads=num_heads,
+                                        fully_connected_dim=fully_connected_dim,
+                                        dropout_rate=dropout_rate,
+                                        layernorm_eps=layernorm_eps) 
+                           for _ in range(self.num_layers)]
+        self.dropout = Dropout(dropout_rate)
+    
+    def call(self, x, enc_output, enc_padding_mask, training):
+        seq_len = tf.shape(x)[1]
+        attention_weights = {}
+        
+        x = self.embedding(x)
+        x *= tf.cast(self.embedding_dim, dtype=tf.float32) ** 0.5
+        x += self.pos_encoding[:, :seq_len, :]
+        x = self.dropout(x, training=training)
+
+        for i in range(self.num_layers):
+            x, block1, block2 = self.dec_layers[i](x, enc_output, enc_padding_mask, training)
+
+            attention_weights['decoder_layer{}_block1_self_att'.format(i+1)] = block1
+            attention_weights['decoder_layer{}_block2_decenc_att'.format(i+1)] = block2
+        
+        # x.shape == (batch_size, target_seq_len, embedding_dim)
+        return x, attention_weights</pre>
+    </div>
+    <p>
+      Finally, we can stack these components together to build the complete
+      Transformer:
+    </p>
+    <div class="tmweb-code">
+      <pre class="verbatim" xml:space="preserve">
+class Transformer(tf.keras.Model):
+    &quot;&quot;&quot;
+    Complete transformer with an Encoder and a Decoder
+    &quot;&quot;&quot;
+    def __init__(self, num_layers, embedding_dim, num_heads, 
+                 fully_connected_dim, input_vocab_size, 
+                 target_vocab_size, max_positional_encoding_input,
+                 max_positional_encoding_target, dropout_rate=0.1, layernorm_eps=1e-6):
+        super(Transformer, self).__init__()
+
+        self.encoder = Encoder(num_layers=num_layers,
+                               embedding_dim=embedding_dim,
+                               num_heads=num_heads,
+                               fully_connected_dim=fully_connected_dim,
+                               input_vocab_size=input_vocab_size,
+                               maximum_position_encoding=max_positional_encoding_input,
+                               dropout_rate=dropout_rate,
+                               layernorm_eps=layernorm_eps)
+
+        self.decoder = Decoder(num_layers=num_layers, 
+                               embedding_dim=embedding_dim,
+                               num_heads=num_heads,
+                               fully_connected_dim=fully_connected_dim,
+                               target_vocab_size=target_vocab_size, 
+                               maximum_position_encoding=max_positional_encoding_target,
+                               dropout_rate=dropout_rate,
+                               layernorm_eps=layernorm_eps)
+
+        self.final_layer = Dense(target_vocab_size, activation='softmax')
+    
+    def call(self, input_sentence, output_sentence, training):
+        enc_output = self.encoder(input_sentence, training)
+        
+        dec_output, attention_weights = self.decoder(
+            output_sentence, enc_output, 
+            enc_padding_mask=create_padding_mask(input_sentence), training=training)
+        
+        final_output = self.final_layer(dec_output)
+
+        return final_output, attention_weights</pre>
+    </div>
+    <p>
+      We've come a long way from the sequential encoder&ndash;decoder network
+      to the Transformer. Yet this is only the beginning of the journey toward
+      understanding the state-of-the-art technologies and terminology used in
+      today's NLP. In the following posts, we might explore some advanced
+      Transformer architectures, as well as implementation details of
+      fundamental ML operations.
     </p>
   </body>
 </html>
