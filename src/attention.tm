@@ -6,7 +6,7 @@
   <\hide-preamble>
     \;
 
-    <assign|notes-header-name|Feel the Water>
+    <assign|notes-header-name|A Machine Naturalist>
 
     <assign|notes-header-image|<image|../penguin.png|20pt|||>>
 
@@ -28,6 +28,8 @@
     <assign|tmhtml-really-large|<macro|body|<with|font-size|1.8|<arg|body>>>>
 
     <assign|menu-item|<macro|body|<with|font-family|ss|<localize|<arg|body>>>>>
+
+    <assign|notes-header|<macro|<notes-header-table|<notes-header-links>>>>
   </hide-preamble>
 
   <notes-header><chapter*|Understanding Attention Mechanisms>
@@ -64,7 +66,7 @@
   superscripts in angle brackets (<math|\<less\>1\<gtr\>,\<ldots\>.,\<less\>T<rsub|y>\<gtr\>>)
   indicate the position of each word within the sequence. Traditionally, a
   method called <strong|statistical machine translation> (SMT) was the
-  dominant approach (as used in early versions of Google Translate). NMT
+  dominant approach (as used in early versions of Google Translate). SMT
   models are trained on large amount of <hlink|parallel corpora|>, and
   analyzes these corpora to identify statistical relationships between words,
   phrases, and sentence structures in different languages.
@@ -2310,21 +2312,21 @@
     <associate|auto-15|<tuple|6|14>>
     <associate|auto-16|<tuple|6|14>>
     <associate|auto-17|<tuple|<with|mode|<quote|math>|\<bullet\>>|15>>
-    <associate|auto-18|<tuple|<with|mode|<quote|math>|\<bullet\>>|16>>
+    <associate|auto-18|<tuple|<with|mode|<quote|math>|\<bullet\>>|15>>
     <associate|auto-19|<tuple|7|16>>
     <associate|auto-2|<tuple|III|1>>
-    <associate|auto-20|<tuple|7|17>>
-    <associate|auto-21|<tuple|1|17>>
+    <associate|auto-20|<tuple|7|16>>
+    <associate|auto-21|<tuple|1|16>>
     <associate|auto-22|<tuple|8|18>>
     <associate|auto-23|<tuple|2|19>>
     <associate|auto-24|<tuple|3|19>>
     <associate|auto-25|<tuple|4|20>>
-    <associate|auto-26|<tuple|5|?>>
-    <associate|auto-27|<tuple|9|?>>
-    <associate|auto-28|<tuple|10|?>>
-    <associate|auto-29|<tuple|6|?>>
+    <associate|auto-26|<tuple|5|20>>
+    <associate|auto-27|<tuple|9|21>>
+    <associate|auto-28|<tuple|10|22>>
+    <associate|auto-29|<tuple|6|23>>
     <associate|auto-3|<tuple|1|2>>
-    <associate|auto-30|<tuple|11|?>>
+    <associate|auto-30|<tuple|11|24>>
     <associate|auto-4|<tuple|1|6>>
     <associate|auto-5|<tuple|1|7>>
     <associate|auto-6|<tuple|2|7>>
@@ -2374,6 +2376,18 @@
       <tuple|normal|<\surround|<hidden-binding|<tuple>|8>|>
         Visualization of Positional Encodings
       </surround>|<pageref|auto-22>>
+
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|9>|>
+        Encoder Layer
+      </surround>|<pageref|auto-27>>
+
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|10>|>
+        Full Encoder
+      </surround>|<pageref|auto-28>>
+
+      <tuple|normal|<\surround|<hidden-binding|<tuple>|11>|>
+        Full Decoder
+      </surround>|<pageref|auto-30>>
     </associate>
     <\associate|toc>
       <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Understanding
@@ -2440,6 +2454,14 @@
       <with|par-left|<quote|3tab>|Scaled Dot-Product Attention
       <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <no-break><pageref|auto-25>>
+
+      <with|par-left|<quote|3tab>|Encoder
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-26>>
+
+      <with|par-left|<quote|3tab>|Decoder
+      <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <no-break><pageref|auto-29>>
     </associate>
   </collection>
 </auxiliary>
