@@ -8,7 +8,7 @@
 
     <assign|hlink-tm|<macro|body|target|<hlink|<arg|body>|<merge|<arg|target>|.tm>>>>
 
-    <assign|html-title|Feel the Water>
+    <assign|html-title|Machine Naturalist>
 
     <assign|html-head-favicon|../resources/blog-icon.png>
 
@@ -29,7 +29,7 @@
     </cell>>>>
   </wide-tabular>
 
-  <chapter*|A Machine Naturalist>
+  <chapter*|Machine Naturalist>
 
   <\quotation>
     <with|font|Linux Libertine|<\with|font-base-size|11>
@@ -123,8 +123,8 @@
 <\auxiliary>
   <\collection>
     <\associate|toc>
-      <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Feel
-      the Water> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
+      <vspace*|1fn><with|font-series|<quote|bold>|math-font-series|<quote|bold>|font-shape|<quote|small-caps>|Machine
+      Naturalist> <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>
       <pageref|auto-1><vspace|0.5fn>
 
       Programming <datoms|<macro|x|<repeat|<arg|x>|<with|font-series|medium|<with|font-size|1|<space|0.2fn>.<space|0.2fn>>>>>|<htab|5mm>>

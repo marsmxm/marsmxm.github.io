@@ -6,7 +6,7 @@
   <\hide-preamble>
     \;
 
-    <assign|notes-header-name|A Machine Naturalist>
+    <assign|notes-header-name|Machine Naturalist>
 
     <assign|notes-header-image|<image|../penguin.png|20pt|||>>
 
